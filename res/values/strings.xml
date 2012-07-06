@@ -1,8 +1,9 @@
 <resources>
-
     <string name="app_name">MiWoTreff</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
     <string name="title_activity_main">MiWoTreff</string>
-
+    <string name="menu_search">Search</string>
+    <string name="menu_add">Add</string>
+    <string name="menu_import">Import</string>
+    <string name="no_entries">No Entries</string>
+    <string name="db_open_error"></string>
 </resources>
