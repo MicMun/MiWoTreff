@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 public class MainActivity extends ListActivity {
@@ -77,13 +76,8 @@ public class MainActivity extends ListActivity {
       Cursor entryCursor = mDbHelper.fetchAllEntries ();
       startManagingCursor (entryCursor);
       
-      String[] from = new String[]{DbAdapter.KEY_DATUM, 
-                                   DbAdapter.KEY_THEMA,
-                                   DbAdapter.KEY_PERSON};
-      int[] to = new int[] {R.id.text_datum, R.id.text_thema, R.id.text_person};
-      
-      SimpleCursorAdapter adapter = new SimpleCursorAdapter 
-      (this, R.layout.list_row, entryCursor, from, to);
+      SpecialCursorAdapter adapter = new SpecialCursorAdapter 
+      (this, entryCursor);
       setListAdapter (adapter);
    }
    
