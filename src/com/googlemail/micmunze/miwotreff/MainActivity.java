@@ -40,6 +40,36 @@ public class MainActivity extends ListActivity {
    }
    
    /**
+    * @see android.app.ListActivity#onPause()
+    */
+   @Override
+   public void onPause() {
+      mDbHelper.close ();
+      mDbHelper = null;
+      
+      super.onPause ();
+   }
+   
+   /**
+    * @see android.app.Activity#onResume()
+    */
+   @Override
+   public void onResume() {
+      if (mDbHelper == null) {
+         mDbHelper = new DbAdapter (this);
+         try {
+            mDbHelper.open ();
+         } catch (SQLException s) {
+            Toast.makeText (this, R.string.db_open_error, 
+                            Toast.LENGTH_SHORT).show ();
+            return;
+         }
+         fillData ();
+      }
+      super.onResume ();
+   }
+   
+   /**
     * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
     */
    @Override
@@ -71,10 +101,8 @@ public class MainActivity extends ListActivity {
    /**
     * Fills Data from Database in List.
     */
-   @SuppressWarnings ("deprecation")
    private void fillData() {
       Cursor entryCursor = mDbHelper.fetchAllEntries ();
-      startManagingCursor (entryCursor);
       
       SpecialCursorAdapter adapter = new SpecialCursorAdapter 
       (this, entryCursor);

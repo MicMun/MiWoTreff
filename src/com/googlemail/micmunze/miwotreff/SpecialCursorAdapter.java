@@ -119,9 +119,13 @@ extends ResourceCursorAdapter
        */
       private boolean isNextWednesday (String d) {
          GregorianCalendar today = new GregorianCalendar ();
-         today.set (GregorianCalendar.DAY_OF_WEEK, GregorianCalendar.WEDNESDAY);
-         int day = today.get (GregorianCalendar.DATE) + 7;
-         today.set (GregorianCalendar.DATE, day);
+         int diff = GregorianCalendar.WEDNESDAY - today.get 
+                                                (GregorianCalendar.DAY_OF_WEEK);
+         if (!(diff >= 0)) {
+            diff += 7;
+         }
+         today.add (GregorianCalendar.DAY_OF_MONTH, diff);
+                
          String strToday = DateFormat.format ("dd.MM.yyyy", today).toString ();
          
          if (strToday.equals (d)) {
