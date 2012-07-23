@@ -5,7 +5,10 @@
  */
 package com.googlemail.micmunze.miwotreff;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,6 +16,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.format.DateFormat;
+import android.util.Log;
 
 /**
  * Klasse f&uuml;r den Datenbankzugriff.
@@ -29,7 +34,7 @@ public class DbAdapter
    public static final String KEY_THEMA = "thema"; // Spalte Thema
    public static final String KEY_PERSON = "person"; // Spalte Person
    
-   //private static final String TAG = "DbAdapter";
+   private static final String TAG = "DbAdapter";
    
    private static final String DATABASE_NAME = "miwotreff";
    private static final String DATABASE_TABLE = "programm";
@@ -194,5 +199,39 @@ public class DbAdapter
       }
       
       return mCursor;
+   }
+   
+   /**
+    * Liefert das Date-Objekt zum Datum-String.
+    * 
+    * @param  d
+    *         Datum als String (Format: dd.MM.yyyy)
+    * @return Date-Objekt.
+    */
+   public static Date getDateFromString (String d) {
+      Date datum = null;
+      
+      SimpleDateFormat sdf = new SimpleDateFormat ("dd.MM.yyyy");
+      try {
+         datum = sdf.parse (d);
+      } catch (ParseException e) {
+         Log.e (TAG, e.getLocalizedMessage ());
+         datum = null;
+      }
+      
+      return datum;
+   }
+   
+   /**
+    * Liefert die String-Repr&auml;sentation des Datums.
+    * 
+    * @param  t
+    *         Zeitstempel in Millisekunden.
+    * @return String des Datums.
+    */
+   public static String getDateString (long t) {
+      GregorianCalendar gc = new GregorianCalendar ();
+      gc.setTimeInMillis (t);
+      return DateFormat.format ("dd.MM.yyyy", gc).toString ();
    }
 }

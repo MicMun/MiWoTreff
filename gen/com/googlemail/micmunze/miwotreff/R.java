@@ -22,23 +22,30 @@ public final class R {
         public static final int ic_launcher=0x7f020003;
     }
     public static final class id {
-        public static final int menu_add=0x7f080005;
-        public static final int menu_import=0x7f080004;
-        public static final int menu_search=0x7f080003;
-        public static final int text_datum=0x7f080000;
-        public static final int text_person=0x7f080002;
-        public static final int text_thema=0x7f080001;
+        public static final int confirm=0x7f080003;
+        public static final int edit_datum=0x7f080000;
+        public static final int edit_person=0x7f080002;
+        public static final int edit_thema=0x7f080001;
+        public static final int menu_add=0x7f080009;
+        public static final int menu_import=0x7f080008;
+        public static final int menu_search=0x7f080007;
+        public static final int text_datum=0x7f080004;
+        public static final int text_person=0x7f080006;
+        public static final int text_thema=0x7f080005;
     }
     public static final class layout {
-        public static final int activity_main=0x7f030000;
-        public static final int list_row=0x7f030001;
+        public static final int activity_edit=0x7f030000;
+        public static final int activity_main=0x7f030001;
+        public static final int list_row=0x7f030002;
     }
     public static final class menu {
         public static final int activity_main=0x7f070000;
     }
     public static final class string {
         public static final int app_name=0x7f050000;
+        public static final int confirm=0x7f050008;
         public static final int db_open_error=0x7f050006;
+        public static final int edit_title=0x7f050007;
         public static final int menu_add=0x7f050003;
         public static final int menu_import=0x7f050004;
         public static final int menu_search=0x7f050002;

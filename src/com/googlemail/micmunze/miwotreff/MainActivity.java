@@ -5,16 +5,20 @@ import java.util.Date;
 import java.util.HashMap;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends ListActivity {
-   
+   private static final int ACTIVITY_CREATE = 0;
+   private static final int ACTIVITY_EDIT = 1;
    private DbAdapter mDbHelper; // Database Helper
    
    /**
@@ -43,10 +47,7 @@ public class MainActivity extends ListActivity {
     * @see android.app.ListActivity#onPause()
     */
    @Override
-   public void onPause() {
-      mDbHelper.close ();
-      mDbHelper = null;
-      
+   public void onPause() {  
       super.onPause ();
    }
    
@@ -55,17 +56,6 @@ public class MainActivity extends ListActivity {
     */
    @Override
    public void onResume() {
-      if (mDbHelper == null) {
-         mDbHelper = new DbAdapter (this);
-         try {
-            mDbHelper.open ();
-         } catch (SQLException s) {
-            Toast.makeText (this, R.string.db_open_error, 
-                            Toast.LENGTH_SHORT).show ();
-            return;
-         }
-         fillData ();
-      }
       super.onResume ();
    }
    
@@ -91,7 +81,7 @@ public class MainActivity extends ListActivity {
             importProg ();
             return true;
          case R.id.menu_add:
-            
+            addProg ();
             return true;
          default:
             return super.onOptionsItemSelected (item);
@@ -127,17 +117,32 @@ public class MainActivity extends ListActivity {
       fillData ();
    }
    
-   //   @Override
-   //   protected void onListItemClick(ListView l, View v, int position, long id) {
-   //       super.onListItemClick(l, v, position, id);
-   //       Intent i = new Intent(this, NoteEdit.class);
-   //       i.putExtra(DbAdapter.KEY_ROWID, id);
-   //       startActivityForResult(i, ACTIVITY_EDIT);
-   //   }
-   //
-   //   @Override
-   //   protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-   //       super.onActivityResult(requestCode, resultCode, intent);
-   //       fillData();
-   //   }
+   /**
+    * Hinzuf&uuml;gen eines neuen Programmpunkts.
+    */
+   private void addProg() {
+      Intent i = new Intent(this, EditActivity.class);
+      startActivityForResult (i, ACTIVITY_CREATE);
+   }
+   
+   /**
+    * @see android.app.ListActivity#onListItemClick(android.widget.ListView, android.view.View, int, long)
+    */
+   @Override
+   protected void onListItemClick(ListView l, View v, int position, long id) {
+      super.onListItemClick(l, v, position, id);
+      Intent i = new Intent(this, EditActivity.class);
+      i.putExtra(DbAdapter.KEY_ROWID, id);
+      startActivityForResult(i, ACTIVITY_EDIT);
+   }
+   
+   /**
+    * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
+    */
+   @Override
+   protected void onActivityResult(int requestCode, int resultCode, 
+                                   Intent intent) {
+      super.onActivityResult(requestCode, resultCode, intent);
+      fillData();
+   }
 }

@@ -89,9 +89,7 @@ extends ResourceCursorAdapter
       public void bind (Cursor c, Context ctx) {
          // Datum
          long d = c.getLong (c.getColumnIndex (DbAdapter.KEY_DATUM));
-         GregorianCalendar gc = new GregorianCalendar ();
-         gc.setTimeInMillis (d);
-         String sd = DateFormat.format ("dd.MM.yyyy", gc).toString ();
+         String sd = DbAdapter.getDateString (d);
          datum.setText (sd);
          
          if (isNextWednesday (sd)) {

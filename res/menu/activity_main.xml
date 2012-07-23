@@ -2,13 +2,13 @@
     <item android:id="@+id/menu_search"
         android:title="@string/menu_search"
         android:icon="@drawable/ic_action_search"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="always" />
     <item android:id="@+id/menu_import"
         android:title="@string/menu_import"
         android:icon="@drawable/ic_action_import"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="always" />
     <item android:id="@+id/menu_add"
         android:title="@string/menu_add"
         android:icon="@drawable/ic_action_add"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="always" />
 </menu>

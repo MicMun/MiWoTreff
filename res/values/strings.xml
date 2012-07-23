@@ -5,5 +5,7 @@
     <string name="menu_add">Add</string>
     <string name="menu_import">Import</string>
     <string name="no_entries">No Entries</string>
-    <string name="db_open_error"></string>
+    <string name="db_open_error">Database Error</string>
+    <string name="edit_title">Programmpunkt editieren</string>
+    <string name="confirm">Ok</string>
 </resources>

@@ -86,7 +86,6 @@ public class HtmlParser
       int start = t.indexOf (TABLE_START);
       start += TABLE_START.length ();
       int end = t.indexOf (TABLE_END, start);
-      
       String s = t.substring (start, end);
       s = s.replace ("&nbsp;", " ");
       
