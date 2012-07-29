@@ -29,6 +29,7 @@ public class EditActivity
 extends Activity
 {
    private static final String TAG = "EditActivity";
+   private static boolean SAVE = true;
    
    private EditText mThemaEdit; // Thema eingeben
    private EditText mPersonEdit; // Person eingeben
@@ -36,6 +37,7 @@ extends Activity
    private EditText mDatumView; // Datum
    private DbAdapter mDbHelper; // Datenbankzugriff
    private Button mConfirm; //Confirm
+   private Button mAbort; // Abort
    
    /**
     * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -52,6 +54,7 @@ extends Activity
       mPersonEdit = (EditText)findViewById (R.id.edit_person);
       mDatumView = (EditText)findViewById (R.id.edit_datum);
       mConfirm = (Button)findViewById (R.id.confirm);
+      mAbort = (Button)findViewById (R.id.abort);
       
       mRowId = savedInstanceState == null ? null : 
          (Long)savedInstanceState.getSerializable (DbAdapter.KEY_ROWID);
@@ -70,6 +73,18 @@ extends Activity
          @Override
          public void onClick (View v) {
             setResult (RESULT_OK);
+            finish ();
+         }
+      });
+      
+      mAbort.setOnClickListener (new View.OnClickListener() {
+         /**
+          * @see android.view.View.OnClickListener#onClick(android.view.View)
+          */
+         @Override
+         public void onClick (View v) {
+            SAVE = false;
+            setResult (RESULT_CANCELED);
             finish ();
          }
       });
@@ -152,22 +167,23 @@ extends Activity
     */
    private void saveState()
    {
-      String thema = mThemaEdit.getText().toString();
-      String person = mPersonEdit.getText().toString();
-      String datum = mDatumView.getText ().toString ();
-      
-      if (mRowId == null) {
-         long id = mDbHelper.createEntry (DbAdapter.getDateFromString (datum), 
-                                          thema, person);
-         if (id > 0) {
-            mRowId = id;
+      if (SAVE) {
+         String thema = mThemaEdit.getText().toString();
+         String person = mPersonEdit.getText().toString();
+         String datum = mDatumView.getText ().toString ();
+         
+         if (mRowId == null) {
+            long id = mDbHelper.createEntry (DbAdapter.getDateFromString (datum), 
+                                             thema, person);
+            if (id > 0) {
+               mRowId = id;
+            } else {
+               String msg = "Entry already exists";
+               Toast.makeText (this, msg, Toast.LENGTH_SHORT).show ();
+            }
          } else {
-            String msg = "Entry already exists";
-            Toast.makeText (this, msg, Toast.LENGTH_SHORT).show ();
+            mDbHelper.updateEntry (mRowId, thema, person);
          }
-      } else {
-         mDbHelper.updateEntry (mRowId, thema, person);
       }
-      
    }
 }
