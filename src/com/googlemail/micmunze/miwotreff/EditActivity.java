@@ -7,13 +7,16 @@ package com.googlemail.micmunze.miwotreff;
 
 import java.util.Date;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -29,32 +32,29 @@ public class EditActivity
 extends Activity
 {
    private static final String TAG = "EditActivity";
-   private static boolean SAVE = true;
    
    private EditText mThemaEdit; // Thema eingeben
    private EditText mPersonEdit; // Person eingeben
    private Long mRowId; // _id
    private EditText mDatumView; // Datum
    private DbAdapter mDbHelper; // Datenbankzugriff
-   private Button mConfirm; //Confirm
-   private Button mAbort; // Abort
    
    /**
     * @see android.app.Activity#onCreate(android.os.Bundle)
     */
+   @SuppressLint ("NewApi")
    @Override
    protected void onCreate (Bundle savedInstanceState) {
       super.onCreate (savedInstanceState);
       mDbHelper = new DbAdapter (this);
       mDbHelper.open ();
       setContentView (R.layout.activity_edit);
-      setTitle (R.string.edit_title);
+      ActionBar ab = getActionBar();
+      ab.setDisplayHomeAsUpEnabled(true);
       
       mThemaEdit = (EditText)findViewById (R.id.edit_thema);
       mPersonEdit = (EditText)findViewById (R.id.edit_person);
       mDatumView = (EditText)findViewById (R.id.edit_datum);
-      mConfirm = (Button)findViewById (R.id.confirm);
-      mAbort = (Button)findViewById (R.id.abort);
       
       mRowId = savedInstanceState == null ? null : 
          (Long)savedInstanceState.getSerializable (DbAdapter.KEY_ROWID);
@@ -65,29 +65,6 @@ extends Activity
          }
       }
       populateFields ();
-      
-      mConfirm.setOnClickListener (new View.OnClickListener() {
-         /**
-          * @see android.view.View.OnClickListener#onClick(android.view.View)
-          */
-         @Override
-         public void onClick (View v) {
-            setResult (RESULT_OK);
-            finish ();
-         }
-      });
-      
-      mAbort.setOnClickListener (new View.OnClickListener() {
-         /**
-          * @see android.view.View.OnClickListener#onClick(android.view.View)
-          */
-         @Override
-         public void onClick (View v) {
-            SAVE = false;
-            setResult (RESULT_CANCELED);
-            finish ();
-         }
-      });
    }
    
    /**
@@ -137,13 +114,41 @@ extends Activity
    }
    
    /**
+    * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+    */
+   @Override
+   public boolean onCreateOptionsMenu(Menu menu) {
+      getMenuInflater().inflate(R.menu.menu_edit, menu);
+      return true;
+   }
+   
+   /**
+    * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+    */
+   @Override
+   public boolean onOptionsItemSelected(MenuItem item) {
+      switch (item.getItemId ()) {
+         case android.R.id.home:
+            // app icon in action bar clicked; go home
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            return true;
+         case R.id.menu_save:
+            saveState();
+            return true;
+         default:
+            return super.onOptionsItemSelected (item);
+      }
+   }
+   
+   /**
     * @see android.app.Activity#onPause()
     */
    @Override
    protected void onPause()
    {
       super.onPause ();
-      saveState();
    }
    
    /**
@@ -167,23 +172,21 @@ extends Activity
     */
    private void saveState()
    {
-      if (SAVE) {
-         String thema = mThemaEdit.getText().toString();
-         String person = mPersonEdit.getText().toString();
-         String datum = mDatumView.getText ().toString ();
-         
-         if (mRowId == null) {
-            long id = mDbHelper.createEntry (DbAdapter.getDateFromString (datum), 
-                                             thema, person);
-            if (id > 0) {
-               mRowId = id;
-            } else {
-               String msg = "Entry already exists";
-               Toast.makeText (this, msg, Toast.LENGTH_SHORT).show ();
-            }
+      String thema = mThemaEdit.getText().toString();
+      String person = mPersonEdit.getText().toString();
+      String datum = mDatumView.getText ().toString ();
+      
+      if (mRowId == null) {
+         long id = mDbHelper.createEntry (DbAdapter.getDateFromString (datum), 
+                                          thema, person);
+         if (id > 0) {
+            mRowId = id;
          } else {
-            mDbHelper.updateEntry (mRowId, thema, person);
+            String msg = "Entry already exists";
+            Toast.makeText (this, msg, Toast.LENGTH_LONG).show ();
          }
+      } else {
+         mDbHelper.updateEntry (mRowId, thema, person);
       }
    }
 }

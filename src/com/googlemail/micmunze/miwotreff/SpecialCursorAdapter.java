@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.CursorAdapter;
+import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ import android.widget.TextView;
  */
 public class SpecialCursorAdapter
 extends ResourceCursorAdapter
+implements Filterable
 {   
    /**
     * Erzeugt einen neuen SpecialCursorAdapter aus Context und Cursor.

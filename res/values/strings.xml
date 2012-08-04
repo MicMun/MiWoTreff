@@ -9,4 +9,5 @@
     <string name="edit_title">Programmpunkt editieren</string>
     <string name="confirm">OK</string>
     <string name="abort">ABBRECHEN</string>
+    <string name="menu_save">Save</string>
 </resources>
