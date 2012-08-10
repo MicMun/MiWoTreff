@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import android.app.ListActivity;
+import android.app.SearchManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -20,6 +21,7 @@ public class MainActivity extends ListActivity {
    private static final int ACTIVITY_CREATE = 0;
    private static final int ACTIVITY_EDIT = 1;
    private DbAdapter mDbHelper; // Database Helper
+   private boolean isSearchActive = false; // Search State
    
    /**
     * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -36,11 +38,35 @@ public class MainActivity extends ListActivity {
       try {
          mDbHelper.open ();
       } catch (SQLException s) {
-         Toast.makeText (this, R.string.db_open_error, 
-                         Toast.LENGTH_SHORT).show ();
+         Toast.makeText
+         (this, R.string.db_open_error, Toast.LENGTH_SHORT).show();
          return;
       }
-      fillData ();
+      handleIntent(getIntent());
+   }
+   
+   /**
+    * @see android.app.Activity#onNewIntent(android.content.Intent)
+    */
+   @Override
+   protected void onNewIntent(Intent intent) {
+      setIntent(intent);
+      handleIntent(intent);
+   }
+   
+   /**
+    * Handle the intent with search.
+    * 
+    * @param  intent
+    *         Intent of the context.
+    */
+   private void handleIntent(Intent intent) {
+      if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+         String query = intent.getStringExtra(SearchManager.QUERY);
+         fillData(query);
+      } else {
+         fillData(null);
+      }
    }
    
    /**
@@ -75,7 +101,15 @@ public class MainActivity extends ListActivity {
    public boolean onOptionsItemSelected(MenuItem item) {
       switch (item.getItemId ())  {
          case R.id.menu_search:
-            
+            if (!isSearchActive) {
+               onSearchRequested();
+               item.setIcon(R.drawable.ic_action_cancel);
+               isSearchActive = true;
+            } else {
+               fillData(null);
+               item.setIcon(R.drawable.ic_action_search);
+               isSearchActive = false;
+            }
             return true;
          case R.id.menu_import:
             importProg ();
@@ -91,12 +125,10 @@ public class MainActivity extends ListActivity {
    /**
     * Fills Data from Database in List.
     */
-   private void fillData() {
-      Cursor entryCursor = mDbHelper.fetchAllEntries ();
-      
-      SpecialCursorAdapter adapter = new SpecialCursorAdapter 
-      (this, entryCursor);
-      setListAdapter (adapter);
+   private void fillData(String search) {
+      Cursor entryCursor = mDbHelper.fetchAllEntries(search);
+      SpecialCursorAdapter adapter = new SpecialCursorAdapter(this,entryCursor);
+      setListAdapter(adapter);
    }
    
    /**
@@ -114,7 +146,7 @@ public class MainActivity extends ListActivity {
                                    (String)m.get (DbAdapter.KEY_PERSON));
          }
       }
-      fillData ();
+      fillData (null);
    }
    
    /**
@@ -143,6 +175,6 @@ public class MainActivity extends ListActivity {
    protected void onActivityResult(int requestCode, int resultCode, 
                                    Intent intent) {
       super.onActivityResult(requestCode, resultCode, intent);
-      fillData();
+      fillData(null);
    }
 }

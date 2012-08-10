@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">MiWoTreff</string>
     <string name="title_activity_main">MiWoTreff</string>
     <string name="menu_search">Search</string>
@@ -6,8 +7,8 @@
     <string name="menu_import">Import</string>
     <string name="no_entries">No Entries</string>
     <string name="db_open_error">Database Error</string>
-    <string name="edit_title">Programmpunkt editieren</string>
-    <string name="confirm">OK</string>
-    <string name="abort">ABBRECHEN</string>
+    <string name="edit_title">Edit Program</string>
     <string name="menu_save">Save</string>
+    <string name="search_hint">Search Date, Topic, Person</string>
+
 </resources>

@@ -56,7 +56,8 @@ public class DbAdapter
     * @author Michael Munzert
     * @version 1.0, 05.07.2012
     */
-   private static class DatabaseHelper extends SQLiteOpenHelper {
+   private static class DatabaseHelper extends SQLiteOpenHelper 
+   {
       /**
        * Neuer DatabaseHelper mit einem Context.
        * 
@@ -90,7 +91,7 @@ public class DbAdapter
     * @param  ctx
     *         Context f&uuml;r die Datenbank.
     */
-   public DbAdapter (Context ctx) {
+   public DbAdapter(Context ctx) {
       this.mCtx = ctx;
    }
    
@@ -102,7 +103,7 @@ public class DbAdapter
     * @throws SQLException
     *         wenn Datenbankverbindung nicht hergestellt werden konnte.
     */
-   public DbAdapter open () throws SQLException {
+   public DbAdapter open() throws SQLException {
       mDbHelper = new DatabaseHelper (mCtx);
       mDb = mDbHelper.getWritableDatabase ();
       return this;
@@ -111,7 +112,7 @@ public class DbAdapter
    /**
     * Schlie&szlig;t die Datenbankverbindung.
     */
-   public void close () {
+   public void close() {
       mDbHelper.close ();
    }
    
@@ -127,7 +128,7 @@ public class DbAdapter
     *         gestaltende Person.
     * @return ID des neuen Eintrags.
     */
-   public long createEntry (Date datum, String thema, String person) {
+   public long createEntry(Date datum, String thema, String person) {
       ContentValues initialValues = new ContentValues ();
       initialValues.put (KEY_DATUM, datum.getTime ());
       initialValues.put (KEY_THEMA, thema);
@@ -143,7 +144,7 @@ public class DbAdapter
     * @return <code>true</code> wenn der Eintrag erfolgreich gel&ouml;scht
     *         sonst <code>false</code>.
     */
-   public boolean deleteEntry (long rowId) {
+   public boolean deleteEntry(long rowId) {
       return mDb.delete (DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
    }
    
@@ -159,7 +160,7 @@ public class DbAdapter
     *         neue Person.
     * @return <code>true</code> bei Erfolg, sonst <code>false</code>.
     */
-   public boolean updateEntry (long rowId, String thema, String person) {
+   public boolean updateEntry(long rowId, String thema, String person) {
       ContentValues values = new ContentValues ();
       values.put (KEY_THEMA, thema);
       values.put (KEY_PERSON, person);
@@ -168,15 +169,43 @@ public class DbAdapter
    }
    
    /**
-    * Liefert Cursor &uuml;ber alle Eintr&auml;ge.
+    * Returns Cursor for all entries with query or all.
     * 
-    * @return Cursor der Tabelle "programm".
+    * @param  query
+    *         Query of the database entries or <code>null</code>.
+    * @return Cursor of table "programm".
     */
-   public Cursor fetchAllEntries () {
-      return mDb.query (DATABASE_TABLE, 
-                        new String [] {KEY_ROWID, KEY_DATUM, KEY_THEMA, 
-                                       KEY_PERSON}, 
-                        null, null, null, null, KEY_DATUM + " desc");
+   public Cursor fetchAllEntries(String query) {
+      query = createQuery(query);
+      return mDb.query(DATABASE_TABLE, 
+                       new String [] {KEY_ROWID, KEY_DATUM, KEY_THEMA, 
+                                      KEY_PERSON}, 
+                       query, null, null, null, KEY_DATUM + " desc");
+   }
+   
+   /**
+    * Creates the query from the value.
+    * 
+    * @param  q
+    *         Value is a date, a topic or a person with '-'.
+    * @return where-Clause for database query.
+    */
+   private String createQuery(String q) {
+      String query = null;
+      
+      if (q == null) {
+         // do nothing -> query is null
+      } else if (q.startsWith("-")) {
+         String s = q.substring(1, q.length()-1);
+         query = "person like '%" + s + "%'";
+      } else if (q.charAt(0) >= '0' && q.charAt(0) <= '9') {
+         Date d = getDateFromString(q);
+         query = "datum = " + d.getTime();
+      } else {
+         query = "thema like '%" + q + "%'";
+      }
+      
+      return query;
    }
    
    /**
@@ -192,8 +221,8 @@ public class DbAdapter
       Cursor mCursor = mDb.query (DATABASE_TABLE, 
                                   new String [] {KEY_ROWID, KEY_DATUM, KEY_THEMA, 
                                                  KEY_PERSON}, 
-                                  KEY_ROWID + "=" + rowId, null, null, null, 
-                                  null);
+                                                 KEY_ROWID + "=" + rowId, null, null, null, 
+                                                 null);
       if (mCursor != null) {
          mCursor.moveToFirst ();
       }

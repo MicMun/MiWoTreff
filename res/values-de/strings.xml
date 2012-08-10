@@ -1,0 +1,14 @@
+<resources>
+
+    <string name="app_name">MiWoTreff</string>
+    <string name="title_activity_main">MiWoTreff</string>
+    <string name="menu_search">Suche</string>
+    <string name="menu_add">Hinzufügen</string>
+    <string name="menu_import">Import</string>
+    <string name="no_entries">Keine Einträge</string>
+    <string name="db_open_error">Datenbankfehler</string>
+    <string name="edit_title">Programm editieren</string>
+    <string name="menu_save">Speichern</string>
+    <string name="search_hint">Suche Datum, Thema, Person</string>
+
+</resources>
