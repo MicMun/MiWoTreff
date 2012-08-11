@@ -21,23 +21,23 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 /**
- * Activity f&uuml;r Erstellen oder Bearbeiten eines Programmpunktes.
- * Besteht aus einem nichteditierbaren Datumsfeld und den Feldern Thema und 
- * Person.
+ * Activity for creating or editing a program entry.
+ * Shows a non-editable Date-Field (edit) or a editable Date-Field (create) and
+ * the fields topic and person.
  *
  * @author Michael Munzert
- * @version 1.0, 14.07.2012
+ * @version 1.0, 11.08.2012
  */
 public class EditActivity
 extends Activity
 {
    private static final String TAG = "EditActivity";
    
-   private EditText mThemaEdit; // Thema eingeben
-   private EditText mPersonEdit; // Person eingeben
+   private EditText mThemaEdit; // topic input
+   private EditText mPersonEdit; // person input
    private Long mRowId; // _id
-   private EditText mDatumView; // Datum
-   private DbAdapter mDbHelper; // Datenbankzugriff
+   private EditText mDatumView; // Date
+   private DbAdapter mDbHelper; // database
    
    /**
     * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -64,41 +64,42 @@ extends Activity
             mRowId = extras.getLong (DbAdapter.KEY_ROWID);
          }
       }
-      populateFields ();
+      populateFields();
    }
    
    /**
-    * Setzt die Felder mit den bisherigen Werten, falls vorhanden.
+    * Sets the fields with the values to edit or with default values.
     */
-   @SuppressWarnings ("deprecation")
-   private void populateFields ()
+   @SuppressWarnings("deprecation")
+   private void populateFields()
    {
       if (mRowId != null) {
+         // actual values
          try {
-            Cursor note = mDbHelper.fetchEntry (mRowId);
-            startManagingCursor (note);
+            Cursor note = mDbHelper.fetchEntry(mRowId);
+            startManagingCursor(note);
             
             if (note != null) {
-               mThemaEdit.setText (note.getString (note.getColumnIndexOrThrow 
-                                                   (DbAdapter.KEY_THEMA)));
-               mPersonEdit.setText (note.getString (note.getColumnIndexOrThrow 
-                                                    (DbAdapter.KEY_PERSON)));
-               Long d = note.getLong (note.getColumnIndexOrThrow 
-                                      (DbAdapter.KEY_DATUM));
-               mDatumView.setText (DbAdapter.getDateString (d));
-               mDatumView.setEnabled (false);
+               mThemaEdit.setText(note.getString(note.getColumnIndexOrThrow
+                                                 (DbAdapter.KEY_THEMA)));
+               mPersonEdit.setText(note.getString(note.getColumnIndexOrThrow 
+                                                  (DbAdapter.KEY_PERSON)));
+               Long d = note.getLong(note.getColumnIndexOrThrow 
+                                     (DbAdapter.KEY_DATUM));
+               mDatumView.setText(DbAdapter.getDateString(d));
+               mDatumView.setEnabled(false);
             }
          } catch (SQLException e) {
-            Log.e (TAG, e.getLocalizedMessage ());
+            Log.e(TAG, e.getLocalizedMessage());
          }
       } else {
-         // Default-Werte
-         String d = DbAdapter.getDateString (new Date().getTime ());
+         // Default values
+         String d = DbAdapter.getDateString(new Date().getTime());
          String t = "Noch offen";
          String p = "Noch offen";
-         mDatumView.setText (d);
-         mThemaEdit.setText (t);
-         mPersonEdit.setText (p);
+         mDatumView.setText(d);
+         mThemaEdit.setText(t);
+         mPersonEdit.setText(p);
       }
    }
    
@@ -108,9 +109,9 @@ extends Activity
    @Override
    protected void onSaveInstanceState(Bundle outState)
    {
-      super.onSaveInstanceState (outState);
+      super.onSaveInstanceState(outState);
       saveState();
-      outState.putSerializable (DbAdapter.KEY_ROWID, mRowId);
+      outState.putSerializable(DbAdapter.KEY_ROWID, mRowId);
    }
    
    /**
@@ -127,7 +128,7 @@ extends Activity
     */
    @Override
    public boolean onOptionsItemSelected(MenuItem item) {
-      switch (item.getItemId ()) {
+      switch (item.getItemId()) {
          case android.R.id.home:
             // app icon in action bar clicked; go home
             Intent intent = new Intent(this, MainActivity.class);
@@ -138,7 +139,7 @@ extends Activity
             saveState();
             return true;
          default:
-            return super.onOptionsItemSelected (item);
+            return super.onOptionsItemSelected(item);
       }
    }
    
@@ -148,7 +149,7 @@ extends Activity
    @Override
    protected void onPause()
    {
-      super.onPause ();
+      super.onPause();
    }
    
    /**
@@ -157,36 +158,36 @@ extends Activity
    @Override
    protected void onResume()
    {
-      super.onResume ();
-      populateFields ();
+      super.onResume();
+      populateFields();
    }
    
    @Override
-   protected void onDestroy () {
-      super.onDestroy ();
-      mDbHelper.close ();
+   protected void onDestroy() {
+      super.onDestroy();
+      mDbHelper.close();
    }
    
    /**
-    * Speichert den Datensatz in der Datenbank.
+    * Saves the data in the database (insert or update).
     */
    private void saveState()
    {
       String thema = mThemaEdit.getText().toString();
       String person = mPersonEdit.getText().toString();
-      String datum = mDatumView.getText ().toString ();
+      String datum = mDatumView.getText().toString();
       
       if (mRowId == null) {
-         long id = mDbHelper.createEntry (DbAdapter.getDateFromString (datum), 
-                                          thema, person);
+         long id = mDbHelper.createEntry(DbAdapter.getDateFromString(datum), 
+                                         thema, person);
          if (id > 0) {
             mRowId = id;
          } else {
             String msg = "Entry already exists";
-            Toast.makeText (this, msg, Toast.LENGTH_LONG).show ();
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
          }
       } else {
-         mDbHelper.updateEntry (mRowId, thema, person);
+         mDbHelper.updateEntry(mRowId, thema, person);
       }
    }
 }

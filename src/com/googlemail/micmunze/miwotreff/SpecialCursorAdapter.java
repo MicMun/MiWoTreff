@@ -13,33 +13,31 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.text.format.DateFormat;
 import android.view.View;
-import android.widget.CursorAdapter;
 import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
 /**
- * Stellt einen speziellen CursorAdapter f&uuml;r die ListView dar.
- * Implementiert einen {@link CursorAdapter} f&uuml;r die {@link ListView}.
+ * Handles the view of the data for the {@link ListView}.
  *
  * @author Michael Munzert
- * @version 1.0, 07.07.2012
+ * @version 1.0, 11.08.2012
  */
 public class SpecialCursorAdapter
 extends ResourceCursorAdapter
 implements Filterable
 {   
    /**
-    * Erzeugt einen neuen SpecialCursorAdapter aus Context und Cursor.
+    * Creates a new SpecialCursorAdapter with context and cursor.
     * 
     * @param  ctx
     *         Context.
     * @param  c
     *         Cursor.
     */
-   public SpecialCursorAdapter (Context ctx, Cursor c) {
-      super (ctx, R.layout.list_row, c, false);
+   public SpecialCursorAdapter(Context ctx, Cursor c) {
+      super(ctx, R.layout.list_row, c, false);
    }
    
    /**
@@ -56,11 +54,10 @@ implements Filterable
    }
    
    /**
-    * Klasse enth&auml;lt die einzelnen Textfelder einer Zeile.
-    * Managt das Binding der Daten aus der DB zu den Textfeldern.
+    * Manage the text fields of a row (binding data to view).
     *
     * @author Michael Munzert
-    * @version 1.0, 07.07.2012
+    * @version 1.0, 11.08.2012
     */
    private static class ViewHolder {
       private ColorStateList oldColors = null;
@@ -69,66 +66,68 @@ implements Filterable
       private TextView person;
       
       /**
-       * Erzeugt einen neuen ViewHolder mit einer View.
+       * Creates a new ViewHolder with a view.
        * 
        * @param  view
        *         View.
        */
-      public ViewHolder (View view) {
-         datum = (TextView) view.findViewById (R.id.text_datum);
-         thema = (TextView) view.findViewById (R.id.text_thema);
-         person = (TextView) view.findViewById (R.id.text_person);
+      public ViewHolder(View view) {
+         datum = (TextView) view.findViewById(R.id.text_datum);
+         thema = (TextView) view.findViewById(R.id.text_thema);
+         person = (TextView) view.findViewById(R.id.text_person);
       }
       
       /**
-       * Bindet die Daten aus Cursor an die Textfelder.
+       * Binds the data from cursor to the text fields.
        * 
        * @param  c
        *         Cursor.
        * @param  ctx
        *         Context.
        */
-      public void bind (Cursor c, Context ctx) {
-         // Datum
-         long d = c.getLong (c.getColumnIndex (DbAdapter.KEY_DATUM));
-         String sd = DbAdapter.getDateString (d);
-         datum.setText (sd);
+      public void bind(Cursor c, Context ctx) {
+         // date
+         long d = c.getLong(c.getColumnIndex(DbAdapter.KEY_DATUM));
+         String sd = DbAdapter.getDateString(d);
+         datum.setText(sd);
          
          if (isNextWednesday (sd)) {
-            oldColors = datum.getTextColors ();
-            datum.setTextColor (Color.YELLOW);
+            oldColors = datum.getTextColors();
+            datum.setTextColor(Color.YELLOW);
          } else if (oldColors != null) {
-            datum.setTextColor (oldColors);
+            datum.setTextColor(oldColors);
          }
          
-         // Thema
-         String t = c.getString (c.getColumnIndex (DbAdapter.KEY_THEMA));
-         thema.setText (t);
+         // topic
+         String t = c.getString(c.getColumnIndex(DbAdapter.KEY_THEMA));
+         thema.setText(t);
          
-         // Person
-         String p = c.getString (c.getColumnIndex (DbAdapter.KEY_PERSON));
-         person.setText (" - " + p + " - ");
+         // person
+         String p = c.getString(c.getColumnIndex(DbAdapter.KEY_PERSON));
+         person.setText(" - " + p + " - ");
       }
       
       /**
-       * Liefert <code>true</code>, wenn das Datum der kommende Mittwoch ist.
+       * Returns <code>true</code>, if the date is the next wednesday.
        * 
        * @param  d
-       *         Datum in Millisekunden.
-       * @return <code>true</code>, wenn das Datum der kommende Mittwoch ist.
+       *         Date in format dd.MM.yyyy.
+       * @return <code>true</code>, if the date is the next wednesday.
        */
       private boolean isNextWednesday (String d) {
-         GregorianCalendar today = new GregorianCalendar ();
-         int diff = GregorianCalendar.WEDNESDAY - today.get 
-                                                (GregorianCalendar.DAY_OF_WEEK);
+         GregorianCalendar today = new GregorianCalendar();
+         
+         int diff = GregorianCalendar.WEDNESDAY - 
+         today.get(GregorianCalendar.DAY_OF_WEEK);
+         
          if (!(diff >= 0)) {
             diff += 7;
          }
-         today.add (GregorianCalendar.DAY_OF_MONTH, diff);
-                
-         String strToday = DateFormat.format ("dd.MM.yyyy", today).toString ();
+         today.add(GregorianCalendar.DAY_OF_MONTH, diff);
          
-         if (strToday.equals (d)) {
+         String strToday = DateFormat.format("dd.MM.yyyy", today).toString();
+         
+         if (strToday.equals(d)) {
             return true;
          }
          

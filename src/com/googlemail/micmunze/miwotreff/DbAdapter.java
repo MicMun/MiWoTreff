@@ -20,19 +20,19 @@ import android.text.format.DateFormat;
 import android.util.Log;
 
 /**
- * Klasse f&uuml;r den Datenbankzugriff.
- * Erstellt die Datenbank und stellt die &uuml;blichen CRUD-Operationen
- * bereit.
+ * Handles the database.
+ * Creates the database with the table and handles the CRUD-Methods
+ * (Create, Update, Delete) and the selections.
  *
  * @author Michael Munzert
- * @version 1.0, 05.07.2012
+ * @version 1.0, 11.08.2012
  */
 public class DbAdapter
 {
    public static final String KEY_ROWID = "_id"; // Primary Key _id
-   public static final String KEY_DATUM = "datum"; // Spalte Datum
-   public static final String KEY_THEMA = "thema"; // Spalte Thema
-   public static final String KEY_PERSON = "person"; // Spalte Person
+   public static final String KEY_DATUM = "datum"; // Column date
+   public static final String KEY_THEMA = "thema"; // Column topic
+   public static final String KEY_PERSON = "person"; // Column person
    
    private static final String TAG = "DbAdapter";
    
@@ -40,29 +40,28 @@ public class DbAdapter
    private static final String DATABASE_TABLE = "programm";
    private static final int DATABASE_VERSION = 1;
    
-   /* Create Statement f&uuml;r Tabelle "programm" */
+   /* Create Statement for table "programm" */
    private static final String TABLE_CREATE = 
    "CREATE TABLE programm (_id integer primary key autoincrement," +
    " datum integer not null unique, thema text not null, person text);";
    
    private SQLiteDatabase mDb; // Database SQLITE
    private DatabaseHelper mDbHelper;
-   private final Context mCtx; // Context fuer Database
+   private final Context mCtx; // Context for Database
    
    /**
-    * Datenbank-Zugriff erstellt die Tabelle und die Datenbank.
-    * Implementiert die Erstellung des Schemas.
+    * Creates the database and the table.
     *
     * @author Michael Munzert
-    * @version 1.0, 05.07.2012
+    * @version 1.0, 11.08.2012
     */
    private static class DatabaseHelper extends SQLiteOpenHelper 
    {
       /**
-       * Neuer DatabaseHelper mit einem Context.
+       * Creates a new DatabaseHelper with a context.
        * 
        * @param  context
-       *         Context der Datenbank.
+       *         Context of the database.
        */
       DatabaseHelper(Context context) {
          super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -86,86 +85,84 @@ public class DbAdapter
    };
    
    /**
-    * Erstellt einen neuen DbAdapter mit einem Context f&uuml;r die Datenbank.
+    * Creates a new DbAdapter with a context for the database.
     * 
     * @param  ctx
-    *         Context f&uuml;r die Datenbank.
+    *         Context for the database.
     */
    public DbAdapter(Context ctx) {
       this.mCtx = ctx;
    }
    
    /**
-    * &Ouml;ffnet die Datenbankverbindung und liefert eine Referenz auf sich
-    * selbst.
+    * Opens the database connection and returns a reference of himself.
     * 
-    * @return Referenz auf sich selbst.
+    * @return self-reference.
     * @throws SQLException
-    *         wenn Datenbankverbindung nicht hergestellt werden konnte.
+    *         if database connection can't be established.
     */
    public DbAdapter open() throws SQLException {
-      mDbHelper = new DatabaseHelper (mCtx);
-      mDb = mDbHelper.getWritableDatabase ();
+      mDbHelper = new DatabaseHelper(mCtx);
+      mDb = mDbHelper.getWritableDatabase();
       return this;
    }
    
    /**
-    * Schlie&szlig;t die Datenbankverbindung.
+    * Closes the connection to the database.
     */
    public void close() {
-      mDbHelper.close ();
+      mDbHelper.close();
    }
    
    /**
-    * F&uuml;gt einen Eintrag bestehend aus Datum, Thema und Person in die
-    * Datenbank ein und liefert die ID des neuen Eintrags.
+    * Insert an entry (date, topic, person) and returns the id of the new entry.
     * 
     * @param  datum
-    *         Datum des Programmpunktes.
+    *         date of the new entry.
     * @param  thema
-    *         Thema an diesem Mittwoch.
+    *         topic of the new entry.
     * @param  person
-    *         gestaltende Person.
-    * @return ID des neuen Eintrags.
+    *         person who manage the event.
+    * @return id of the new entry.
     */
    public long createEntry(Date datum, String thema, String person) {
-      ContentValues initialValues = new ContentValues ();
-      initialValues.put (KEY_DATUM, datum.getTime ());
-      initialValues.put (KEY_THEMA, thema);
-      initialValues.put (KEY_PERSON, person);
-      return mDb.insert (DATABASE_TABLE, null, initialValues);
+      ContentValues initialValues = new ContentValues();
+      initialValues.put(KEY_DATUM, datum.getTime());
+      initialValues.put(KEY_THEMA, thema);
+      initialValues.put(KEY_PERSON, person);
+      return mDb.insert(DATABASE_TABLE, null, initialValues);
    }
    
    /**
-    * L&ouml;scht einen Eintrag mit der ID aus der Datenbank.
+    * Deletes the entry with the id from database.
     * 
     * @param  rowId
-    *         zu l&ouml;schende ID.
-    * @return <code>true</code> wenn der Eintrag erfolgreich gel&ouml;scht
-    *         sonst <code>false</code>.
+    *         id, which will be deleted.
+    * @return <code>true</code> if entry could be deleted, 
+    *         else <code>false</code>.
     */
    public boolean deleteEntry(long rowId) {
-      return mDb.delete (DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
+      return mDb.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
    }
    
    /**
-    * Aktualisiert den Eintrag mit ID <code>rowId</code> mit den neuen Thema und
-    * Person und liefert <code>true</code> bei Erfolg.
+    * Updates an entry with id <code>rowId</code> with the new topic and person.
+    * Returns <code>true</code>, if success.
     * 
     * @param  rowId
-    *         zu aktualisierende ID.
+    *         id to update.
     * @param  thema
-    *         neues Thema.
+    *         new topic.
     * @param  person
-    *         neue Person.
-    * @return <code>true</code> bei Erfolg, sonst <code>false</code>.
+    *         new person.
+    * @return <code>true</code> if success, else <code>false</code>.
     */
    public boolean updateEntry(long rowId, String thema, String person) {
-      ContentValues values = new ContentValues ();
-      values.put (KEY_THEMA, thema);
-      values.put (KEY_PERSON, person);
-      return mDb.update (DATABASE_TABLE, values, 
-                         KEY_ROWID + "=" + rowId, null) > 0;
+      ContentValues values = new ContentValues();
+      values.put(KEY_THEMA, thema);
+      values.put(KEY_PERSON, person);
+      return mDb.update
+      (DATABASE_TABLE, values, KEY_ROWID + "=" + rowId, null) > 0;
    }
    
    /**
@@ -177,10 +174,10 @@ public class DbAdapter
     */
    public Cursor fetchAllEntries(String query) {
       query = createQuery(query);
-      return mDb.query(DATABASE_TABLE, 
-                       new String [] {KEY_ROWID, KEY_DATUM, KEY_THEMA, 
-                                      KEY_PERSON}, 
-                       query, null, null, null, KEY_DATUM + " desc");
+      return mDb.query
+      (DATABASE_TABLE, new String[] {KEY_ROWID, KEY_DATUM, KEY_THEMA, 
+                                     KEY_PERSON}, query, null, null, null, 
+                                     KEY_DATUM + " desc");
    }
    
    /**
@@ -209,42 +206,42 @@ public class DbAdapter
    }
    
    /**
-    * Liefert Cursor f&uuml;r einen Eintrag mit der gegebenen ID.
+    * Returns the cursor for entry with the given id.
     * 
     * @param  rowId
-    *         ID des zu lesenden Falls.
-    * @return Cursor des Eintrags oder <code>null</code>, wenn nicht gefunden.
+    *         id of the selected entry.
+    * @return Cursor of the entry or <code>null</code>, if not found.
     * @throws SQLException 
-    *         wenn ein Fehler beim Lesen aus der Datenbank auftritt.
+    *         if an error occurs while reading from database.
     */
-   public Cursor fetchEntry (long rowId) throws SQLException {
-      Cursor mCursor = mDb.query (DATABASE_TABLE, 
-                                  new String [] {KEY_ROWID, KEY_DATUM, KEY_THEMA, 
-                                                 KEY_PERSON}, 
-                                                 KEY_ROWID + "=" + rowId, null, null, null, 
-                                                 null);
+   public Cursor fetchEntry(long rowId) throws SQLException {
+      Cursor mCursor = mDb.query(DATABASE_TABLE, 
+                                 new String[] {KEY_ROWID, KEY_DATUM, KEY_THEMA, 
+                                               KEY_PERSON}, 
+                                               KEY_ROWID + "=" + rowId, null, 
+                                               null, null, null);
       if (mCursor != null) {
-         mCursor.moveToFirst ();
+         mCursor.moveToFirst();
       }
       
       return mCursor;
    }
    
    /**
-    * Liefert das Date-Objekt zum Datum-String.
+    * Returns the Date-Object from String.
     * 
     * @param  d
-    *         Datum als String (Format: dd.MM.yyyy)
-    * @return Date-Objekt.
+    *         Date as String (Format: dd.MM.yyyy)
+    * @return Date-Object.
     */
-   public static Date getDateFromString (String d) {
+   public static Date getDateFromString(String d) {
       Date datum = null;
       
-      SimpleDateFormat sdf = new SimpleDateFormat ("dd.MM.yyyy");
+      SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
       try {
-         datum = sdf.parse (d);
+         datum = sdf.parse(d);
       } catch (ParseException e) {
-         Log.e (TAG, e.getLocalizedMessage ());
+         Log.e(TAG, e.getLocalizedMessage());
          datum = null;
       }
       
@@ -252,15 +249,15 @@ public class DbAdapter
    }
    
    /**
-    * Liefert die String-Repr&auml;sentation des Datums.
+    * Returns the Date as a String.
     * 
     * @param  t
-    *         Zeitstempel in Millisekunden.
-    * @return String des Datums.
+    *         timestamp in milliseconds (see {@link java.util.Date#getTime()}).
+    * @return String of the date.
     */
-   public static String getDateString (long t) {
-      GregorianCalendar gc = new GregorianCalendar ();
-      gc.setTimeInMillis (t);
-      return DateFormat.format ("dd.MM.yyyy", gc).toString ();
+   public static String getDateString(long t) {
+      GregorianCalendar gc = new GregorianCalendar();
+      gc.setTimeInMillis(t);
+      return DateFormat.format("dd.MM.yyyy", gc).toString();
    }
 }

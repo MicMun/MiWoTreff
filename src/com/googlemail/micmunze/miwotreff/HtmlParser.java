@@ -21,11 +21,10 @@ import java.util.HashMap;
 import android.util.Log;
 
 /**
- * Parser f&uuml;r HTML-Zeile.
- * Parst eine HTML-Tabelle.
+ * Parser for the html-table of the program.
  *
  * @author Michael Munzert
- * @version 1.0, 06.07.2012
+ * @version 1.0, 11.08.2012
  */
 public class HtmlParser
 {
@@ -34,88 +33,89 @@ public class HtmlParser
    private final String TAG = "MiWoTreff.HtmlParser";
    
    /**
-    * Erzeugt neuen HtmlParser.
+    * Creates a new HtmlParser.
     */
-   public HtmlParser () {}
+   public HtmlParser() {}
    
    /**
-    * Liefert die Tabelle als String.
+    * Returns the table as a String.
     * 
     * @param  url
-    *         URL der HTML-Seite.
-    * @return Tabelle mit Programm.
+    *         URL of the html-Page.
+    * @return Table with program.
     */
-   public String getHtmlFromUrl (String u) {
+   public String getHtmlFromUrl(String u) {
       String line = null;
       
       try {
-         URL url = new URL (u);
-         HttpURLConnection con = (HttpURLConnection) url.openConnection ();
-         con.setUseCaches (false);
-         con.setRequestMethod ("GET");
-         con.connect ();
+         URL url = new URL(u);
+         HttpURLConnection con = (HttpURLConnection) url.openConnection();
+         con.setUseCaches(false);
+         con.setRequestMethod("GET");
+         con.connect();
          BufferedReader in = new BufferedReader 
-         (new InputStreamReader (con.getInputStream (), 
-                                 Charset.forName ("iso-8859-1")));
+         (new InputStreamReader(con.getInputStream(), 
+                                Charset.forName("iso-8859-1")));
          
          
-         while ((line = in.readLine ()) != null) {
-            if (line.contains (TABLE_START)) {
+         while ((line = in.readLine()) != null) {
+            if (line.contains(TABLE_START)) {
                break;
             }
          }
       } catch (MalformedURLException e) {
-         Log.e (TAG, e.getLocalizedMessage ());
+         Log.e(TAG, e.getLocalizedMessage());
       } catch (IOException e) {
-         Log.e (TAG, e.getLocalizedMessage ());
+         Log.e(TAG, e.getLocalizedMessage());
       }
       
       return line;
    }
    
    /**
-    * Parst die Tabelle und liefert eine Liste der Zeilen (Maps) zur&uuml;ck.
+    * Parses the table and returns the list of rows (Maps).
+    * 
     * @param  t
-    *         Tabelle im HTML-Format.
-    * @return Liste mit Maps (jede Zeile eine Map).
+    *         table in html.
+    * @return List of Maps (every row a map).
     */
-   public ArrayList<HashMap<String, Object>> getProg (String t) {
+   public ArrayList<HashMap<String, Object>> getProg(String t) {
       ArrayList<HashMap<String, Object>> prog = 
-      new ArrayList<HashMap<String,Object>> (50);
+      new ArrayList<HashMap<String,Object>>(50);
       
-      int start = t.indexOf (TABLE_START);
-      start += TABLE_START.length ();
-      int end = t.indexOf (TABLE_END, start);
-      String s = t.substring (start, end);
-      s = s.replace ("&nbsp;", " ");
+      int start = t.indexOf(TABLE_START);
+      start += TABLE_START.length();
+      int end = t.indexOf(TABLE_END, start);
+      String s = t.substring(start, end);
+      s = s.replace("&nbsp;", " ");
       
-      String[] rows = s.split ("<tr>");
+      String[] rows = s.split("<tr>");
       
       for (int i = 1; i < rows.length; ++i) {
-         HashMap<String, Object> map = new HashMap<String, Object> ();
-         String[] cols = rows[i].split ("<td>");
-         String datum = cols[1].replace ("</td>", "");
-         start = datum.indexOf (' ') + 1;
-         datum = datum.substring (start);
-         SimpleDateFormat sdf = new SimpleDateFormat ("dd.MM.yyyy");
+         HashMap<String, Object> map = new HashMap<String, Object>();
+         String[] cols = rows[i].split("<td>");
+         String datum = cols[1].replace("</td>", "");
+         start = datum.indexOf(' ') + 1;
+         datum = datum.substring(start);
+         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
          Date d = null;
          try {
-            d = sdf.parse (datum.trim ());
+            d = sdf.parse(datum.trim());
          } catch (ParseException e) {
-            Log.e (TAG, e.getLocalizedMessage ());
+            Log.e(TAG, e.getLocalizedMessage());
             return null;
          }
-         String thema = cols[2].replace ("</td>", "");
-         start = thema.indexOf ('>') + 1;
-         end = thema.indexOf ('<', start);
-         thema = thema.substring (start, end).trim ();
+         String thema = cols[2].replace("</td>", "");
+         start = thema.indexOf('>') + 1;
+         end = thema.indexOf('<', start);
+         thema = thema.substring(start, end).trim();
          
-         String person = cols[3].replace ("</td></tr>", "").trim ();
-
-         map.put (DbAdapter.KEY_DATUM, d);
-         map.put (DbAdapter.KEY_THEMA, thema);
-         map.put (DbAdapter.KEY_PERSON, person);
-         prog.add (map);
+         String person = cols[3].replace("</td></tr>", "").trim();
+         
+         map.put(DbAdapter.KEY_DATUM, d);
+         map.put(DbAdapter.KEY_THEMA, thema);
+         map.put(DbAdapter.KEY_PERSON, person);
+         prog.add(map);
       }
       
       return prog;

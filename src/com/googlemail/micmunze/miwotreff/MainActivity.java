@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 
 import android.app.ListActivity;
-import android.app.SearchManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -17,11 +16,16 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+/**
+ * Main Activity with the features of the app.
+ *
+ * @author Michael Munzert
+ * @version 1.0, 11.08.2012
+ */
 public class MainActivity extends ListActivity {
    private static final int ACTIVITY_CREATE = 0;
    private static final int ACTIVITY_EDIT = 1;
    private DbAdapter mDbHelper; // Database Helper
-   private boolean isSearchActive = false; // Search State
    
    /**
     * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -30,43 +34,19 @@ public class MainActivity extends ListActivity {
    public void onCreate(Bundle savedInstanceState) {
       StrictMode.ThreadPolicy policy = new StrictMode.
       ThreadPolicy.Builder().permitAll().build();
-      StrictMode.setThreadPolicy(policy); 
+      StrictMode.setThreadPolicy(policy);
       
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
-      mDbHelper = new DbAdapter (this);
+      mDbHelper = new DbAdapter(this);
       try {
-         mDbHelper.open ();
+         mDbHelper.open();
       } catch (SQLException s) {
          Toast.makeText
          (this, R.string.db_open_error, Toast.LENGTH_SHORT).show();
          return;
       }
-      handleIntent(getIntent());
-   }
-   
-   /**
-    * @see android.app.Activity#onNewIntent(android.content.Intent)
-    */
-   @Override
-   protected void onNewIntent(Intent intent) {
-      setIntent(intent);
-      handleIntent(intent);
-   }
-   
-   /**
-    * Handle the intent with search.
-    * 
-    * @param  intent
-    *         Intent of the context.
-    */
-   private void handleIntent(Intent intent) {
-      if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-         String query = intent.getStringExtra(SearchManager.QUERY);
-         fillData(query);
-      } else {
-         fillData(null);
-      }
+      fillData();
    }
    
    /**
@@ -74,7 +54,7 @@ public class MainActivity extends ListActivity {
     */
    @Override
    public void onPause() {  
-      super.onPause ();
+      super.onPause();
    }
    
    /**
@@ -82,7 +62,7 @@ public class MainActivity extends ListActivity {
     */
    @Override
    public void onResume() {
-      super.onResume ();
+      super.onResume();
    }
    
    /**
@@ -99,62 +79,54 @@ public class MainActivity extends ListActivity {
     */
    @Override
    public boolean onOptionsItemSelected(MenuItem item) {
-      switch (item.getItemId ())  {
+      switch (item.getItemId())  {
          case R.id.menu_search:
-            if (!isSearchActive) {
-               onSearchRequested();
-               item.setIcon(R.drawable.ic_action_cancel);
-               isSearchActive = true;
-            } else {
-               fillData(null);
-               item.setIcon(R.drawable.ic_action_search);
-               isSearchActive = false;
-            }
+            onSearchRequested();
             return true;
          case R.id.menu_import:
-            importProg ();
+            importProg();
             return true;
          case R.id.menu_add:
-            addProg ();
+            addProg();
             return true;
          default:
-            return super.onOptionsItemSelected (item);
+            return super.onOptionsItemSelected(item);
       }
    }
    
    /**
     * Fills Data from Database in List.
     */
-   private void fillData(String search) {
-      Cursor entryCursor = mDbHelper.fetchAllEntries(search);
+   private void fillData() {
+      Cursor entryCursor = mDbHelper.fetchAllEntries(null);
       SpecialCursorAdapter adapter = new SpecialCursorAdapter(this,entryCursor);
       setListAdapter(adapter);
    }
    
    /**
-    * Importiert das Programm von der Homepage der Evangelischen Gemeinschaft.
+    * Import the program from the homepage of the "Evangelische Gemeinschaft".
     */
-   private void importProg () {
+   private void importProg() {
       HtmlParser parser = new HtmlParser();
       String table = parser.getHtmlFromUrl 
       ("http://www.gemeinschaft-muenchen.de/index.php?id=7&no_cache=1");
-      ArrayList<HashMap<String, Object>> prog = parser.getProg (table);
+      ArrayList<HashMap<String, Object>> prog = parser.getProg(table);
       if (prog != null) {
          for (HashMap<String, Object> m : prog) {
-            mDbHelper.createEntry ((Date)m.get (DbAdapter.KEY_DATUM), 
-                                   (String)m.get (DbAdapter.KEY_THEMA), 
-                                   (String)m.get (DbAdapter.KEY_PERSON));
+            mDbHelper.createEntry((Date)m.get(DbAdapter.KEY_DATUM), 
+                                  (String)m.get(DbAdapter.KEY_THEMA), 
+                                  (String)m.get(DbAdapter.KEY_PERSON));
          }
       }
-      fillData (null);
+      fillData();
    }
    
    /**
-    * Hinzuf&uuml;gen eines neuen Programmpunkts.
+    * Adds a new program entry.
     */
    private void addProg() {
       Intent i = new Intent(this, EditActivity.class);
-      startActivityForResult (i, ACTIVITY_CREATE);
+      startActivityForResult(i, ACTIVITY_CREATE);
    }
    
    /**
@@ -175,6 +147,6 @@ public class MainActivity extends ListActivity {
    protected void onActivityResult(int requestCode, int resultCode, 
                                    Intent intent) {
       super.onActivityResult(requestCode, resultCode, intent);
-      fillData(null);
+      fillData();
    }
 }
