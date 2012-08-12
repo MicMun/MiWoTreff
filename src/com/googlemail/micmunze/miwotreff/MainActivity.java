@@ -8,8 +8,8 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,10 +32,6 @@ public class MainActivity extends ListActivity {
     */
    @Override
    public void onCreate(Bundle savedInstanceState) {
-      StrictMode.ThreadPolicy policy = new StrictMode.
-      ThreadPolicy.Builder().permitAll().build();
-      StrictMode.setThreadPolicy(policy);
-      
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
       mDbHelper = new DbAdapter(this);
@@ -104,21 +100,10 @@ public class MainActivity extends ListActivity {
    }
    
    /**
-    * Import the program from the homepage of the "Evangelische Gemeinschaft".
+    * Imports the program from the homepage of the "Evangelische Gemeinschaft".
     */
    private void importProg() {
-      HtmlParser parser = new HtmlParser();
-      String table = parser.getHtmlFromUrl 
-      ("http://www.gemeinschaft-muenchen.de/index.php?id=7&no_cache=1");
-      ArrayList<HashMap<String, Object>> prog = parser.getProg(table);
-      if (prog != null) {
-         for (HashMap<String, Object> m : prog) {
-            mDbHelper.createEntry((Date)m.get(DbAdapter.KEY_DATUM), 
-                                  (String)m.get(DbAdapter.KEY_THEMA), 
-                                  (String)m.get(DbAdapter.KEY_PERSON));
-         }
-      }
-      fillData();
+      new ImportTask().execute(new Void[] {});
    }
    
    /**
@@ -148,5 +133,41 @@ public class MainActivity extends ListActivity {
                                    Intent intent) {
       super.onActivityResult(requestCode, resultCode, intent);
       fillData();
+   }
+   
+   /**
+    * Imports the program from Homepage asynchronous in the background.
+    *
+    * @author Michael Munzert
+    * @version 1.0, 12.08.2012
+    */
+   private class ImportTask extends AsyncTask<Void, Void, Void>
+   {
+      /**
+       * @see android.os.AsyncTask#doInBackground(Params[])
+       */
+      @Override
+      protected Void doInBackground(Void... params) {
+         HtmlParser parser = new HtmlParser();
+         String table = parser.getHtmlFromUrl 
+         ("http://www.gemeinschaft-muenchen.de/index.php?id=7&no_cache=1");
+         ArrayList<HashMap<String, Object>> prog = parser.getProg(table);
+         if (prog != null) {
+            for (HashMap<String, Object> m : prog) {
+               mDbHelper.createEntry((Date)m.get(DbAdapter.KEY_DATUM), 
+                                     (String)m.get(DbAdapter.KEY_THEMA), 
+                                     (String)m.get(DbAdapter.KEY_PERSON));
+            }
+         }
+         return null;
+      }
+      
+      /**
+       * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+       */
+      @Override
+      protected void onPostExecute(Void result) {
+         fillData();
+      }
    }
 }
