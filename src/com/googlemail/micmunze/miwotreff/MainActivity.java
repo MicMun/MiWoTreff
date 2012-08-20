@@ -2,6 +2,7 @@ package com.googlemail.micmunze.miwotreff;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import android.app.ListActivity;
@@ -10,9 +11,14 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.CalendarContract;
+import android.provider.CalendarContract.Events;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -25,6 +31,7 @@ import android.widget.Toast;
 public class MainActivity extends ListActivity {
    private static final int ACTIVITY_CREATE = 0;
    private static final int ACTIVITY_EDIT = 1;
+   //   private static final String TAG = "MiWoTreff";
    private DbAdapter mDbHelper; // Database Helper
    
    /**
@@ -43,6 +50,7 @@ public class MainActivity extends ListActivity {
          return;
       }
       fillData();
+      registerForContextMenu(getListView());
    }
    
    /**
@@ -59,6 +67,14 @@ public class MainActivity extends ListActivity {
    @Override
    public void onResume() {
       super.onResume();
+   }
+   
+   /**
+    * @see android.app.ListActivity#onDestroy()
+    */
+   @Override
+   public void onDestroy() {
+      mDbHelper.close();
    }
    
    /**
@@ -120,6 +136,7 @@ public class MainActivity extends ListActivity {
    @Override
    protected void onListItemClick(ListView l, View v, int position, long id) {
       super.onListItemClick(l, v, position, id);
+      // Edit the entry
       Intent i = new Intent(this, EditActivity.class);
       i.putExtra(DbAdapter.KEY_ROWID, id);
       startActivityForResult(i, ACTIVITY_EDIT);
@@ -133,6 +150,67 @@ public class MainActivity extends ListActivity {
                                    Intent intent) {
       super.onActivityResult(requestCode, resultCode, intent);
       fillData();
+   }
+   
+   /**
+    * @see android.app.Activity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
+    */
+   @Override
+   public void onCreateContextMenu(ContextMenu menu, View v, 
+                                   ContextMenu.ContextMenuInfo menuInfo) {
+      super.onCreateContextMenu(menu, v, menuInfo);
+      MenuInflater inflater = getMenuInflater();
+      inflater.inflate(R.menu.context_menu, menu);
+   }
+   
+   /**
+    * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
+    */
+   @Override
+   public boolean onContextItemSelected(MenuItem item) {
+      AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+      
+      switch (item.getItemId()) {
+         case R.id.addToCal: // Add to google calendar
+            add2Call(info);
+            return true;
+         default:
+            return super.onContextItemSelected(item);
+      }
+   }
+   
+   /**
+    * Adds the entry to the calendar.
+    * 
+    * @param  info
+    *         Info about the entry.
+    */
+   private void add2Call(AdapterContextMenuInfo info) {
+      Cursor c = mDbHelper.fetchEntry(info.id);
+      // Date and time of the calendar entry
+      long d = c.getLong(1);
+      GregorianCalendar start = new GregorianCalendar();
+      GregorianCalendar end = new GregorianCalendar();
+      start.setTimeInMillis(d);
+      start.set(GregorianCalendar.HOUR_OF_DAY, 19);
+      start.set(GregorianCalendar.MINUTE, 30);
+      end.setTimeInMillis(d);
+      end.set(GregorianCalendar.HOUR_OF_DAY, 21);
+      
+      // title
+      String title = "MiWoTreff: " + c.getString(2);
+      // location
+      String loc = "Möhlstraße 20, 80935 München";
+      
+      // Calendar: Insert per Intent
+      Intent intent = new Intent(Intent.ACTION_INSERT)
+      .setData(Events.CONTENT_URI)
+      .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, start.getTimeInMillis())
+      .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, end.getTimeInMillis())
+      .putExtra(Events.TITLE, title)
+      .putExtra(Events.EVENT_LOCATION, loc)
+      .putExtra(Events.AVAILABILITY, Events.AVAILABILITY_BUSY);
+      startActivity(intent);
    }
    
    /**

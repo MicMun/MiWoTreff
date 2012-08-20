@@ -29,10 +29,22 @@ import android.util.Log;
  */
 public class DbAdapter
 {
-   public static final String KEY_ROWID = "_id"; // Primary Key _id
-   public static final String KEY_DATUM = "datum"; // Column date
-   public static final String KEY_THEMA = "thema"; // Column topic
-   public static final String KEY_PERSON = "person"; // Column person
+   /**
+    * Key for primary Key <code>_id</code>.
+    */
+   public static final String KEY_ROWID = "_id";
+   /**
+    * Key for column <code>datum</code> (date).
+    */
+   public static final String KEY_DATUM = "datum";
+   /**
+    * Key for column <code>thema</code> (topic).
+    */
+   public static final String KEY_THEMA = "thema";
+   /**
+    * Key for column <code>person</code> (person).
+    */
+   public static final String KEY_PERSON = "person";
    
    private static final String TAG = "DbAdapter";
    

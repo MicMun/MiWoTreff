@@ -23,13 +23,14 @@ public final class R {
         public static final int ic_launcher=0x7f020004;
     }
     public static final class id {
+        public static final int addToCal=0x7f090006;
         public static final int edit_datum=0x7f090000;
         public static final int edit_person=0x7f090002;
         public static final int edit_thema=0x7f090001;
-        public static final int menu_add=0x7f090009;
-        public static final int menu_import=0x7f090008;
-        public static final int menu_save=0x7f090006;
-        public static final int menu_search=0x7f090007;
+        public static final int menu_add=0x7f09000a;
+        public static final int menu_import=0x7f090009;
+        public static final int menu_save=0x7f090007;
+        public static final int menu_search=0x7f090008;
         public static final int text_datum=0x7f090003;
         public static final int text_person=0x7f090005;
         public static final int text_thema=0x7f090004;
@@ -40,10 +41,12 @@ public final class R {
         public static final int list_row=0x7f030002;
     }
     public static final class menu {
-        public static final int menu_edit=0x7f080000;
-        public static final int menu_main=0x7f080001;
+        public static final int context_menu=0x7f080000;
+        public static final int menu_edit=0x7f080001;
+        public static final int menu_main=0x7f080002;
     }
     public static final class string {
+        public static final int addToCall=0x7f06000a;
         public static final int app_name=0x7f060000;
         public static final int db_open_error=0x7f060006;
         public static final int edit_title=0x7f060007;

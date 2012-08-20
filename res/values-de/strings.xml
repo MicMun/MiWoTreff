@@ -10,5 +10,6 @@
     <string name="edit_title">Programm editieren</string>
     <string name="menu_save">Speichern</string>
     <string name="search_hint">Suche Datum, Thema, Person</string>
+    <string name="addToCall">Zum Kalender hinzufügen</string>
 
 </resources>

@@ -10,5 +10,6 @@
     <string name="edit_title">Edit Program</string>
     <string name="menu_save">Save</string>
     <string name="search_hint">Search Date, Topic, Person</string>
+    <string name="addToCall">Add to Calendar</string>
 
 </resources>
