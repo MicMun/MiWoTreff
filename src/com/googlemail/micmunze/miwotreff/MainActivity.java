@@ -75,6 +75,7 @@ public class MainActivity extends ListActivity {
    @Override
    public void onDestroy() {
       mDbHelper.close();
+      super.onDestroy();
    }
    
    /**
