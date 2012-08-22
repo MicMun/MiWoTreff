@@ -48,6 +48,8 @@ public final class R {
     public static final class string {
         public static final int addToCall=0x7f06000a;
         public static final int app_name=0x7f060000;
+        public static final int cal_loc=0x7f06000c;
+        public static final int cal_prefix=0x7f06000b;
         public static final int db_open_error=0x7f060006;
         public static final int edit_title=0x7f060007;
         public static final int menu_add=0x7f060003;

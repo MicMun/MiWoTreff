@@ -199,9 +199,11 @@ public class MainActivity extends ListActivity {
       end.set(GregorianCalendar.HOUR_OF_DAY, 21);
       
       // title
-      String title = "MiWoTreff: " + c.getString(2);
+      String title = getResources().getString(R.string.cal_prefix) + " " +  
+      c.getString(2);
+      
       // location
-      String loc = "Möhlstraße 20, 80935 München";
+      String loc = getResources().getString(R.string.cal_loc);
       
       // Calendar: Insert per Intent
       Intent intent = new Intent(Intent.ACTION_INSERT)

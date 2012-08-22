@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">MiWoTreff</string>
     <string name="title_activity_main">MiWoTreff</string>
     <string name="menu_search">Suche</string>
@@ -11,5 +11,6 @@
     <string name="menu_save">Speichern</string>
     <string name="search_hint">Suche Datum, Thema, Person</string>
     <string name="addToCall">Zum Kalender hinzufügen</string>
-
+    <string name="cal_prefix">MiWoTreff: </string>
+    <string name="cal_loc">Möhlstraße 20, 80935 München</string>
 </resources>
