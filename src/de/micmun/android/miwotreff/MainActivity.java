@@ -1,4 +1,4 @@
-package com.googlemail.micmunze.miwotreff;
+package de.micmun.android.miwotreff;
 
 import java.util.ArrayList;
 import java.util.Date;

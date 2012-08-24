@@ -3,7 +3,7 @@
  *
  * Copyright 2012 by Michael Munzert
  */
-package com.googlemail.micmunze.miwotreff;
+package de.micmun.android.miwotreff;
 
 import android.app.ListActivity;
 import android.app.SearchManager;
