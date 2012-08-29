@@ -205,13 +205,13 @@ public class DbAdapter
       if (q == null) {
          // do nothing -> query is null
       } else if (q.startsWith("-")) {
-         String s = q.substring(1, q.length()-1);
-         query = "person like '%" + s + "%'";
+         String s = q.substring(1, q.length()-1).toUpperCase();
+         query = "upper(person) like '%" + s + "%'";
       } else if (q.charAt(0) >= '0' && q.charAt(0) <= '9') {
          Date d = getDateFromString(q);
          query = "datum = " + d.getTime();
       } else {
-         query = "thema like '%" + q + "%'";
+         query = "upper(thema) like '%" + q.toUpperCase() + "%'";
       }
       
       return query;
