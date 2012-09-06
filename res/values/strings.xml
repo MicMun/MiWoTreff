@@ -13,4 +13,8 @@
     <string name="addToCall">Add to Calendar</string>
     <string name="cal_prefix">MiWoTreff: </string>
     <string name="cal_loc">Möhlstraße 20, 80935 Munich</string>
+    <string name="no_connection">Can\'t Import: No Internet Connection.</string>
+    <string name="icon_desc">Error-Icon</string>
+    <string name="error_sql">SQL-Error: </string>
+    <string name="entry_exits">Entry already exists</string>
 </resources>

@@ -6,20 +6,27 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Events;
 import android.view.ContextMenu;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -45,8 +52,8 @@ public class MainActivity extends ListActivity {
       try {
          mDbHelper.open();
       } catch (SQLException s) {
-         Toast.makeText
-         (this, R.string.db_open_error, Toast.LENGTH_SHORT).show();
+         String text = getResources().getString(R.string.db_open_error);
+         showError(text);
          return;
       }
       fillData();
@@ -108,6 +115,28 @@ public class MainActivity extends ListActivity {
    }
    
    /**
+    * Shows the error message.
+    * 
+    * @param  msg
+    *         error message.
+    */
+   private void showError(String msg) {
+      LayoutInflater inflater = getLayoutInflater();
+      View layout = inflater.inflate
+      (R.layout.error_main, (ViewGroup) findViewById(R.id.error_root));
+      
+      //      ImageView image = (ImageView) layout.findViewById(R.id.error_icon);
+      TextView text = (TextView) layout.findViewById(R.id.error_msg);
+      text.setText(msg);
+      
+      Toast toast = new Toast(getApplicationContext());
+      toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+      toast.setDuration(Toast.LENGTH_LONG);
+      toast.setView(layout);
+      toast.show();
+   }
+   
+   /**
     * Fills Data from Database in List.
     */
    private void fillData() {
@@ -120,7 +149,12 @@ public class MainActivity extends ListActivity {
     * Imports the program from the homepage of the "Evangelische Gemeinschaft".
     */
    private void importProg() {
-      new ImportTask().execute(new Void[] {});
+      if (isOnline())
+         new ImportTask().execute(new Void[] {});
+      else {
+         String text = getResources().getString(R.string.no_connection);
+         showError(text);
+      }
    }
    
    /**
@@ -217,27 +251,45 @@ public class MainActivity extends ListActivity {
    }
    
    /**
+    * Returns <code>true</code>, if you are connected to the internet.
+    * @return
+    */
+   private boolean isOnline() {
+      boolean ret = false;
+      ConnectivityManager cm = (ConnectivityManager)
+      getSystemService(Context.CONNECTIVITY_SERVICE);
+      NetworkInfo ni = cm.getActiveNetworkInfo();
+      
+      if (ni != null && ni.isConnected() && !ni.isRoaming())
+         ret = true;
+      
+      return ret;
+   }
+   
+   /**
     * Imports the program from Homepage asynchronous in the background.
     *
     * @author Michael Munzert
     * @version 1.0, 12.08.2012
     */
-   private class ImportTask extends AsyncTask<Void, Void, Void>
-   {
+   private class ImportTask extends AsyncTask<Void, Void, Integer>
+   {      
       /**
        * @see android.os.AsyncTask#doInBackground(Params[])
        */
       @Override
-      protected Void doInBackground(Void... params) {
+      protected Integer doInBackground(Void... params) {
          HtmlParser parser = new HtmlParser();
          String table = parser.getHtmlFromUrl 
          ("http://www.gemeinschaft-muenchen.de/index.php?id=7&no_cache=1");
-         ArrayList<HashMap<String, Object>> prog = parser.getProg(table);
-         if (prog != null) {
-            for (HashMap<String, Object> m : prog) {
-               mDbHelper.createEntry((Date)m.get(DbAdapter.KEY_DATUM), 
-                                     (String)m.get(DbAdapter.KEY_THEMA), 
-                                     (String)m.get(DbAdapter.KEY_PERSON));
+         if (table != null) {
+            ArrayList<HashMap<String, Object>> prog = parser.getProg(table);
+            if (prog != null) {
+               for (HashMap<String, Object> m : prog) {
+                  mDbHelper.createEntry((Date)m.get(DbAdapter.KEY_DATUM), 
+                                        (String)m.get(DbAdapter.KEY_THEMA), 
+                                        (String)m.get(DbAdapter.KEY_PERSON));
+               }
             }
          }
          return null;
@@ -247,7 +299,7 @@ public class MainActivity extends ListActivity {
        * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
        */
       @Override
-      protected void onPostExecute(Void result) {
+      protected void onPostExecute(Integer result) {
          fillData();
       }
    }

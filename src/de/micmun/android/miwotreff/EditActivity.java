@@ -15,9 +15,14 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -68,6 +73,28 @@ extends Activity
    }
    
    /**
+    * Shows the error message.
+    * 
+    * @param  msg
+    *         error message.
+    */
+   private void showError(String msg) {
+      LayoutInflater inflater = getLayoutInflater();
+      View layout = inflater.inflate
+      (R.layout.error_main, (ViewGroup) findViewById(R.id.error_root));
+      
+      //      ImageView image = (ImageView) layout.findViewById(R.id.error_icon);
+      TextView text = (TextView) layout.findViewById(R.id.error_msg);
+      text.setText(msg);
+      
+      Toast toast = new Toast(getApplicationContext());
+      toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+      toast.setDuration(Toast.LENGTH_LONG);
+      toast.setView(layout);
+      toast.show();
+   }
+   
+   /**
     * Sets the fields with the values to edit or with default values.
     */
    @SuppressWarnings("deprecation")
@@ -91,6 +118,9 @@ extends Activity
             }
          } catch (SQLException e) {
             Log.e(TAG, e.getLocalizedMessage());
+            String msg = getResources().getString
+            (R.string.error_sql) + e.getLocalizedMessage();
+            showError(msg);
          }
       } else {
          // Default values
@@ -183,8 +213,9 @@ extends Activity
          if (id > 0) {
             mRowId = id;
          } else {
-            String msg = "Entry already exists";
-            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            String msg = getResources().getString(R.string.entry_exits);
+            Log.e(TAG, msg);
+            showError(msg);
          }
       } else {
          mDbHelper.updateEntry(mRowId, thema, person);

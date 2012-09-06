@@ -13,4 +13,8 @@
     <string name="addToCall">Zum Kalender hinzufügen</string>
     <string name="cal_prefix">MiWoTreff: </string>
     <string name="cal_loc">Möhlstraße 20, 80935 München</string>
+    <string name="no_connection">Kann nicht importieren: Keine Internetverbindung.</string>
+    <string name="icon_desc">Fehler-Icon</string>
+    <string name="error_sql">SQL-Fehler: </string>
+    <string name="entry_exits">Eintrag existiert schon</string>
 </resources>

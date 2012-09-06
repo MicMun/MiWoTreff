@@ -11,7 +11,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -26,6 +31,28 @@ extends ListActivity
    private DbAdapter mDbHelper; // Database Helper
    
    /**
+    * Shows the error message.
+    * 
+    * @param  msg
+    *         error message.
+    */
+   private void showError(String msg) {
+      LayoutInflater inflater = getLayoutInflater();
+      View layout = inflater.inflate
+      (R.layout.error_main, (ViewGroup) findViewById(R.id.error_root));
+      
+      //      ImageView image = (ImageView) layout.findViewById(R.id.error_icon);
+      TextView text = (TextView) layout.findViewById(R.id.error_msg);
+      text.setText(msg);
+      
+      Toast toast = new Toast(getApplicationContext());
+      toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+      toast.setDuration(Toast.LENGTH_LONG);
+      toast.setView(layout);
+      toast.show();
+   }
+   
+   /**
     * @see android.app.Activity#onCreate(android.os.Bundle)
     */
    @Override
@@ -38,8 +65,8 @@ extends ListActivity
       try {
          mDbHelper.open();
       } catch (SQLException s) {
-         Toast.makeText
-         (this, R.string.db_open_error, Toast.LENGTH_SHORT).show();
+         String msg = getResources().getString(R.string.db_open_error);
+         showError(msg);
          return;
       }
       

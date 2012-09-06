@@ -66,7 +66,7 @@ public class HtmlParser
       } catch (MalformedURLException e) {
          Log.e(TAG, e.getLocalizedMessage());
       } catch (IOException e) {
-         Log.e(TAG, e.getLocalizedMessage());
+         Log.e(TAG, "ERROR: " + e.getLocalizedMessage());
       }
       
       return line;
