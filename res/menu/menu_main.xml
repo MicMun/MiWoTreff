@@ -5,7 +5,7 @@
         android:showAsAction="always" />
     <item android:id="@+id/menu_import"
         android:title="@string/menu_import"
-        android:icon="@drawable/ic_action_import"
+        android:icon="@drawable/ic_action_refresh"
         android:showAsAction="always" />
     <item android:id="@+id/menu_add"
         android:title="@string/menu_add"
