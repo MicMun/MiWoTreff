@@ -9,7 +9,7 @@ This GitHub repository hosts the code for the Android app MiWoTreff. MiWoTreff s
 
 Von meinem Galaxy Nexus - From my Galaxy Nexus:
 
-![Screenshot-List and Edit](http://i.imgur.com/xJkKi.png)
+![Screenshot-List and Edit](http://i.imgur.com/vBVMa.png)
 
 ##License
 
