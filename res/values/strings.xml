@@ -3,14 +3,15 @@
     <string name="app_name">MiWoTreff</string>
     <string name="title_activity_main">MiWoTreff</string>
     <string name="menu_search">Search</string>
-    <string name="menu_add">Add</string>
-    <string name="menu_import">Import</string>
+    <string name="menu_export">Export/Import</string>
+    <string name="menu_refresh">Refresh</string>
     <string name="no_entries">No Entries</string>
     <string name="db_open_error">Database Error</string>
     <string name="edit_title">Edit Program</string>
     <string name="menu_save">Save</string>
     <string name="search_hint">Search Date, Topic, Person</string>
     <string name="addToCall">Add to Calendar</string>
+    <string name="delItem">Delete Item</string>
     <string name="cal_prefix">MiWoTreff: </string>
     <string name="cal_loc">Möhlstraße 20, 80935 Munich</string>
     <string name="no_connection">Can\'t Import: No Internet Connection.</string>

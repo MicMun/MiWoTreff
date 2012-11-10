@@ -36,7 +36,6 @@ import android.widget.Toast;
  * @version 1.0, 11.08.2012
  */
 public class MainActivity extends ListActivity {
-   private static final int ACTIVITY_CREATE = 0;
    private static final int ACTIVITY_EDIT = 1;
    //   private static final String TAG = "MiWoTreff";
    private DbAdapter mDbHelper; // Database Helper
@@ -103,11 +102,11 @@ public class MainActivity extends ListActivity {
          case R.id.menu_search:
             onSearchRequested();
             return true;
-         case R.id.menu_import:
+         case R.id.menu_refresh:
             importProg();
             return true;
-         case R.id.menu_add:
-            addProg();
+         case R.id.menu_export:
+            showError("Not implemented yet!");
             return true;
          default:
             return super.onOptionsItemSelected(item);
@@ -158,14 +157,6 @@ public class MainActivity extends ListActivity {
    }
    
    /**
-    * Adds a new program entry.
-    */
-   private void addProg() {
-      Intent i = new Intent(this, EditActivity.class);
-      startActivityForResult(i, ACTIVITY_CREATE);
-   }
-   
-   /**
     * @see android.app.ListActivity#onListItemClick(android.widget.ListView, android.view.View, int, long)
     */
    @Override
@@ -209,6 +200,9 @@ public class MainActivity extends ListActivity {
          case R.id.addToCal: // Add to google calendar
             add2Call(info);
             return true;
+         case R.id.delItem: // Delete Item
+            delItem(info);
+            return true;
          default:
             return super.onContextItemSelected(item);
       }
@@ -248,6 +242,20 @@ public class MainActivity extends ListActivity {
       .putExtra(Events.EVENT_LOCATION, loc)
       .putExtra(Events.AVAILABILITY, Events.AVAILABILITY_BUSY);
       startActivity(intent);
+   }
+   
+   /**
+    * Deletes an item from database and list.
+    * 
+    * @param  info
+    *         Info about the entry.
+    */
+   private void delItem(AdapterContextMenuInfo info) {
+      if (!mDbHelper.deleteEntry(info.id)) {
+         showError("Can't delete Entry with ID = " + info.id);
+         return;
+      }
+      fillData();
    }
    
    /**
