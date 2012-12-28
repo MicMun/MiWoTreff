@@ -10,6 +10,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -27,6 +32,7 @@ import android.util.Log;
  * @author Michael Munzert
  * @version 1.0, 11.08.2012
  */
+@SuppressLint ("DefaultLocale")
 public class DbAdapter
 {
    /**
@@ -246,6 +252,7 @@ public class DbAdapter
     *         Date as String (Format: dd.MM.yyyy)
     * @return Date-Object.
     */
+   @SuppressLint ("SimpleDateFormat")
    public static Date getDateFromString(String d) {
       Date datum = null;
       
@@ -271,5 +278,34 @@ public class DbAdapter
       GregorianCalendar gc = new GregorianCalendar();
       gc.setTimeInMillis(t);
       return DateFormat.format("dd.MM.yyyy", gc).toString();
+   }
+   
+   /**
+    * Returns the app data as json.
+    * 
+    * @return {@link org.json.JSONArray JSONArray}
+    */
+   public JSONArray getJSonData() {
+      JSONArray dataList = new JSONArray();
+      JSONObject data;
+      
+      Cursor c = fetchAllEntries(null);
+      
+      while (c.moveToNext()) {
+         String d = getDateString(c.getLong(1));
+         String t = c.getString(2);
+         String p = c.getString(3);
+         data = new JSONObject();
+         try {
+            data.put(KEY_DATUM, d);
+            data.put(KEY_THEMA, t);
+            data.put(KEY_PERSON, p);
+            dataList.put(data);
+         } catch (JSONException e) {
+            Log.e(TAG, "ERROR: " + e.getLocalizedMessage());
+         }
+      }
+      
+      return dataList;
    }
 }

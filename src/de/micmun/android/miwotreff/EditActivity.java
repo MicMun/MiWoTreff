@@ -83,7 +83,7 @@ extends Activity
       View layout = inflater.inflate
       (R.layout.error_main, (ViewGroup) findViewById(R.id.error_root));
       
-      //      ImageView image = (ImageView) layout.findViewById(R.id.error_icon);
+      // ImageView image = (ImageView) layout.findViewById(R.id.error_icon);
       TextView text = (TextView) layout.findViewById(R.id.error_msg);
       text.setText(msg);
       

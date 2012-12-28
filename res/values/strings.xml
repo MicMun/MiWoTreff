@@ -3,8 +3,9 @@
     <string name="app_name">MiWoTreff</string>
     <string name="title_activity_main">MiWoTreff</string>
     <string name="menu_search">Search</string>
-    <string name="menu_export">Export/Import</string>
+    <string name="menu_export">Backup/Restore</string>
     <string name="menu_refresh">Refresh</string>
+    <string name="menu_setting">Settings</string>
     <string name="no_entries">No Entries</string>
     <string name="db_open_error">Database Error</string>
     <string name="edit_title">Edit Program</string>
@@ -18,4 +19,6 @@
     <string name="icon_desc">Error-Icon</string>
     <string name="error_sql">SQL-Error: </string>
     <string name="entry_exits">Entry already exists</string>
+    <string name="label_backup">Save</string>
+    <string name="label_restore">Restore</string>
 </resources>

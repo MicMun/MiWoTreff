@@ -1,9 +1,16 @@
 package de.micmun.android.miwotreff;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+
+import org.json.JSONArray;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -14,8 +21,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Events;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -36,8 +45,10 @@ import android.widget.Toast;
  * @version 1.0, 11.08.2012
  */
 public class MainActivity extends ListActivity {
-   private static final int ACTIVITY_EDIT = 1;
-   //   private static final String TAG = "MiWoTreff";
+   public static final int TYPE_BACKUP = 0;
+   public static final int TYPE_RESTORE = 1;
+   private static final int ACTIVITY_EDIT = 1; // Edit Entry
+   private static final String TAG = "MiWoTreff";
    private DbAdapter mDbHelper; // Database Helper
    
    /**
@@ -104,9 +115,6 @@ public class MainActivity extends ListActivity {
             return true;
          case R.id.menu_refresh:
             importProg();
-            return true;
-         case R.id.menu_export:
-            showError("Not implemented yet!");
             return true;
          default:
             return super.onOptionsItemSelected(item);
@@ -175,7 +183,8 @@ public class MainActivity extends ListActivity {
    protected void onActivityResult(int requestCode, int resultCode, 
                                    Intent intent) {
       super.onActivityResult(requestCode, resultCode, intent);
-      fillData();
+      if (requestCode == ACTIVITY_EDIT)
+         fillData();
    }
    
    /**
@@ -310,5 +319,61 @@ public class MainActivity extends ListActivity {
       protected void onPostExecute(Integer result) {
          fillData();
       }
+   }
+   
+   /**
+    * Backup or restore the data of the app.
+    * 
+    * @param  type
+    *         Type backup or restore.
+    */
+   public void backupOrRestore(int type) {
+      switch (type) {
+         case TYPE_BACKUP:
+            backup();
+            break;
+         case TYPE_RESTORE:
+            restore();
+            break;
+         default:
+            Log.e(TAG, "ERROR: Invalid type.");
+            break;
+      }
+   }
+   
+   /**
+    * Performs the backup.
+    */
+   private void backup() {
+      JSONArray data = mDbHelper.getJSonData();
+      File rootDir = Environment.getExternalStorageDirectory();
+      File dir = new File(rootDir, "miwotreff");
+      if (!dir.exists() && !dir.mkdirs()) {
+         showError("Can't create directory '" + dir.getAbsolutePath() + "'!");
+         return;
+      }
+      String time = "" + new Date().getTime();
+      File file = new File(dir, "miwotreff_" + time);
+      
+      try {
+         FileOutputStream fos = new FileOutputStream(file);
+         OutputStreamWriter osw = new OutputStreamWriter(fos);
+         osw.write(data.toString());
+         osw.flush();
+         osw.close();
+         Toast.makeText(this, "Backup in File " + file.toString(), 
+                        Toast.LENGTH_LONG).show();
+      } catch (FileNotFoundException e) {
+         showError("FileNotFoundException -> " + e.getLocalizedMessage());
+      } catch (IOException e) {
+         showError("IOException -> " + e.getLocalizedMessage());
+      }
+   }
+   
+   /**
+    * Performs the restore.
+    */
+   private void restore() {
+      // TODO: Implementation of restore.
    }
 }
