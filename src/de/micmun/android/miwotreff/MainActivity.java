@@ -1,9 +1,11 @@
 package de.micmun.android.miwotreff;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,9 +13,12 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -47,6 +52,7 @@ import android.widget.Toast;
 public class MainActivity extends ListActivity {
    public static final int TYPE_BACKUP = 0;
    public static final int TYPE_RESTORE = 1;
+   private static final String ENC = "UTF-8";
    private static final int ACTIVITY_EDIT = 1; // Edit Entry
    private static final String TAG = "MiWoTreff";
    private DbAdapter mDbHelper; // Database Helper
@@ -341,23 +347,25 @@ public class MainActivity extends ListActivity {
       }
    }
    
+   private final File DIR = new File(Environment.getExternalStorageDirectory(), 
+                                     "miwotreff");
+   
    /**
     * Performs the backup.
     */
    private void backup() {
       JSONArray data = mDbHelper.getJSonData();
-      File rootDir = Environment.getExternalStorageDirectory();
-      File dir = new File(rootDir, "miwotreff");
-      if (!dir.exists() && !dir.mkdirs()) {
-         showError("Can't create directory '" + dir.getAbsolutePath() + "'!");
+      
+      if (!DIR.exists() && !DIR.mkdirs()) {
+         showError("Can't create directory '" + DIR.getAbsolutePath() + "'!");
          return;
       }
       String time = "" + new Date().getTime();
-      File file = new File(dir, "miwotreff_" + time);
+      File file = new File(DIR, "miwotreff_" + time);
       
       try {
          FileOutputStream fos = new FileOutputStream(file);
-         OutputStreamWriter osw = new OutputStreamWriter(fos);
+         OutputStreamWriter osw = new OutputStreamWriter(fos, ENC);
          osw.write(data.toString());
          osw.flush();
          osw.close();
@@ -374,6 +382,49 @@ public class MainActivity extends ListActivity {
     * Performs the restore.
     */
    private void restore() {
-      // TODO: Implementation of restore.
+      String[] items = DIR.list(); // List of names of backup files
+      final String[] sortItems = new String[items.length];
+      for (int i = items.length-1;i >= 0;--i) {
+         sortItems[items.length-(i+1)] = items[i];
+      }
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      builder.setTitle(R.string.label_restore);
+      builder.setItems(sortItems, new DialogInterface.OnClickListener() {
+         /**
+          * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+          */
+         @Override
+         public void onClick(DialogInterface dialog, int which) {
+            File file = new File(DIR, sortItems[which]);
+            InputStreamReader isr = null;
+            
+            try {
+               FileInputStream fis = new FileInputStream(file);
+               isr = new InputStreamReader(fis, ENC);
+               int c;
+               StringBuffer sb = new StringBuffer();
+               
+               while ((c = isr.read()) != -1) {
+                  sb.append((char)c);
+               }
+               JSONArray array = new JSONArray(sb.toString());
+               mDbHelper.writeJSonData(array);
+               fillData();
+            } catch (FileNotFoundException e) {
+               showError(e.getLocalizedMessage());
+            } catch (IOException e) {
+               showError(e.getLocalizedMessage());
+            } catch (JSONException e) {
+               showError(e.getLocalizedMessage());
+            } finally {
+               try {
+                  isr.close();
+               } catch (IOException e) {
+                  isr = null;
+               }
+            }
+         }
+      });
+      builder.show();
    }
 }

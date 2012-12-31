@@ -308,4 +308,21 @@ public class DbAdapter
       
       return dataList;
    }
+   
+   /**
+    * Writes the JSON data in the database.
+    * 
+    * @param  data
+    *         {@link org.json.JSONArray JSONArray}.
+    * @throws JSONException 
+    */
+   public void writeJSonData(JSONArray data) throws JSONException {
+      for (int i = 0;i < data.length();++i) {
+         JSONObject o = data.getJSONObject(i);
+         Date d = getDateFromString(o.getString(KEY_DATUM));
+         String t = o.getString(KEY_THEMA);
+         String p = o.getString(KEY_PERSON);
+         createEntry(d, t, p);
+      }
+   }
 }
