@@ -1,40 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal" >
-
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/text_datum"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:textSize="14sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/text_thema"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/text_person"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-</LinearLayout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/row_background"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:minHeight="40dip"
+	android:paddingLeft="5dip"
+	android:paddingRight="5dip" >
+	<TextView
+		android:id="@+id/text_datum"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_marginRight="8dp"
+		android:textSize="16sp" />
+	<TextView
+		android:id="@+id/text_thema"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/text_datum"
+		android:textSize="16sp"
+		android:textStyle="bold" />
+	<TextView
+		android:id="@+id/text_person"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/text_thema"
+		android:layout_toRightOf="@id/text_datum"
+		android:textSize="14sp"
+		android:textStyle="italic" />
+</RelativeLayout>

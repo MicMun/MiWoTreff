@@ -3,7 +3,7 @@
  *
  * Copyright 2012 by Michael Munzert
  */
-package de.micmun.android.miwotreff;
+package de.micmun.android.miwotreff.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import android.util.Log;
 
@@ -28,6 +29,7 @@ import android.util.Log;
  */
 public class HtmlParser
 {
+	private static final Locale DEFAULT = Locale.getDefault();
    private final String TABLE_START = "<table class='contenttable'>";
    private final String TABLE_END = "</table>";
    private final String TAG = "MiWoTreff.HtmlParser";
@@ -97,7 +99,7 @@ public class HtmlParser
          String datum = cols[1].replace("</td>", "");
          start = datum.indexOf(' ') + 1;
          datum = datum.substring(start);
-         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", DEFAULT);
          Date d = null;
          try {
             d = sdf.parse(datum.trim());

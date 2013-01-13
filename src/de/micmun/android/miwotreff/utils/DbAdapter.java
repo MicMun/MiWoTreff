@@ -3,18 +3,18 @@
  *
  * Copyright 2012 by Michael Munzert
  */
-package de.micmun.android.miwotreff;
+package de.micmun.android.miwotreff.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -29,10 +29,9 @@ import android.util.Log;
  * Creates the database with the table and handles the CRUD-Methods
  * (Create, Update, Delete) and the selections.
  *
- * @author Michael Munzert
- * @version 1.0, 11.08.2012
+ * @author MicMun
+ * @version 1.0, 13.01.2013
  */
-@SuppressLint ("DefaultLocale")
 public class DbAdapter
 {
    /**
@@ -63,6 +62,10 @@ public class DbAdapter
    "CREATE TABLE programm (_id integer primary key autoincrement," +
    " datum integer not null unique, thema text not null, person text);";
    
+   /* Locale */
+   private static final Locale def = Locale.getDefault();
+   
+   // Database and Context
    private SQLiteDatabase mDb; // Database SQLITE
    private DatabaseHelper mDbHelper;
    private final Context mCtx; // Context for Database
@@ -208,16 +211,17 @@ public class DbAdapter
    private String createQuery(String q) {
       String query = null;
       
+      
       if (q == null) {
          // do nothing -> query is null
-      } else if (q.startsWith("-")) {
-         String s = q.substring(1, q.length()-1).toUpperCase();
-         query = "upper(person) like '%" + s + "%'";
       } else if (q.charAt(0) >= '0' && q.charAt(0) <= '9') {
          Date d = getDateFromString(q);
          query = "datum = " + d.getTime();
       } else {
-         query = "upper(thema) like '%" + q.toUpperCase() + "%'";
+      	String s = q.toUpperCase(def);
+      	String tmp = "upper(person) like '%%%s%%' or " +
+      			"upper(thema) like '%%%s%%'";
+         query = String.format(def, tmp, s, s);
       }
       
       return query;
@@ -252,11 +256,10 @@ public class DbAdapter
     *         Date as String (Format: dd.MM.yyyy)
     * @return Date-Object.
     */
-   @SuppressLint ("SimpleDateFormat")
    public static Date getDateFromString(String d) {
       Date datum = null;
       
-      SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+      SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", def);
       try {
          datum = sdf.parse(d);
       } catch (ParseException e) {

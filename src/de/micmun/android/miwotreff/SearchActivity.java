@@ -11,13 +11,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
+import de.micmun.android.miwotreff.utils.DbAdapter;
+import de.micmun.android.miwotreff.utils.SpecialCursorAdapter;
 
 /**
  * Shows the Search Result.
@@ -29,28 +26,6 @@ public class SearchActivity
 extends ListActivity
 {
    private DbAdapter mDbHelper; // Database Helper
-   
-   /**
-    * Shows the error message.
-    * 
-    * @param  msg
-    *         error message.
-    */
-   private void showError(String msg) {
-      LayoutInflater inflater = getLayoutInflater();
-      View layout = inflater.inflate
-      (R.layout.error_main, (ViewGroup) findViewById(R.id.error_root));
-      
-      //      ImageView image = (ImageView) layout.findViewById(R.id.error_icon);
-      TextView text = (TextView) layout.findViewById(R.id.error_msg);
-      text.setText(msg);
-      
-      Toast toast = new Toast(getApplicationContext());
-      toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-      toast.setDuration(Toast.LENGTH_LONG);
-      toast.setView(layout);
-      toast.show();
-   }
    
    /**
     * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -66,7 +41,7 @@ extends ListActivity
          mDbHelper.open();
       } catch (SQLException s) {
          String msg = getResources().getString(R.string.db_open_error);
-         showError(msg);
+         Log.e("miwotreff.SearchActivity", msg);
          return;
       }
       
