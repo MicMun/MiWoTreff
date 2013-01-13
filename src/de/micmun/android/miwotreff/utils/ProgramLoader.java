@@ -67,7 +67,7 @@ extends AsyncTask<Void, Void, Integer>
 	@Override
 	protected Integer doInBackground(Void... params) {
 		publishProgress();
-		
+
 		if (isOnline()) {
 			HtmlParser parser = new HtmlParser();
 			String table = parser.getHtmlFromUrl 
@@ -93,16 +93,18 @@ extends AsyncTask<Void, Void, Integer>
 		Log.e("miwotreff.ProgramLoader", "No Internet connection!");
 		return 1;
 	}
-	
+
 	/**
 	 * @see AsyncTask#onProgressUpdate(Progress... progress)
 	 */
-	protected void onProgressUpdate(Integer... progress) {
-      btnRefresh.setIcon((mCtx.getResources().getDrawable(R.drawable.ic_action_refresh_anim)));
-      btnRefresh.setEnabled(false);
-      AnimationDrawable frameAnimation = (AnimationDrawable) btnRefresh.getIcon();
-      frameAnimation.start();
-  }
+	@Override
+	protected void onProgressUpdate(Void... progress) {
+		btnRefresh.setIcon((mCtx.getResources().getDrawable(R.drawable.ic_action_refresh_anim)));
+		btnRefresh.setEnabled(false);
+		AnimationDrawable frameAnimation = (AnimationDrawable) btnRefresh.getIcon();
+		frameAnimation.start();
+
+	}
 
 	/**
 	 * @see android.os.AsyncTask#onPostExecute
@@ -110,8 +112,8 @@ extends AsyncTask<Void, Void, Integer>
 	@Override
 	protected void onPostExecute(Integer result) {
 		btnRefresh.setIcon(btnRefresStaticDrawable);
-      btnRefresh.setEnabled(true);
-      
+		btnRefresh.setEnabled(true);
+
 		if (result == 0) {
 			notifyLoaderListener();
 		}
