@@ -11,11 +11,11 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.support.v4.widget.ResourceCursorAdapter;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Filterable;
 import android.widget.ListView;
-import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
 /**
