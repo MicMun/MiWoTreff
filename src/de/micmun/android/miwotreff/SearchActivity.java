@@ -13,6 +13,9 @@ import android.database.SQLException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+
+import com.devspark.appmsg.AppMsg;
+
 import de.micmun.android.miwotreff.utils.DbAdapter;
 import de.micmun.android.miwotreff.utils.SpecialCursorAdapter;
 
@@ -25,6 +28,7 @@ import de.micmun.android.miwotreff.utils.SpecialCursorAdapter;
 public class SearchActivity
 extends ListActivity
 {
+	private final String TAG = "MiWoTreff.SearchActivity";
    private DbAdapter mDbHelper; // Database Helper
    
    /**
@@ -40,8 +44,9 @@ extends ListActivity
       try {
          mDbHelper.open();
       } catch (SQLException s) {
-         String msg = getResources().getString(R.string.db_open_error);
-         Log.e("miwotreff.SearchActivity", msg);
+         Log.e(TAG, s.getLocalizedMessage());
+         AppMsg.makeText(this, R.string.db_open_error, 
+                         AppMsg.STYLE_ALERT).show();
          return;
       }
       

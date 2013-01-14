@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import android.content.Context;
+import android.database.SQLException;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
@@ -17,6 +18,10 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.MenuItem;
+
+import com.devspark.appmsg.AppMsg;
+
+import de.micmun.android.miwotreff.MainActivity;
 import de.micmun.android.miwotreff.R;
 
 /**
@@ -29,6 +34,7 @@ import de.micmun.android.miwotreff.R;
 public class ProgramLoader 
 extends AsyncTask<Void, Void, Integer> 
 {
+	private final String TAG = "MiWoTreff.ProgramLoader";
 	private ArrayList<LoaderListener> listener = new ArrayList<LoaderListener>();
 	private Context mCtx;
 	private DbAdapter mDbHelper = null;
@@ -41,7 +47,14 @@ extends AsyncTask<Void, Void, Integer>
 		btnRefresh = mi;
 		btnRefresStaticDrawable = btnRefresh.getIcon();
 		mDbHelper = new DbAdapter(mCtx);
-		mDbHelper.open();
+		try {
+			mDbHelper.open();
+		} catch (SQLException s) {
+			Log.e(TAG, s.getLocalizedMessage());
+			AppMsg.makeText((MainActivity)ctx, R.string.db_open_error, 
+			                AppMsg.STYLE_ALERT).show();
+			return;
+		}
 	}
 
 	/**
@@ -67,31 +80,38 @@ extends AsyncTask<Void, Void, Integer>
 	@Override
 	protected Integer doInBackground(Void... params) {
 		publishProgress();
-
-		if (isOnline()) {
+		
+		if (!isOnline()) {
+			Log.e(TAG, "No Internet connection!");
+			AppMsg.makeText((MainActivity)mCtx, R.string.error_pl_noconnect, 
+			                AppMsg.STYLE_ALERT).show();		
+			return 1;
+		} else {
 			HtmlParser parser = new HtmlParser();
 			String table = parser.getHtmlFromUrl 
 						("http://www.gemeinschaft-muenchen.de/index.php?id=7&no_cache=1");
-			if (table != null) {
+			if (table == null) {
+				Log.e(TAG, "Can't fetch program!");
+				AppMsg.makeText((MainActivity)mCtx, R.string.error_pl_fetch, 
+				                AppMsg.STYLE_ALERT).show();
+				return 1;
+			} else {
 				ArrayList<HashMap<String, Object>> prog = parser.getProg(table);
-				if (prog != null) {
+				if (prog == null) {
+					Log.e(TAG, "No data!");
+					AppMsg.makeText((MainActivity)mCtx, R.string.error_pl_nodata, 
+					                AppMsg.STYLE_ALERT).show();
+					return 1;
+				} else {
 					for (HashMap<String, Object> m : prog) {
 						mDbHelper.createEntry((Date)m.get(DbAdapter.KEY_DATUM), 
 						                      (String)m.get(DbAdapter.KEY_THEMA), 
 						                      (String)m.get(DbAdapter.KEY_PERSON));
 					}
-				} else {
-					Log.e("miwotreff.ProgramLoader", "No data!");
-					return 1;
 				}
-			} else {
-				Log.e("miwotreff.ProgramLoader", "Can't fetch program!");
-				return 1;
 			}
-			return 0;
 		}
-		Log.e("miwotreff.ProgramLoader", "No Internet connection!");
-		return 1;
+		return 0;
 	}
 
 	/**
@@ -103,7 +123,6 @@ extends AsyncTask<Void, Void, Integer>
 		btnRefresh.setEnabled(false);
 		AnimationDrawable frameAnimation = (AnimationDrawable) btnRefresh.getIcon();
 		frameAnimation.start();
-
 	}
 
 	/**
@@ -116,6 +135,8 @@ extends AsyncTask<Void, Void, Integer>
 
 		if (result == 0) {
 			notifyLoaderListener();
+			AppMsg.makeText((MainActivity)mCtx, R.string.load_success, 
+			                AppMsg.STYLE_INFO).show();
 		}
 		mDbHelper.close();
 	}

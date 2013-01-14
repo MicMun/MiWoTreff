@@ -28,7 +28,9 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.SubMenu;
 import android.view.View;
-import android.widget.Toast;
+
+import com.devspark.appmsg.AppMsg;
+
 import de.micmun.android.miwotreff.MainActivity;
 import de.micmun.android.miwotreff.R;
 
@@ -43,7 +45,7 @@ extends ActionProvider
 implements OnMenuItemClickListener
 {
 	// Types of the action
-	private static final String TAG = "miwotreff.BackupActionProvider";
+	private static final String TAG = "MiWoTreff.BackupActionProvider";
 	private static final String ENC = "UTF-8"; // Encoding
 
 	private String backup = ""; // Title Backup
@@ -64,8 +66,9 @@ implements OnMenuItemClickListener
 		try {
 			mDbHelper.open();
 		} catch (SQLException s) {
-			String text = context.getResources().getString(R.string.db_open_error);
-			Log.e(TAG, text);
+			Log.e(TAG, s.getLocalizedMessage());
+			AppMsg.makeText((MainActivity)context, R.string.db_open_error, 
+			                AppMsg.STYLE_ALERT).show();
 			mDbHelper = null;
 			return;
 		}
@@ -111,7 +114,6 @@ implements OnMenuItemClickListener
 	@Override
 	public void onPrepareSubMenu(SubMenu subMenu) {
 		subMenu.clear();
-		Log.d("miwotreff.BackupActionProvider", "onPrepareSubmenu");
 		MenuItem item1 = subMenu.add(R.string.menu_backup);
 		item1.setOnMenuItemClickListener(this);
 		backup = item1.getTitle().toString();
@@ -144,10 +146,10 @@ implements OnMenuItemClickListener
 			return;
 		
 		JSONArray data = mDbHelper.getJSonData();
-		mDbHelper.close();
 
 		if (!DIR.exists() && !DIR.mkdirs()) {
-			Log.e(TAG, "Can't create directory '" + DIR.getAbsolutePath() + "'!");
+			String msg = getMessage(R.string.error_mkdir, DIR.getAbsolutePath());
+			AppMsg.makeText(ma, msg, AppMsg.STYLE_ALERT).show();
 			return;
 		}
 		String time = "" + new Date().getTime();
@@ -159,12 +161,15 @@ implements OnMenuItemClickListener
 			osw.write(data.toString());
 			osw.flush();
 			osw.close();
-			Toast.makeText(ma, "Backup in File " + file.toString(), 
-			               Toast.LENGTH_LONG).show();
+			String msg = getMessage(R.string.info_mkdir, file.toString());
+			Log.d(TAG, msg);
+			AppMsg.makeText(ma, msg, AppMsg.STYLE_INFO).show();
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "FileNotFoundException -> " + e.getLocalizedMessage());
 		} catch (IOException e) {
 			Log.e(TAG, "IOException -> " + e.getLocalizedMessage());
+			String msg = getMessage(R.string.error_write_file, file.toString());
+			AppMsg.makeText(ma, msg, AppMsg.STYLE_ALERT).show();
 		}
 	}
 
@@ -204,22 +209,51 @@ implements OnMenuItemClickListener
 					mDbHelper.writeJSonData(array);
 					if (ma != null)
 						ma.update();
+					AppMsg.makeText(ma, R.string.restore_success, 
+					                AppMsg.STYLE_INFO).show();
 				} catch (FileNotFoundException e) {
 					Log.e(TAG, e.getLocalizedMessage());
 				} catch (IOException e) {
 					Log.e(TAG, e.getLocalizedMessage());
+					String msg = getMessage(R.string.error_read_file, 
+					                        file.toString());
+					AppMsg.makeText(ma, msg, AppMsg.STYLE_ALERT).show();
 				} catch (JSONException e) {
 					Log.e(TAG, e.getLocalizedMessage());
+					String msg = getMessage(R.string.error_parse_file, 
+					                        file.toString());
+					AppMsg.makeText(ma, msg, AppMsg.STYLE_ALERT).show();
 				} finally {
 					try {
 						isr.close();
 					} catch (IOException e) {
+						Log.e(TAG, e.getLocalizedMessage());
 						isr = null;
 					}
-					mDbHelper.close();
 				}
 			}
 		});
 		builder.show();
+	}
+	
+	/**
+	 * Returns the message from ressource with format argument if needed.
+	 * 
+	 * @param  id
+	 *         id of the string ressource.
+	 * @param  arg
+	 *         argument string or <code>null</code>, if no argument required.
+	 * @return message as string.
+	 */
+	private String getMessage(int id, String arg) {
+		String str = ma.getResources().getString(id);
+		String msg = "";
+		if (arg != null) {
+			msg = String.format(str, arg);
+		} else {
+			msg = str;
+		}
+		
+		return msg;
 	}
 }

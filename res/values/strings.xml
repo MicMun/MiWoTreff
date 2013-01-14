@@ -13,4 +13,14 @@
 	<string name="cal_prefix">MiWoTreff: </string>
 	<string name="cal_loc">Möhlstraße 20, 80935 Munich</string>
 	<string name="delItem">Delete Item</string>
+	<string name="error_mkdir">Can\'t create directory \'%s\'!</string>
+	<string name="info_mkdir">Backup in File %s</string>
+	<string name="error_write_file">Error writing backup file!</string>
+	<string name="error_read_file">Error reading backup file!</string>
+	<string name="error_parse_file">Error parsing json file!</string>
+	<string name="error_pl_noconnect">There is no internet connection to load.</string>
+	<string name="error_pl_fetch">Error fetching data from website.</string>
+	<string name="error_pl_nodata">There is no data on the website.</string>
+	<string name="load_success">Data loaded successfully.</string>
+	<string name="restore_success">Restore data successfully.</string>
 </resources>

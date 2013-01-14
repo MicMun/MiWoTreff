@@ -16,6 +16,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+
+import com.devspark.appmsg.AppMsg;
+
 import de.micmun.android.miwotreff.utils.BackupActionProvider;
 import de.micmun.android.miwotreff.utils.DbAdapter;
 import de.micmun.android.miwotreff.utils.LoaderListener;
@@ -43,8 +46,9 @@ public class MainActivity extends ListActivity implements LoaderListener{
 		try {
 			mDbHelper.open();
 		} catch (SQLException s) {
-			String text = getResources().getString(R.string.db_open_error);
-			Log.e(TAG, text);
+			Log.e(TAG, s.getLocalizedMessage());
+			AppMsg.makeText(this, R.string.db_open_error, 
+			                AppMsg.STYLE_ALERT).show();
 			return;
 		}
 		fillData();

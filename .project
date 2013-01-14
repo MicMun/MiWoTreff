@@ -3,6 +3,7 @@
 	<name>miwotreff</name>
 	<comment></comment>
 	<projects>
+		<project>Crouton</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
