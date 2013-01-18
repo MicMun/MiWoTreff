@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Miwotreff</string>
+	<string name="no_entries">Keine Einträge gefunden.</string>
+	<string name="menu_search">Suche</string>
+	<string name="menu_refresh">Daten aktualisieren</string>
+	<string name="menu_export">Wiederherstellen/Sichern</string>
+	<string name="db_open_error">Öffnen der Datenbank fehlgeschlagen.</string>
+	<string name="search_hint">Suche Datum, Thema, Person</string>
+	<string name="menu_backup">Sichern</string>
+	<string name="menu_restore">Wiederherstellen</string>
+	<string name="addToCall">Zum Kalender hinzufügen</string>
+	<string name="cal_prefix">MiWoTreff: </string>
+	<string name="cal_loc">Möhlstraße 20, 80935 München</string>
+	<string name="delItem">Eintrag löschen</string>
+	<string name="error_delItem">Fehler: %ld ist nicht gelöscht worden.</string>
+	<string name="error_mkdir">Kann Verzeichnis \'%s\' nicht erstellen!</string>
+	<string name="info_mkdir">In Datei %s gesichert</string>
+	<string name="error_write_file">Fehler beim Speichern der Sicherungsdatei!</string>
+	<string name="error_read_file">Fehler beim Lesen der Sicherungsdatei!</string>
+	<string name="error_parse_file">Fehler beim Parsen der Sicherungsdatei!</string>
+	<string name="error_pl_noconnect">Es besteht keine Internetverbindung.</string>
+	<string name="error_pl_fetch">Fehler beim Holen der Daten von der Website.</string>
+	<string name="error_pl_nodata">Es gibt keine Daten auf der Website.</string>
+	<string name="load_success">Daten erfolgreich geladen.</string>
+	<string name="restore_success">Daten erfolgreich wiederhergestellt.</string>
+	<!-- UndoBar -->
+	<string name="undobar_entry_deleted">Eintrag gelöscht.</string>
+	<string name="undobar_undo">Rückgängig</string>
+	<!-- Done & Discard -->
+	<string name="done">Speichern</string>
+	<string name="discard">Abbrechen</string>
+	<!-- EditActivity -->
+	<string name="error_sql">SQL-Fehler: Kann Eintrag mit ID \'%ld\' nicht lesen.</string>
+</resources>
