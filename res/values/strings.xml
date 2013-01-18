@@ -35,5 +35,4 @@
 	
 	<!--  EditActivity -->
 	<string name="error_sql">SQL-Error: Can\'t read Entry with ID \'%ld\'.</string>
-	<string name="entry_exits">Entry already exists</string>
 </resources>
