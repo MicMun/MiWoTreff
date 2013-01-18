@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ListView;
 
 import com.devspark.appmsg.AppMsg;
 
@@ -34,9 +35,10 @@ import de.micmun.android.miwotreff.utils.UndoBarController;
  * @version 1.0, 13.01.2013
  */
 public class MainActivity extends ListActivity implements LoaderListener,
-         UndoBarController.UndoListener
+UndoBarController.UndoListener
 {
    private static final String TAG = "MiWoTreff";
+   private static final int ACTIVITY_EDIT = 1;
    private DbAdapter mDbHelper; // Database Helper
 
    private MenuItem btnRefresh = null;
@@ -58,7 +60,7 @@ public class MainActivity extends ListActivity implements LoaderListener,
       } catch (SQLException s) {
          Log.e(TAG, s.getLocalizedMessage());
          AppMsg.makeText(this, R.string.db_open_error, AppMsg.STYLE_ALERT)
-                  .show();
+         .show();
          return;
       }
       fillData();
@@ -141,6 +143,30 @@ public class MainActivity extends ListActivity implements LoaderListener,
    }
 
    /**
+    * @see android.app.ListActivity#onListItemClick(android.widget.ListView,
+    *      android.view.View, int, long)
+    */
+   @Override
+   protected void onListItemClick(ListView l, View v, int position, long id) {
+      super.onListItemClick(l, v, position, id);
+      // Edit the entry
+      Intent i = new Intent(this, EditActivity.class);
+      i.putExtra(DbAdapter.KEY_ROWID, id);
+      startActivityForResult(i, ACTIVITY_EDIT);
+   }
+
+   /**
+    * @see android.app.Activity#onActivityResult(int, int,
+    *      android.content.Intent)
+    */
+   @Override
+   protected void onActivityResult(int requestCode, int resultCode,
+                                   Intent intent) {
+      super.onActivityResult(requestCode, resultCode, intent);
+      fillData();
+   }
+
+   /**
     * @see de.micmun.android.miwotreff.utils.LoaderListener#update()
     */
    @Override
@@ -184,13 +210,13 @@ public class MainActivity extends ListActivity implements LoaderListener,
 
       // Calendar: Insert per Intent
       Intent intent = new Intent(Intent.ACTION_INSERT)
-               .setData(Events.CONTENT_URI)
-               .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-                         start.getTimeInMillis())
-               .putExtra(CalendarContract.EXTRA_EVENT_END_TIME,
-                         end.getTimeInMillis()).putExtra(Events.TITLE, title)
-               .putExtra(Events.EVENT_LOCATION, loc)
-               .putExtra(Events.AVAILABILITY, Events.AVAILABILITY_BUSY);
+      .setData(Events.CONTENT_URI)
+      .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,
+                start.getTimeInMillis())
+                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME,
+                          end.getTimeInMillis()).putExtra(Events.TITLE, title)
+                          .putExtra(Events.EVENT_LOCATION, loc)
+                          .putExtra(Events.AVAILABILITY, Events.AVAILABILITY_BUSY);
       startActivity(intent);
    }
 
@@ -235,8 +261,8 @@ public class MainActivity extends ListActivity implements LoaderListener,
          return;
       } else { // Successfully deleted
          mUndoBarController
-                  .showUndoBar(false,
-                               getString(R.string.undobar_entry_deleted), null);
+         .showUndoBar(false,
+                      getString(R.string.undobar_entry_deleted), null);
          fillData();
       }
    }

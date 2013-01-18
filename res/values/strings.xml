@@ -24,7 +24,16 @@
 	<string name="error_pl_nodata">There is no data on the website.</string>
 	<string name="load_success">Data loaded successfully.</string>
 	<string name="restore_success">Restore data successfully.</string>
+	
 	<!-- UndoBar -->
 	<string name="undobar_entry_deleted">Entry deleted.</string>
 	<string name="undobar_undo">Undo</string>
+	
+	<!-- Done & Discard -->
+    <string name="done">Done</string>
+    <string name="discard">Discard</string>
+	
+	<!--  EditActivity -->
+	<string name="error_sql">SQL-Error: Can\'t read Entry with ID \'%ld\'.</string>
+	<string name="entry_exits">Entry already exists</string>
 </resources>
