@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -29,6 +30,7 @@ import com.devspark.appmsg.AppMsg;
 
 import de.micmun.android.miwotreff.utils.DbAdapter;
 import de.micmun.android.miwotreff.utils.SpecialCursorAdapter;
+import de.micmun.android.miwotreff.utils.UndoBarController;
 
 /**
  * Shows the Search Result.
@@ -38,6 +40,7 @@ import de.micmun.android.miwotreff.utils.SpecialCursorAdapter;
  */
 public class SearchActivity
 extends ListActivity
+implements UndoBarController.UndoListener
 {
 	private final String TAG = "MiWoTreff.SearchActivity";
    private DbAdapter mDbHelper; // Database Helper
@@ -50,6 +53,9 @@ extends ListActivity
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
       getActionBar().setDisplayHomeAsUpEnabled(true);
+      
+      new UndoBarController(findViewById(R.id.undobar),
+                            this);
       
       mDbHelper = new DbAdapter(this);
       try {
@@ -139,5 +145,13 @@ extends ListActivity
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
       startActivity(intent);
       super.onBackPressed();
+   }
+
+   /**
+    * @see de.micmun.android.miwotreff.utils.UndoBarController.UndoListener#onUndo(android.os.Parcelable)
+    */
+   @Override
+   public void onUndo(Parcelable token) {
+      // Do nothing, only because of not showing undo message      
    }
 }
