@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Miwotreff</string>
-	<string name="no_entries">No Entries found.</string>
+	<string name="no_entries">No Entries here.\nRefresh data to load data.</string>
 	<string name="menu_search">Search</string>
 	<string name="menu_refresh">Refresh Data</string>
 	<string name="menu_export">Restore/Backup</string>
@@ -24,6 +24,7 @@
 	<string name="error_pl_nodata">There is no data on the website.</string>
 	<string name="load_success">Data loaded successfully.</string>
 	<string name="restore_success">Restore data successfully.</string>
+	<string name="no_restore">No files to restore.</string>
 	<!-- UndoBar -->
 	<string name="undobar_entry_deleted">Entry deleted.</string>
 	<string name="undobar_undo">Undo</string>

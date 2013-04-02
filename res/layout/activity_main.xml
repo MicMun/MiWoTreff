@@ -10,13 +10,17 @@
 		android:id="@android:id/empty"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="@string/no_entries" />
+		android:layout_gravity="center"
+		android:gravity="center"
+		android:text="@string/no_entries"
+		android:textAppearance="@android:style/TextAppearance.Holo.Large" />
 	<LinearLayout
 		android:id="@+id/undobar"
 		style="@style/UndoBar" >
 		<TextView
 			android:id="@+id/undobar_message"
-			style="@style/UndoBarMessage" />
+			style="@style/UndoBarMessage"
+			android:textIsSelectable="true" />
 		<Button
 			android:id="@+id/undobar_button"
 			style="@style/UndoBarButton" />

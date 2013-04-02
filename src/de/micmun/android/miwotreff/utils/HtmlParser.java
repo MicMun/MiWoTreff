@@ -118,9 +118,10 @@ public class HtmlParser
             Log.e(TAG, e.getLocalizedMessage());
             return null;
          }
-         String thema = cols[2].replace("</td>", "");
+         String thema = cols[2].replace("</span>", "");
+         thema = thema.replace("<br />", "\n");
          start = thema.indexOf('>') + 1;
-         end = thema.indexOf('<', start);
+         end = thema.indexOf("</td>", start);
          thema = thema.substring(start, end).trim();
          
          String person = cols[3].replace("</td></tr>", "").trim();

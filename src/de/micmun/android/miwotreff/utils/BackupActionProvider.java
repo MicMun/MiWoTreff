@@ -47,14 +47,12 @@ import de.micmun.android.miwotreff.R;
 
 /**
  * ActionProvider for the backup/restore item in actionbar.
- *
+ * 
  * @author MicMun
  * @version 1.0, 13.01.2013
  */
-public class BackupActionProvider
-extends ActionProvider
-implements OnMenuItemClickListener
-{
+public class BackupActionProvider extends ActionProvider implements
+		OnMenuItemClickListener {
 	// Types of the action
 	private static final String TAG = "MiWoTreff.BackupActionProvider";
 	private static final String ENC = "UTF-8"; // Encoding
@@ -68,8 +66,8 @@ implements OnMenuItemClickListener
 	/**
 	 * Creates a new BackupActionProvider with the context.
 	 * 
-	 * @param  context
-	 *         Context of the application.
+	 * @param context
+	 *           Context of the application.
 	 */
 	public BackupActionProvider(Context context) {
 		super(context);
@@ -78,8 +76,8 @@ implements OnMenuItemClickListener
 			mDbHelper.open();
 		} catch (SQLException s) {
 			Log.e(TAG, s.getLocalizedMessage());
-			AppMsg.makeText((MainActivity)context, R.string.db_open_error, 
-			                AppMsg.STYLE_ALERT).show();
+			AppMsg.makeText((MainActivity) context, R.string.db_open_error,
+					AppMsg.STYLE_ALERT).show();
 			mDbHelper = null;
 			return;
 		}
@@ -88,8 +86,8 @@ implements OnMenuItemClickListener
 	/**
 	 * Sets the MainActivity of the App.
 	 * 
-	 * @param  m
-	 *         {@link MainActivity}.
+	 * @param m
+	 *           {@link MainActivity}.
 	 */
 	public void setActivity(MainActivity m) {
 		ma = m;
@@ -108,7 +106,7 @@ implements OnMenuItemClickListener
 	 */
 	@Override
 	public boolean onPerformDefaultAction() {
-		return super.onPerformDefaultAction();      
+		return super.onPerformDefaultAction();
 	}
 
 	/**
@@ -142,12 +140,12 @@ implements OnMenuItemClickListener
 			backup();
 		else if (item.getTitle().toString().equals(restore))
 			restore();
-		
+
 		return true;
 	}
 
-	private final File DIR = new File(Environment.getExternalStorageDirectory(), 
-				"miwotreff");
+	private final File DIR = new File(Environment.getExternalStorageDirectory(),
+			"miwotreff");
 
 	/**
 	 * Creates a backup of the data.
@@ -155,7 +153,7 @@ implements OnMenuItemClickListener
 	private void backup() {
 		if (mDbHelper == null)
 			return;
-		
+
 		JSONArray data = mDbHelper.getJSonData();
 
 		if (!DIR.exists() && !DIR.mkdirs()) {
@@ -190,17 +188,23 @@ implements OnMenuItemClickListener
 	private void restore() {
 		if (mDbHelper == null)
 			return;
-		
+
 		String[] items = DIR.list(); // List of names of backup files
+		if (items == null || items.length == 0) {
+			AppMsg.makeText(ma, ma.getResources().getString(R.string.no_restore),
+					AppMsg.STYLE_INFO).show();
+			return;
+		}
 		final String[] sortItems = new String[items.length];
-		for (int i = items.length-1;i >= 0;--i) {
-			sortItems[items.length-(i+1)] = items[i];
+		for (int i = items.length - 1; i >= 0; --i) {
+			sortItems[items.length - (i + 1)] = items[i];
 		}
 		AlertDialog.Builder builder = new AlertDialog.Builder(ma);
 		builder.setTitle(R.string.menu_restore);
 		builder.setItems(sortItems, new DialogInterface.OnClickListener() {
 			/**
-			 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+			 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface,
+			 *      int)
 			 */
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -214,25 +218,25 @@ implements OnMenuItemClickListener
 					StringBuffer sb = new StringBuffer();
 
 					while ((c = isr.read()) != -1) {
-						sb.append((char)c);
+						sb.append((char) c);
 					}
 					JSONArray array = new JSONArray(sb.toString());
 					mDbHelper.writeJSonData(array);
 					if (ma != null)
 						ma.update();
-					AppMsg.makeText(ma, R.string.restore_success, 
-					                AppMsg.STYLE_INFO).show();
+					AppMsg.makeText(ma, R.string.restore_success, AppMsg.STYLE_INFO)
+							.show();
 				} catch (FileNotFoundException e) {
 					Log.e(TAG, e.getLocalizedMessage());
 				} catch (IOException e) {
 					Log.e(TAG, e.getLocalizedMessage());
-					String msg = getMessage(R.string.error_read_file, 
-					                        file.toString());
+					String msg = getMessage(R.string.error_read_file,
+							file.toString());
 					AppMsg.makeText(ma, msg, AppMsg.STYLE_ALERT).show();
 				} catch (JSONException e) {
 					Log.e(TAG, e.getLocalizedMessage());
-					String msg = getMessage(R.string.error_parse_file, 
-					                        file.toString());
+					String msg = getMessage(R.string.error_parse_file,
+							file.toString());
 					AppMsg.makeText(ma, msg, AppMsg.STYLE_ALERT).show();
 				} finally {
 					try {
@@ -246,14 +250,14 @@ implements OnMenuItemClickListener
 		});
 		builder.show();
 	}
-	
+
 	/**
 	 * Returns the message from ressource with format argument if needed.
 	 * 
-	 * @param  id
-	 *         id of the string ressource.
-	 * @param  arg
-	 *         argument string or <code>null</code>, if no argument required.
+	 * @param id
+	 *           id of the string ressource.
+	 * @param arg
+	 *           argument string or <code>null</code>, if no argument required.
 	 * @return message as string.
 	 */
 	private String getMessage(int id, String arg) {
@@ -264,7 +268,7 @@ implements OnMenuItemClickListener
 		} else {
 			msg = str;
 		}
-		
+
 		return msg;
 	}
 }
