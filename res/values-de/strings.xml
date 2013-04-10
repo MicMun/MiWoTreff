@@ -22,7 +22,7 @@
 	<string name="error_pl_noconnect">Es besteht keine Internetverbindung.</string>
 	<string name="error_pl_fetch">Fehler beim Holen der Daten von der Website.</string>
 	<string name="error_pl_nodata">Es gibt keine Daten auf der Website.</string>
-	<string name="load_success">Daten erfolgreich geladen.</string>
+	<string name="load_success">%d hinzugefügt.</string>
 	<string name="restore_success">Daten erfolgreich wiederhergestellt.</string>
 	<string name="no_restore">Keine Wiederherstellungsdateien.</string>
 	<!-- UndoBar -->

@@ -37,14 +37,12 @@ import de.micmun.android.miwotreff.R;
 
 /**
  * Loads the program from the website and save it in the database.
- *
- * @author  MicMun
+ * 
+ * @author MicMun
  * @version 1.0, 13.01.2013
- *
+ * 
  */
-public class ProgramLoader 
-extends AsyncTask<Void, Void, Integer> 
-{
+public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
 	private final String TAG = "MiWoTreff.ProgramLoader";
 	private ArrayList<LoaderListener> listener = new ArrayList<LoaderListener>();
 	private Context mCtx;
@@ -62,8 +60,8 @@ extends AsyncTask<Void, Void, Integer>
 			mDbHelper.open();
 		} catch (SQLException s) {
 			Log.e(TAG, s.getLocalizedMessage());
-			AppMsg.makeText((MainActivity)ctx, R.string.db_open_error, 
-			                AppMsg.STYLE_ALERT).show();
+			AppMsg.makeText((MainActivity) ctx, R.string.db_open_error,
+					AppMsg.STYLE_ALERT).show();
 			return;
 		}
 	}
@@ -75,8 +73,8 @@ extends AsyncTask<Void, Void, Integer>
 	 */
 	private boolean isOnline() {
 		boolean ret = false;
-		ConnectivityManager cm = (ConnectivityManager) mCtx.getSystemService
-					(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager cm = (ConnectivityManager) mCtx
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo ni = cm.getActiveNetworkInfo();
 
 		if (ni != null && ni.isConnected() && !ni.isRoaming())
@@ -91,33 +89,33 @@ extends AsyncTask<Void, Void, Integer>
 	@Override
 	protected Integer doInBackground(Void... params) {
 		publishProgress();
-		
+
 		if (!isOnline()) {
 			Log.e(TAG, "No Internet connection!");
-			AppMsg.makeText((MainActivity)mCtx, R.string.error_pl_noconnect, 
-			                AppMsg.STYLE_ALERT).show();		
+			AppMsg.makeText((MainActivity) mCtx, R.string.error_pl_noconnect,
+					AppMsg.STYLE_ALERT).show();
 			return 1;
 		} else {
 			HtmlParser parser = new HtmlParser();
-			String table = parser.getHtmlFromUrl 
-						("http://www.gemeinschaft-muenchen.de/index.php?id=7&no_cache=1");
+			String table = parser
+					.getHtmlFromUrl("http://www.gemeinschaft-muenchen.de/index.php?id=7&no_cache=1");
 			if (table == null) {
 				Log.e(TAG, "Can't fetch program!");
-				AppMsg.makeText((MainActivity)mCtx, R.string.error_pl_fetch, 
-				                AppMsg.STYLE_ALERT).show();
+				AppMsg.makeText((MainActivity) mCtx, R.string.error_pl_fetch,
+						AppMsg.STYLE_ALERT).show();
 				return 1;
 			} else {
 				ArrayList<HashMap<String, Object>> prog = parser.getProg(table);
 				if (prog == null) {
 					Log.e(TAG, "No data!");
-					AppMsg.makeText((MainActivity)mCtx, R.string.error_pl_nodata, 
-					                AppMsg.STYLE_ALERT).show();
+					AppMsg.makeText((MainActivity) mCtx, R.string.error_pl_nodata,
+							AppMsg.STYLE_ALERT).show();
 					return 1;
 				} else {
 					for (HashMap<String, Object> m : prog) {
-						mDbHelper.createEntry((Date)m.get(DbAdapter.KEY_DATUM), 
-						                      (String)m.get(DbAdapter.KEY_THEMA), 
-						                      (String)m.get(DbAdapter.KEY_PERSON));
+						mDbHelper.createEntry((Date) m.get(DbAdapter.KEY_DATUM),
+								(String) m.get(DbAdapter.KEY_THEMA),
+								(String) m.get(DbAdapter.KEY_PERSON));
 					}
 				}
 			}
@@ -130,9 +128,11 @@ extends AsyncTask<Void, Void, Integer>
 	 */
 	@Override
 	protected void onProgressUpdate(Void... progress) {
-		btnRefresh.setIcon((mCtx.getResources().getDrawable(R.drawable.ic_action_refresh_anim)));
+		btnRefresh.setIcon((mCtx.getResources()
+				.getDrawable(R.drawable.ic_action_refresh_anim)));
 		btnRefresh.setEnabled(false);
-		AnimationDrawable frameAnimation = (AnimationDrawable) btnRefresh.getIcon();
+		AnimationDrawable frameAnimation = (AnimationDrawable) btnRefresh
+				.getIcon();
 		frameAnimation.start();
 	}
 
@@ -146,8 +146,6 @@ extends AsyncTask<Void, Void, Integer>
 
 		if (result == 0) {
 			notifyLoaderListener();
-			AppMsg.makeText((MainActivity)mCtx, R.string.load_success, 
-			                AppMsg.STYLE_INFO).show();
 		}
 		mDbHelper.close();
 	}
@@ -155,8 +153,8 @@ extends AsyncTask<Void, Void, Integer>
 	/**
 	 * Adds a LoaderListener to the list of listener.
 	 * 
-	 * @param  l
-	 *         {@link LoaderListener} to add.
+	 * @param l
+	 *           {@link LoaderListener} to add.
 	 */
 	public void addLoaderListener(LoaderListener l) {
 		listener.add(l);
@@ -165,8 +163,8 @@ extends AsyncTask<Void, Void, Integer>
 	/**
 	 * Removes a LoaderListener from the list of listener.
 	 * 
-	 * @param  l
-	 *         {@link LoaderListener} to remove.
+	 * @param l
+	 *           {@link LoaderListener} to remove.
 	 */
 	public void removeLoaderListener(LoaderListener l) {
 		listener.remove(l);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Miwotreff</string>
-	<string name="no_entries">No Entries here.\nRefresh data to load data.</string>
+	<string name="no_entries">No Entries here.\nRefresh to load data.</string>
 	<string name="menu_search">Search</string>
 	<string name="menu_refresh">Refresh Data</string>
 	<string name="menu_export">Restore/Backup</string>
@@ -22,7 +22,7 @@
 	<string name="error_pl_noconnect">There is no internet connection to load.</string>
 	<string name="error_pl_fetch">Error fetching data from website.</string>
 	<string name="error_pl_nodata">There is no data on the website.</string>
-	<string name="load_success">Data loaded successfully.</string>
+	<string name="load_success">%d added.</string>
 	<string name="restore_success">Restore data successfully.</string>
 	<string name="no_restore">No files to restore.</string>
 	<!-- UndoBar -->
