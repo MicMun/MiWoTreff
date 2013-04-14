@@ -31,6 +31,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
@@ -284,6 +285,16 @@ public class MainActivity extends ListActivity implements LoaderListener,
 			mUndoBarController.showUndoBar(false,
 					getString(R.string.undobar_entry_deleted), null);
 			fillData();
+			getListView().setOnTouchListener(new View.OnTouchListener() {
+				/**
+				 * @see android.view.View.OnTouchListener#onTouch(android.view.View, android.view.MotionEvent)
+				 */
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					mUndoBarController.hideUndoBar(false);
+					return false;
+				}
+			});
 		}
 	}
 
