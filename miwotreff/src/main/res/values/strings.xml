@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Permission -->
+    <string name="perm_desc">Access to the db provider of MIWOTREFF</string>
+
+    <!-- Application -->
+    <string name="app_name">Miwotreff</string>
+    <string name="no_entries">No Entries here.\nRefresh to load data.</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_refresh">Refresh Data</string>
+    <string name="menu_export">Restore/Backup</string>
+    <string name="db_open_error">Failed to open the database.</string>
+    <string name="search_hint">Search Date, Topic, Person</string>
+    <string name="menu_backup">Backup</string>
+    <string name="menu_restore">Restore</string>
+    <string name="addToCall">Add to Calendar</string>
+    <string name="cal_prefix">MiWoTreff:</string>
+    <string name="cal_loc">Möhlstraße 20, 80935 Munich</string>
+    <string name="delItem">Delete Item</string>
+    <string name="error_delItem">Error: %ld wasn\'t deleted.</string>
+    <string name="error_mkdir">Can\'t create directory \'%s\'!</string>
+    <string name="info_mkdir">Backup in File %s</string>
+    <string name="error_write_file">Error writing backup file!</string>
+    <string name="error_read_file">Error reading backup file!</string>
+    <string name="error_parse_file">Error parsing json file!</string>
+    <string name="error_pl_noconnect">There is no internet connection to load.</string>
+    <string name="error_pl_fetch">Error fetching data from website.</string>
+    <string name="error_pl_nodata">There is no data on the website.</string>
+    <string name="load_success">%d added.</string>
+    <string name="restore_success">Restore data successfully.</string>
+    <string name="no_restore">No files to restore.</string>
+    <!-- UndoBar -->
+    <string name="undobar_entry_deleted">Entry deleted.</string>
+    <string name="undobar_undo">Undo</string>
+    <!-- Done & Discard -->
+    <string name="done">Done</string>
+    <string name="discard">Discard</string>
+    <!-- EditActivity -->
+    <string name="error_sql">SQL-Error: Can\'t read Entry with ID \'%ld\'.</string>
+</resources>
