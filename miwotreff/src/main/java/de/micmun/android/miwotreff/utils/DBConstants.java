@@ -43,4 +43,8 @@ public class DBConstants implements BaseColumns {
      * Content uri.
      */
     public static final Uri TABLE_CONTENT_URI = Uri.parse(BASE_URI + "/" + TABLE_NAME);
+   /**
+    * Name for query with date.
+    */
+   public static final String DATE_QUERY = "withdate";
 }

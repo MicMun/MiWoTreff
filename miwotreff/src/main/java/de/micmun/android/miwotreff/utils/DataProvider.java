@@ -16,96 +16,149 @@ import org.json.JSONException;
  * @version 1.0, 12.08.2013
  */
 public class DataProvider extends ContentProvider {
-    private static final String TAG = "MiWoTreff.DataProvider";
-    // IDs for matching content
-    private static final int ROOT_ID = 0;
-    private static final int TABLE_PROGRAM_ID = 10;
-    private static final UriMatcher mUriMatcher = new UriMatcher(ROOT_ID);
+   private static final String TAG = "MiWoTreff.DataProvider";
+   // IDs for matching content
+   private static final int ROOT_ID = 0;
+   private static final int TABLE_PROGRAM_ID = 10;
+   private static final int PROGRAM_POINT_ID = 11;
+   private static final int PROGRAM_DATE_ID = 12;
+   private static final UriMatcher mUriMatcher = new UriMatcher(ROOT_ID);
 
-    /**
-     * Static constructor for the uri's to match.
-     */
-    static {
-        mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME, TABLE_PROGRAM_ID);
-    }
+   /**
+    * Static constructor for the uri's to match.
+    */
+   static {
+      mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME,
+            TABLE_PROGRAM_ID);
+      mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME + "/#",
+            PROGRAM_POINT_ID);
+      mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME + "/"
+            + DBConstants.DATE_QUERY,
+            PROGRAM_DATE_ID);
+   }
 
-    private DbHelper mDbHelper;
-    private SQLiteDatabase mDb;
+   private DbHelper mDbHelper;
+   private SQLiteDatabase mDb;
 
-    /**
-     * @see android.content.ContentProvider#onCreate()
-     */
-    @Override
-    public boolean onCreate() {
-        mDbHelper = new DbHelper(getContext());
-        mDb = mDbHelper.getWritableDatabase();
-        return true;
-    }
+   /**
+    * @see android.content.ContentProvider#onCreate()
+    */
+   @Override
+   public boolean onCreate() {
+      mDbHelper = new DbHelper(getContext());
+      mDb = mDbHelper.getWritableDatabase();
+      return true;
+   }
 
-    /**
-     * @see ContentProvider#query(android.net.Uri, String[], String, String[], String)
-     */
-    @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Cursor res = null;
-        switch (mUriMatcher.match(uri)) {
-            case TABLE_PROGRAM_ID:
-                projection = new String[]{DBConstants._ID, DBConstants.KEY_DATUM,
-                        DBConstants.KEY_THEMA, DBConstants.KEY_PERSON};
-                sortOrder = DBConstants.KEY_DATUM + " desc";
-                res = mDb.query(DBConstants.TABLE_NAME, projection, null, null, null, null, sortOrder);
-                res.setNotificationUri(getContext().getContentResolver(), uri);
-        }
-        return res;
-    }
+   /**
+    * @see ContentProvider#query(android.net.Uri, String[], String, String[],
+    * String)
+    */
+   @Override
+   public Cursor query(Uri uri, String[] projection, String selection,
+                       String[] selectionArgs, String sortOrder) {
+      Cursor res = null;
+      switch (mUriMatcher.match(uri)) {
+         case TABLE_PROGRAM_ID:
+            projection = new String[]{DBConstants._ID, DBConstants.KEY_DATUM,
+                  DBConstants.KEY_THEMA, DBConstants.KEY_PERSON};
+            sortOrder = DBConstants.KEY_DATUM + " desc";
+            res = mDb.query(DBConstants.TABLE_NAME, projection, null, null,
+                  null, null, sortOrder);
+            res.setNotificationUri(getContext().getContentResolver(), uri);
+            break;
+         case PROGRAM_POINT_ID:
+            projection = new String[]{DBConstants._ID, DBConstants.KEY_DATUM,
+                  DBConstants.KEY_THEMA, DBConstants.KEY_PERSON};
+            selection = DBConstants._ID + " = ?";
+            selectionArgs = new String[]{uri.getLastPathSegment()};
+            res = mDb.query(DBConstants.TABLE_NAME, projection, selection,
+                  selectionArgs, null, null, null);
+            break;
+         case PROGRAM_DATE_ID:
+            projection = new String[]{DBConstants._ID, DBConstants.KEY_EDIT};
+            selection = DBConstants.KEY_DATUM + " = ?";
+            res = mDb.query(DBConstants.TABLE_NAME, projection, selection,
+                  selectionArgs, null, null, null);
+            break;
+      }
+      return res;
+   }
 
-    @Override
-    public String getType(Uri uri) {
-        String type = null;
+   /**
+    * @see android.content.ContentProvider#getType(android.net.Uri)
+    */
+   @Override
+   public String getType(Uri uri) {
+      String type = null;
 
-        switch (mUriMatcher.match(uri)) {
-            case TABLE_PROGRAM_ID:
-                type = "vnd.android.cursor.dir/vnd." + DBConstants.AUTHORITY + "."
-                        + DBConstants.TABLE_NAME;
-                break;
-        }
+      switch (mUriMatcher.match(uri)) {
+         case TABLE_PROGRAM_ID:
+            type = "vnd.android.cursor.dir/vnd." + DBConstants.AUTHORITY + "."
+                  + DBConstants.TABLE_NAME;
+            break;
+         case PROGRAM_POINT_ID:
+            type = "vnd.android.cursor.item/vnd." + DBConstants.AUTHORITY + "" +
+                  "." + DBConstants.TABLE_NAME;
+      }
 
-        return type;
-    }
+      return type;
+   }
 
-    @Override
-    public Uri insert(Uri uri, ContentValues values) {
-        Uri res = null;
+   /**
+    * @see android.content.ContentProvider#insert(android.net.Uri,
+    * android.content.ContentValues)
+    */
+   @Override
+   public Uri insert(Uri uri, ContentValues values) {
+      Uri res = null;
 
-        switch (mUriMatcher.match(uri)) {
-            case TABLE_PROGRAM_ID:
-                long id = mDb.insert(DBConstants.TABLE_NAME, null, values);
-                if (id != -1) {
-                    res = uri.withAppendedPath(uri, String.valueOf(id));
-                    getContext().getContentResolver().notifyChange(uri, null);
-                }
-        }
-        return res;
-    }
+      switch (mUriMatcher.match(uri)) {
+         case TABLE_PROGRAM_ID:
+            long id = mDb.insert(DBConstants.TABLE_NAME, null, values);
+            if (id != -1) {
+               res = uri.withAppendedPath(uri, String.valueOf(id));
+               getContext().getContentResolver().notifyChange(uri, null);
+            }
+      }
+      return res;
+   }
 
-    @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
-    }
+   @Override
+   public int delete(Uri uri, String selection, String[] selectionArgs) {
+      return 0;
+   }
 
-    @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
-    }
+   /**
+    * @see android.content.ContentProvider#update(android.net.Uri,
+    * android.content.ContentValues, String, String[])
+    */
+   @Override
+   public int update(Uri uri, ContentValues values, String selection,
+                     String[] selectionArgs) {
+      int count = 0;
 
-    /**
-     * Insert an entry (date, topic, person) and returns the id of the new entry.
-     *
-     * @param datum  date of the new entry.
-     * @param thema  topic of the new entry.
-     * @param person person who manage the event.
-     * @return id of the new entry.
-     */
+      switch (mUriMatcher.match(uri)) {
+         case PROGRAM_POINT_ID:
+            selection = DBConstants._ID + " = ?";
+            selectionArgs = new String[]{uri.getLastPathSegment()};
+            count = mDb.update(DBConstants.TABLE_NAME, values, selection,
+                  selectionArgs);
+            getContext().getContentResolver().notifyChange(DBConstants
+                  .TABLE_CONTENT_URI, null);
+            break;
+      }
+      return count;
+   }
+
+   /**
+    * Insert an entry (date, topic, person) and returns the id of the new entry.
+    *
+    * @param datum  date of the new entry.
+    * @param thema  topic of the new entry.
+    * @param person person who manage the event.
+    * @return id of the new entry.
+    */
 //    public long createEntry(Date datum, String thema, String person) {
 //        ContentValues initialValues = new ContentValues();
 //        initialValues.put(DBConstants.KEY_DATUM, datum.getTime());
@@ -115,26 +168,26 @@ public class DataProvider extends ContentProvider {
 //                SQLiteDatabase.CONFLICT_REPLACE);
 //    }
 
-    /**
-     * Deletes the entry with the id from database.
-     *
-     * @param rowId id, which will be deleted.
-     * @return <code>true</code> if entry could be deleted, else
-     * <code>false</code>.
-     */
+   /**
+    * Deletes the entry with the id from database.
+    *
+    * @param rowId id, which will be deleted.
+    * @return <code>true</code> if entry could be deleted, else
+    * <code>false</code>.
+    */
 //    public boolean deleteEntry(long rowId) {
 //        return mDb.delete(DBConstants.TABLE_NAME, DBConstants._ID + "=" + rowId, null) > 0;
 //    }
 
-    /**
-     * Updates an entry with id <code>rowId</code> with the new topic and person.
-     * Returns <code>true</code>, if success.
-     *
-     * @param rowId  id to update.
-     * @param thema  new topic.
-     * @param person new person.
-     * @return <code>true</code> if success, else <code>false</code>.
-     */
+   /**
+    * Updates an entry with id <code>rowId</code> with the new topic and person.
+    * Returns <code>true</code>, if success.
+    *
+    * @param rowId  id to update.
+    * @param thema  new topic.
+    * @param person new person.
+    * @return <code>true</code> if success, else <code>false</code>.
+    */
 //    public boolean updateEntry(long rowId, String thema, String person) {
 //        ContentValues values = new ContentValues();
 //        values.put(DBConstants.KEY_THEMA, thema);
@@ -142,12 +195,12 @@ public class DataProvider extends ContentProvider {
 //        return mDb.update(DBConstants.TABLE_NAME, values, DBConstants._ID + "=" + rowId, null) > 0;
 //    }
 
-    /**
-     * Returns Cursor for all entries with query or all.
-     *
-     * @param query Query of the database entries or <code>null</code>.
-     * @return Cursor of table "programm".
-     */
+   /**
+    * Returns Cursor for all entries with query or all.
+    *
+    * @param query Query of the database entries or <code>null</code>.
+    * @return Cursor of table "programm".
+    */
 //    public Cursor fetchAllEntries(String query) {
 //        query = createQuery(query);
 //        return mDb.query(DBConstants.TABLE_NAME, new String[]{DBConstants._ID, DBConstants.KEY_DATUM,
@@ -155,12 +208,12 @@ public class DataProvider extends ContentProvider {
 //                + " desc");
 //    }
 
-    /**
-     * Creates the query from the value.
-     *
-     * @param q Value is a date, a topic or a person with '-'.
-     * @return where-Clause for database query.
-     */
+   /**
+    * Creates the query from the value.
+    *
+    * @param q Value is a date, a topic or a person with '-'.
+    * @return where-Clause for database query.
+    */
 //    private String createQuery(String q) {
 //        String query = null;
 //
@@ -179,13 +232,13 @@ public class DataProvider extends ContentProvider {
 //        return query;
 //    }
 
-    /**
-     * Returns the cursor for entry with the given id.
-     *
-     * @param rowId id of the selected entry.
-     * @return Cursor of the entry or <code>null</code>, if not found.
-     * @throws android.database.SQLException if an error occurs while reading from database.
-     */
+   /**
+    * Returns the cursor for entry with the given id.
+    *
+    * @param rowId id of the selected entry.
+    * @return Cursor of the entry or <code>null</code>, if not found.
+    * @throws android.database.SQLException if an error occurs while reading from database.
+    */
 //    public Cursor fetchEntry(long rowId) throws SQLException {
 //        Cursor mCursor = mDb.query(DBConstants.TABLE_NAME, new String[]{DBConstants._ID,
 //                DBConstants.KEY_DATUM, DBConstants.KEY_THEMA, DBConstants.KEY_PERSON},
@@ -198,11 +251,11 @@ public class DataProvider extends ContentProvider {
 //        return mCursor;
 //    }
 
-    /**
-     * Returns the app data as json.
-     *
-     * @return {@link org.json.JSONArray JSONArray}
-     */
+   /**
+    * Returns the app data as json.
+    *
+    * @return {@link org.json.JSONArray JSONArray}
+    */
 //    public JSONArray getJSonData() {
 //        JSONArray dataList = new JSONArray();
 //        JSONObject data;
@@ -227,12 +280,12 @@ public class DataProvider extends ContentProvider {
 //        return dataList;
 //    }
 
-    /**
-     * Writes the JSON data in the database.
-     *
-     * @param data {@link org.json.JSONArray JSONArray}.
-     * @throws JSONException
-     */
+   /**
+    * Writes the JSON data in the database.
+    *
+    * @param data {@link org.json.JSONArray JSONArray}.
+    * @throws JSONException
+    */
 //    public void writeJSonData(JSONArray data) throws JSONException {
 //        for (int i = 0; i < data.length(); ++i) {
 //            JSONObject o = data.getJSONObject(i);
