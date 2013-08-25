@@ -50,6 +50,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
    private ArrayList<LoaderListener> listener = new ArrayList<LoaderListener>();
    private ConnectivityManager mConManager;
    private MenuItem btnRefresh = null;
+   private int counter;
 
    public ProgramLoader(Context ctx, MenuItem mi) {
       super();
@@ -102,6 +103,8 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
                      AppMsg.STYLE_ALERT).show();
                return 1;
             } else {
+               counter = 0;
+
                for (HashMap<String, Object> m : prog) {
                   long date = ((Date) m.get(DBConstants.KEY_DATUM)).getTime();
                   String topic = (String) m.get(DBConstants.KEY_THEMA);
@@ -125,20 +128,19 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
                      // Insert
                      mCtx.getContentResolver()
                            .insert(DBConstants.TABLE_CONTENT_URI, values);
+                     counter++;
                   } else { // exists
                      c.moveToFirst();
                      int edit = c.getInt(c.getColumnIndex(DBConstants
                            .KEY_EDIT));
                      int id = c.getInt(c.getColumnIndex(DBConstants._ID));
-                     int count = 0;
 
                      if (edit == 0) { // if not edited yet
                         // Update
                         uri = Uri.withAppendedPath(DBConstants
                               .TABLE_CONTENT_URI, String.valueOf(id));
-                        count = mCtx.getContentResolver().update(uri, values,
+                        mCtx.getContentResolver().update(uri, values,
                               null, null);
-                        Log.d(TAG, "UPDATE-count = " + count);
                      }
                   }
                }
@@ -169,6 +171,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
    protected void onPostExecute(Integer result) {
       btnRefresh.setIcon(btnRefresStaticDrawable);
       btnRefresh.setEnabled(true);
+      Log.d(TAG, "result = " + result);
 
       if (result == 0) {
          notifyLoaderListener();
@@ -198,7 +201,8 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
     */
    protected void notifyLoaderListener() {
       for (LoaderListener l : listener) {
-         l.update();
+         Log.d(TAG, l.toString());
+         l.update(counter);
       }
    }
 }

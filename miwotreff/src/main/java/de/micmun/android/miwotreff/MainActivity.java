@@ -24,7 +24,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,7 +36,6 @@ import com.devspark.appmsg.AppMsg;
 
 import de.micmun.android.miwotreff.utils.BackupActionProvider;
 import de.micmun.android.miwotreff.utils.DBConstants;
-import de.micmun.android.miwotreff.utils.DbHelper;
 import de.micmun.android.miwotreff.utils.LoaderListener;
 import de.micmun.android.miwotreff.utils.ProgramLoader;
 import de.micmun.android.miwotreff.utils.SpecialCursorAdapter;
@@ -53,14 +51,12 @@ public class MainActivity extends ListActivity implements LoaderListener,
       UndoBarController.UndoListener, LoaderManager.LoaderCallbacks<Cursor> {
    private static final String TAG = "MiWoTreff";
    private static final int ACTIVITY_EDIT = 1;
-   private DbHelper mDbHelper; // Database Helper
    private SpecialCursorAdapter mAdapter;
    private MenuItem btnRefresh = null;
    private UndoBarController mUndoBarController;
    private String tmpDelDatum;
    private String tmpDelThema;
    private String tmpDelPerson;
-   private int countEntries = 0;
 
    @Override
    public void onCreate(Bundle savedInstanceState) {
@@ -82,7 +78,6 @@ public class MainActivity extends ListActivity implements LoaderListener,
     */
    @Override
    public void onDestroy() {
-      mDbHelper.close();
       super.onDestroy();
    }
 
@@ -112,7 +107,6 @@ public class MainActivity extends ListActivity implements LoaderListener,
             ProgramLoader pl = new ProgramLoader(this, btnRefresh);
             pl.addLoaderListener(this);
             pl.execute(new Void[]{});
-            pl.removeLoaderListener(this);
             return true;
          default:
             return super.onOptionsItemSelected(item);
@@ -158,9 +152,9 @@ public class MainActivity extends ListActivity implements LoaderListener,
    protected void onListItemClick(ListView l, View v, int position, long id) {
       super.onListItemClick(l, v, position, id);
       // Edit the entry
-//        Intent i = new Intent(this, EditActivity.class);
-//        i.putExtra(DbHelper.KEY_ROWID, id);
-//        startActivityForResult(i, ACTIVITY_EDIT);
+      Intent i = new Intent(this, EditActivity.class);
+      i.putExtra(DBConstants._ID, id);
+      startActivityForResult(i, ACTIVITY_EDIT);
    }
 
    /**
@@ -171,29 +165,16 @@ public class MainActivity extends ListActivity implements LoaderListener,
    protected void onActivityResult(int requestCode, int resultCode,
                                    Intent intent) {
       super.onActivityResult(requestCode, resultCode, intent);
-      fillData();
    }
 
    /**
-    * @see de.micmun.android.miwotreff.utils.LoaderListener#update()
+    * @see de.micmun.android.miwotreff.utils.LoaderListener#update(int c)
     */
    @Override
-   public void update() {
-      int count = countEntries;
-      fillData();
+   public void update(int c) {
       String msg = String.format(getResources()
-            .getString(R.string.load_success), countEntries - count);
+            .getString(R.string.load_success), c);
       AppMsg.makeText(this, msg, AppMsg.STYLE_INFO).show();
-   }
-
-   /**
-    * Reads the data from database and fill the list.
-    */
-   private void fillData() {
-//        Cursor entryCursor = mDbHelper.fetchAllEntries(null);
-//        SpecialCursorAdapter adapter = new SpecialCursorAdapter(this, entryCursor);
-//        setListAdapter(adapter);
-//        countEntries = adapter.getCount();
    }
 
    /**
