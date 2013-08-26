@@ -17,18 +17,22 @@
 package de.micmun.android.miwotreff;
 
 import android.app.ListActivity;
+import android.app.LoaderManager;
 import android.app.SearchManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
-import android.database.SQLException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.devspark.appmsg.AppMsg;
+import java.util.Date;
 
-import de.micmun.android.miwotreff.utils.DbHelper;
+import de.micmun.android.miwotreff.utils.DBConstants;
+import de.micmun.android.miwotreff.utils.DBDateUtility;
 import de.micmun.android.miwotreff.utils.SpecialCursorAdapter;
 import de.micmun.android.miwotreff.utils.UndoBarController;
 
@@ -39,116 +43,160 @@ import de.micmun.android.miwotreff.utils.UndoBarController;
  * @version 2.0, 18.01.2013
  */
 public class SearchActivity
-        extends ListActivity
-        implements UndoBarController.UndoListener {
-    private final String TAG = "MiWoTreff.SearchActivity";
-    private DbHelper mDbHelper; // Database Helper
+      extends ListActivity
+      implements UndoBarController.UndoListener,
+      LoaderManager.LoaderCallbacks<Cursor> {
+   private static final int SEARCH_DATE = 0;
+   private static final int SEARCH_OTHERS = 1;
+   private static final String KEY_SEARCH = "search";
+   private final String TAG = "MiWoTreff.SearchActivity";
+   private SpecialCursorAdapter mAdapter;
 
-    /**
-     * @see android.app.Activity#onCreate(android.os.Bundle)
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+   /**
+    * @see android.app.Activity#onCreate(android.os.Bundle)
+    */
+   @Override
+   public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+      getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        new UndoBarController(findViewById(R.id.undobar),
-                this);
+      new UndoBarController(findViewById(R.id.undobar),
+            this);
 
-//        mDbHelper = new DbHelper(this);
-//        try {
-//            mDbHelper.open();
-//        } catch (SQLException s) {
-//            Log.e(TAG, s.getLocalizedMessage());
-//            AppMsg.makeText(this, R.string.db_open_error, AppMsg.STYLE_ALERT).show();
-//            return;
-//        }
+      mAdapter = new SpecialCursorAdapter(this, null);
+      setListAdapter(mAdapter);
 
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            handleIntent(query);
-        }
-    }
+      Intent intent = getIntent();
+      if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+         String query = intent.getStringExtra(SearchManager.QUERY);
+         handleIntent(query);
+      }
+   }
 
-    /**
-     * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+   /**
+    * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+    */
+   @Override
+   public boolean onOptionsItemSelected(MenuItem item) {
+      switch (item.getItemId()) {
+         case android.R.id.home:
+            // app icon in action bar clicked; go home
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            return true;
+         default:
+            return super.onOptionsItemSelected(item);
+      }
+   }
 
-    /**
-     * @see android.app.Activity#onNewIntent(android.content.Intent)
-     */
-    @Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            handleIntent(query);
-        }
-    }
+   /**
+    * @see android.app.Activity#onNewIntent(android.content.Intent)
+    */
+   @Override
+   protected void onNewIntent(Intent intent) {
+      setIntent(intent);
+      if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+         String query = intent.getStringExtra(SearchManager.QUERY);
+         handleIntent(query);
+      }
+   }
 
-    /**
-     * Handle the intent with search.
-     *
-     * @param search Intent of the context.
-     */
-    private void handleIntent(String search) {
-        fillData(search);
-    }
+   /**
+    * Handle the intent with search.
+    *
+    * @param search Intent of the context.
+    */
+   private void handleIntent(String search) {
+      Bundle b = new Bundle();
+      b.putString(KEY_SEARCH, search);
+      if (search.matches("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{2,4}")) {
+         Log.d(TAG, "Search: " + search);
+         getLoaderManager().initLoader(SEARCH_DATE, b, this);
+      } else {
+         getLoaderManager().initLoader(SEARCH_OTHERS, b, this);
+      }
+   }
 
-    /**
-     * @see android.app.ListActivity#onPause()
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
+   /**
+    * @see android.app.ListActivity#onPause()
+    */
+   @Override
+   public void onPause() {
+      super.onPause();
+   }
 
-    /**
-     * @see android.app.Activity#onResume()
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
+   /**
+    * @see android.app.Activity#onResume()
+    */
+   @Override
+   public void onResume() {
+      super.onResume();
+   }
 
-    /**
-     * Fills Data from Database in List.
-     */
-    private void fillData(String search) {
-//        Cursor entryCursor = mDbHelper.fetchAllEntries(search);
-//        SpecialCursorAdapter adapter = new SpecialCursorAdapter(this, entryCursor);
-//        setListAdapter(adapter);
-    }
+   @Override
+   public void onBackPressed() {
+      // app icon in action bar clicked; go home
+      Intent intent = new Intent(this, MainActivity.class);
+      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      startActivity(intent);
+      super.onBackPressed();
+   }
 
-    @Override
-    public void onBackPressed() {
-        // app icon in action bar clicked; go home
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        super.onBackPressed();
-    }
+   /**
+    * @see de.micmun.android.miwotreff.utils.UndoBarController.UndoListener#onUndo(android.os.Parcelable)
+    */
+   @Override
+   public void onUndo(Parcelable token) {
+      // Do nothing, only because of not showing undo message
+   }
 
-    /**
-     * @see de.micmun.android.miwotreff.utils.UndoBarController.UndoListener#onUndo(android.os.Parcelable)
-     */
-    @Override
-    public void onUndo(Parcelable token) {
-        // Do nothing, only because of not showing undo message
-    }
+   // *********************************************************************************************
+   //   CursorLoader
+   // *********************************************************************************************
+
+   /**
+    * @see android.app.LoaderManager.LoaderCallbacks#onCreateLoader(int, android.os.Bundle)
+    */
+   @Override
+   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+      Uri uri;
+      String sel;
+      String[] selArgs;
+
+      switch (id) {
+         case SEARCH_DATE:
+            Date d = DBDateUtility.getDateFromString(args.getString
+                  (KEY_SEARCH));
+            uri = DBConstants.TABLE_CONTENT_URI;
+            sel = DBConstants.KEY_DATUM + " = ?";
+            selArgs = new String[]{String.valueOf(d.getTime())};
+            return new CursorLoader(this, uri, null, sel, selArgs, null);
+         case SEARCH_OTHERS:
+            String s = args.getString(KEY_SEARCH);
+            uri = DBConstants.TABLE_CONTENT_URI;
+            sel = "UPPER(" + DBConstants.KEY_THEMA + ") LIKE ? OR UPPER(" +
+                  DBConstants.KEY_PERSON + ") LIKE ?";
+            selArgs = new String[]{"%" + s + "%", "%" + s + "%"};
+            return new CursorLoader(this, uri, null, sel, selArgs, null);
+      }
+      return null;
+   }
+
+   @Override
+   public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+      Cursor old = mAdapter.swapCursor(data);
+      if (old != null) {
+         old.close();
+      }
+   }
+
+   @Override
+   public void onLoaderReset(Loader<Cursor> loader) {
+      Cursor old = mAdapter.swapCursor(null);
+      if (old != null) {
+         old.close();
+      }
+   }
 }

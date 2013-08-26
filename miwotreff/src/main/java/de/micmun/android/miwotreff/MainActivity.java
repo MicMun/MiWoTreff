@@ -18,24 +18,32 @@ package de.micmun.android.miwotreff;
 
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.CalendarContract;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 
 import com.devspark.appmsg.AppMsg;
 
+import java.util.GregorianCalendar;
+
 import de.micmun.android.miwotreff.utils.BackupActionProvider;
 import de.micmun.android.miwotreff.utils.DBConstants;
+import de.micmun.android.miwotreff.utils.DBDateUtility;
 import de.micmun.android.miwotreff.utils.LoaderListener;
 import de.micmun.android.miwotreff.utils.ProgramLoader;
 import de.micmun.android.miwotreff.utils.SpecialCursorAdapter;
@@ -57,6 +65,7 @@ public class MainActivity extends ListActivity implements LoaderListener,
    private String tmpDelDatum;
    private String tmpDelThema;
    private String tmpDelPerson;
+   private int tmpDelEdit;
 
    @Override
    public void onCreate(Bundle savedInstanceState) {
@@ -183,34 +192,39 @@ public class MainActivity extends ListActivity implements LoaderListener,
     * @param info Info about the entry.
     */
    private void add2Cal(AdapterContextMenuInfo info) {
-//        Cursor c = mDbHelper.fetchEntry(info.id);
+      Cursor c = getContentResolver().query(Uri.withAppendedPath(DBConstants
+            .TABLE_CONTENT_URI, String.valueOf(info.id)), null, null, null,
+            null);
+
       // Date and time of the calendar entry
-//        long d = c.getLong(1);
-//        GregorianCalendar start = new GregorianCalendar();
-//        GregorianCalendar end = new GregorianCalendar();
-//        start.setTimeInMillis(d);
-//        start.set(GregorianCalendar.HOUR_OF_DAY, 19);
-//        start.set(GregorianCalendar.MINUTE, 30);
-//        end.setTimeInMillis(d);
-//        end.set(GregorianCalendar.HOUR_OF_DAY, 21);
-//
-//        // title
-//        String title = getResources().getString(R.string.cal_prefix) + " "
-//                + c.getString(2);
-//
-//        // location
-//        String loc = getResources().getString(R.string.cal_loc);
-//
-//        // Calendar: Insert per Intent
-//        Intent intent = new Intent(Intent.ACTION_INSERT)
-//                .setData(Events.CONTENT_URI)
-//                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-//                        start.getTimeInMillis())
-//                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME,
-//                        end.getTimeInMillis()).putExtra(Events.TITLE, title)
-//                .putExtra(Events.EVENT_LOCATION, loc)
-//                .putExtra(Events.AVAILABILITY, Events.AVAILABILITY_BUSY);
-//        startActivity(intent);
+      long d = c.getLong(c.getColumnIndex(DBConstants.KEY_DATUM));
+      GregorianCalendar start = new GregorianCalendar();
+      GregorianCalendar end = new GregorianCalendar();
+      start.setTimeInMillis(d);
+      start.set(GregorianCalendar.HOUR_OF_DAY, 19);
+      start.set(GregorianCalendar.MINUTE, 30);
+      end.setTimeInMillis(d);
+      end.set(GregorianCalendar.HOUR_OF_DAY, 21);
+
+      // title
+      String title = getResources().getString(R.string.cal_prefix) + " "
+            + c.getString(c.getColumnIndex(DBConstants.KEY_THEMA));
+
+      // location
+      String loc = getResources().getString(R.string.cal_loc);
+
+      // Calendar: Insert per Intent
+      Intent intent = new Intent(Intent.ACTION_INSERT)
+            .setData(CalendarContract.Events.CONTENT_URI)
+            .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,
+                  start.getTimeInMillis())
+            .putExtra(CalendarContract.EXTRA_EVENT_END_TIME,
+                  end.getTimeInMillis())
+            .putExtra(CalendarContract.Events.TITLE, title)
+            .putExtra(CalendarContract.Events.EVENT_LOCATION, loc)
+            .putExtra(CalendarContract.Events.AVAILABILITY,
+                  CalendarContract.Events.AVAILABILITY_BUSY);
+      startActivity(intent);
    }
 
    /**
@@ -238,33 +252,39 @@ public class MainActivity extends ListActivity implements LoaderListener,
     */
    private void delItem(AdapterContextMenuInfo info) {
         /* Store temporarily */
-//        Cursor c = mDbHelper.fetchEntry(info.id);
-//        tmpDelDatum = DbHelper.getDateString(c.getLong(1));
-//        tmpDelThema = c.getString(2);
-//        tmpDelPerson = c.getString(3);
-//        c.close();
-//
-//        if (!mDbHelper.deleteEntry(info.id)) {
-//            String msg = String.format(
-//                    getResources().getString(R.string.error_delItem), info.id);
-//            Log.e(TAG, msg);
-//            AppMsg.makeText(this, msg, AppMsg.STYLE_ALERT).show();
-//            return;
-//        } else { // Successfully deleted
-//            mUndoBarController.showUndoBar(false,
-//                    getString(R.string.undobar_entry_deleted), null);
-//            fillData();
-//            getListView().setOnTouchListener(new View.OnTouchListener() {
-//                /**
-//                 * @see android.view.View.OnTouchListener#onTouch(android.view.View, android.view.MotionEvent)
-//                 */
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    mUndoBarController.hideUndoBar(false);
-//                    return false;
-//                }
-//            });
-//        }
+      Cursor c = getContentResolver().query(Uri.withAppendedPath(DBConstants
+            .TABLE_CONTENT_URI, String.valueOf(info.id)), null, null, null,
+            null);
+      c.moveToFirst();
+      tmpDelDatum = DBDateUtility.getDateString(c.getLong(c.getColumnIndex
+            (DBConstants.KEY_DATUM)));
+      tmpDelThema = c.getString(c.getColumnIndex(DBConstants.KEY_THEMA));
+      tmpDelPerson = c.getString(c.getColumnIndex(DBConstants.KEY_PERSON));
+      tmpDelEdit = c.getInt(c.getColumnIndex(DBConstants.KEY_EDIT));
+      c.close();
+
+      // delete entry
+      if (getContentResolver().delete(Uri.withAppendedPath(DBConstants
+            .TABLE_CONTENT_URI, String.valueOf(info.id)), null, null) != 1) {
+         String msg = String.format(
+               getResources().getString(R.string.error_delItem), info.id);
+         Log.e(TAG, msg);
+         AppMsg.makeText(this, msg, AppMsg.STYLE_ALERT).show();
+      } else { // successfully deleted
+         mUndoBarController.showUndoBar(false,
+               getString(R.string.undobar_entry_deleted), null);
+         getListView().setOnTouchListener(new View.OnTouchListener() {
+            /**
+             * @see android.view.View.OnTouchListener#onTouch(android.view.View,
+             * android.view.MotionEvent)
+             */
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+               mUndoBarController.hideUndoBar(false);
+               return false;
+            }
+         });
+      }
    }
 
    /**
@@ -272,9 +292,13 @@ public class MainActivity extends ListActivity implements LoaderListener,
     */
    @Override
    public void onUndo(Parcelable token) {
-//        mDbHelper.createEntry(DbHelper.getDateFromString(tmpDelDatum),
-//                tmpDelThema, tmpDelPerson);
-//        fillData();
+      ContentValues values = new ContentValues();
+      values.put(DBConstants.KEY_DATUM, DBDateUtility.getDateFromString
+            (tmpDelDatum).getTime());
+      values.put(DBConstants.KEY_THEMA, tmpDelThema);
+      values.put(DBConstants.KEY_PERSON, tmpDelPerson);
+      values.put(DBConstants.KEY_EDIT, tmpDelEdit);
+      getContentResolver().insert(DBConstants.TABLE_CONTENT_URI, values);
    }
 
    // *********************************************************************************************

@@ -63,13 +63,14 @@ public class DataProvider extends ContentProvider {
             projection = new String[]{DBConstants._ID, DBConstants.KEY_DATUM,
                   DBConstants.KEY_THEMA, DBConstants.KEY_PERSON};
             sortOrder = DBConstants.KEY_DATUM + " desc";
-            res = mDb.query(DBConstants.TABLE_NAME, projection, null, null,
-                  null, null, sortOrder);
+            res = mDb.query(DBConstants.TABLE_NAME, projection, selection,
+                  selectionArgs, null, null, sortOrder);
             res.setNotificationUri(getContext().getContentResolver(), uri);
             break;
          case PROGRAM_POINT_ID:
             projection = new String[]{DBConstants._ID, DBConstants.KEY_DATUM,
-                  DBConstants.KEY_THEMA, DBConstants.KEY_PERSON};
+                  DBConstants.KEY_THEMA, DBConstants.KEY_PERSON,
+                  DBConstants.KEY_EDIT};
             selection = DBConstants._ID + " = ?";
             selectionArgs = new String[]{uri.getLastPathSegment()};
             res = mDb.query(DBConstants.TABLE_NAME, projection, selection,
@@ -100,6 +101,11 @@ public class DataProvider extends ContentProvider {
          case PROGRAM_POINT_ID:
             type = "vnd.android.cursor.item/vnd." + DBConstants.AUTHORITY + "" +
                   "." + DBConstants.TABLE_NAME;
+            break;
+         case PROGRAM_DATE_ID:
+            type = "vnd.android.cursor.item/vnd." + DBConstants.AUTHORITY + "" +
+                  "." + DBConstants.TABLE_NAME + "." + DBConstants.DATE_QUERY;
+            break;
       }
 
       return type;
@@ -126,6 +132,15 @@ public class DataProvider extends ContentProvider {
 
    @Override
    public int delete(Uri uri, String selection, String[] selectionArgs) {
+      switch (mUriMatcher.match(uri)) {
+         case PROGRAM_POINT_ID:
+            selection = DBConstants._ID + " = ?";
+            selectionArgs = new String[]{uri.getLastPathSegment()};
+            getContext().getContentResolver().notifyChange(DBConstants
+                  .TABLE_CONTENT_URI, null);
+            return mDb.delete(DBConstants.TABLE_NAME, selection,
+                  selectionArgs);
+      }
       return 0;
    }
 
@@ -150,23 +165,6 @@ public class DataProvider extends ContentProvider {
       }
       return count;
    }
-
-   /**
-    * Insert an entry (date, topic, person) and returns the id of the new entry.
-    *
-    * @param datum  date of the new entry.
-    * @param thema  topic of the new entry.
-    * @param person person who manage the event.
-    * @return id of the new entry.
-    */
-//    public long createEntry(Date datum, String thema, String person) {
-//        ContentValues initialValues = new ContentValues();
-//        initialValues.put(DBConstants.KEY_DATUM, datum.getTime());
-//        initialValues.put(DBConstants.KEY_THEMA, thema);
-//        initialValues.put(DBConstants.KEY_PERSON, person);
-//        return mDb.insertWithOnConflict(DBConstants.TABLE_NAME, null, initialValues,
-//                SQLiteDatabase.CONFLICT_REPLACE);
-//    }
 
    /**
     * Deletes the entry with the id from database.
