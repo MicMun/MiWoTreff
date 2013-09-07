@@ -61,7 +61,8 @@ public class DataProvider extends ContentProvider {
       switch (mUriMatcher.match(uri)) {
          case TABLE_PROGRAM_ID:
             projection = new String[]{DBConstants._ID, DBConstants.KEY_DATUM,
-                  DBConstants.KEY_THEMA, DBConstants.KEY_PERSON};
+                  DBConstants.KEY_THEMA, DBConstants.KEY_PERSON,
+                  DBConstants.KEY_EDIT};
             sortOrder = DBConstants.KEY_DATUM + " desc";
             res = mDb.query(DBConstants.TABLE_NAME, projection, selection,
                   selectionArgs, null, null, sortOrder);
@@ -121,7 +122,8 @@ public class DataProvider extends ContentProvider {
 
       switch (mUriMatcher.match(uri)) {
          case TABLE_PROGRAM_ID:
-            long id = mDb.insert(DBConstants.TABLE_NAME, null, values);
+            long id = mDb.insertWithOnConflict(DBConstants.TABLE_NAME, null,
+                  values, SQLiteDatabase.CONFLICT_REPLACE);
             if (id != -1) {
                res = uri.withAppendedPath(uri, String.valueOf(id));
                getContext().getContentResolver().notifyChange(uri, null);

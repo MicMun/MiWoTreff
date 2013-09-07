@@ -16,10 +16,12 @@
  */
 package de.micmun.android.miwotreff;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -39,11 +41,14 @@ import android.widget.ListView;
 
 import com.devspark.appmsg.AppMsg;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 
-import de.micmun.android.miwotreff.utils.BackupActionProvider;
 import de.micmun.android.miwotreff.utils.DBConstants;
 import de.micmun.android.miwotreff.utils.DBDateUtility;
+import de.micmun.android.miwotreff.utils.JSONBackupRestore;
 import de.micmun.android.miwotreff.utils.LoaderListener;
 import de.micmun.android.miwotreff.utils.ProgramLoader;
 import de.micmun.android.miwotreff.utils.SpecialCursorAdapter;
@@ -67,6 +72,9 @@ public class MainActivity extends ListActivity implements LoaderListener,
    private String tmpDelPerson;
    private int tmpDelEdit;
 
+   /**
+    * @see android.app.ListActivity#onCreate(android.os.Bundle)
+    */
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -95,11 +103,6 @@ public class MainActivity extends ListActivity implements LoaderListener,
       // Inflate the menu; this adds items to the action bar if it is present.
       getMenuInflater().inflate(R.menu.activity_main, menu);
       btnRefresh = menu.findItem(R.id.menu_refresh);
-      // BackupActionProvider for backup/restore
-      MenuItem bi = menu.findItem(R.id.menu_export);
-      BackupActionProvider bap = new BackupActionProvider(this);
-      bap.setActivity(this);
-      bi.setActionProvider(bap);
       return true;
    }
 
@@ -116,6 +119,12 @@ public class MainActivity extends ListActivity implements LoaderListener,
             ProgramLoader pl = new ProgramLoader(this, btnRefresh);
             pl.addLoaderListener(this);
             pl.execute(new Void[]{});
+            return true;
+         case R.id.menu_export:
+            backupData();
+            return true;
+         case R.id.menu_import:
+            restoreData();
             return true;
          default:
             return super.onOptionsItemSelected(item);
@@ -285,6 +294,55 @@ public class MainActivity extends ListActivity implements LoaderListener,
             }
          });
       }
+   }
+
+   /**
+    * Backup the data.
+    */
+   private void backupData() {
+      JSONBackupRestore jbr = new JSONBackupRestore(this,
+            JSONBackupRestore.TYPE_BACKUP);
+      jbr.execute();
+   }
+
+   /**
+    * Restores the data.
+    */
+   private void restoreData() {
+      final JSONBackupRestore jbr = new JSONBackupRestore(this,
+            JSONBackupRestore.TYPE_RESTORE);
+      final File[] files = jbr.getBackupFiles();
+      if (files == null || files.length <= 0) {
+         AppMsg.makeText(this, R.string.no_restore, AppMsg.STYLE_INFO).show();
+         return;
+      }
+      String[] fileNames = new String[files.length];
+      // build the file names
+      for (int i = 0; i < fileNames.length; ++i) {
+         fileNames[i] = files[i].getName();
+      }
+      // sort descend
+      Arrays.sort(fileNames, new Comparator<String>() {
+         @Override
+         public int compare(String lhs, String rhs) {
+            return rhs.compareTo(lhs);
+         }
+
+         @Override
+         public boolean equals(Object object) {
+            return this.equals(object);
+         }
+      });
+      // dialog with files, click on file restore data from file.
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      builder.setTitle(R.string.menu_restore);
+      builder.setItems(fileNames, new DialogInterface.OnClickListener() {
+         @Override
+         public void onClick(DialogInterface dialog, int which) {
+            jbr.execute(files[which]);
+         }
+      });
+      builder.show();
    }
 
    /**
