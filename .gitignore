@@ -26,12 +26,14 @@ proguard/
 
 # Gradle
 .gradle
-settings.gradle
 build
 gradle/
 gradlew
 gradlew.bat
 
 # Android Library AppMsg
-AppMsg/
+Android-AppMsg/
+
+# .git
+.gitmodules
 

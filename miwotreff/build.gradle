@@ -8,14 +8,8 @@ buildscript {
 }
 apply plugin: 'android'
 
-repositories {
-    maven {
-        url "https://github.com/johnkil/Android-AppMsg"
-    }
-}
-
 dependencies {
-    compile project(':AppMsg')
+    compile project(':Android-AppMsg:library')
 }
 
 android {
