@@ -112,9 +112,11 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
          rc = 1;
       } catch (IOException e) {
          Log.e(TAG, e.getLocalizedMessage());
+         mMessage = getMessage(R.string.error_read_file, null);
          rc = 1;
       } catch (JSONException e) {
          Log.e(TAG, e.getLocalizedMessage());
+         mMessage = getMessage(R.string.error_parse_file, null);
          rc = 1;
       } finally {
          if (isr != null)
@@ -214,8 +216,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
                rc = 1;
             } catch (IOException e) {
                Log.e(TAG, "IOException -> " + e.getLocalizedMessage());
-               mMessage = getMessage(R.string.error_write_file,
-                     file.toString());
+               mMessage = getMessage(R.string.error_write_file, null);
                rc = 1;
             }
          }
