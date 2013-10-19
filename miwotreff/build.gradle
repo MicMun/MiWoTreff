@@ -3,13 +3,16 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.5.+'
+        classpath 'com.android.tools.build:gradle:0.6.+'
     }
 }
 apply plugin: 'android'
 
 dependencies {
-    compile project(':Android-AppMsg:library')
+    repositories {
+        mavenCentral()
+    }
+    compile "io.github.johnkil:android-appmsg:1.1"
 }
 
 android {

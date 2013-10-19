@@ -1,1 +1,1 @@
-include ':Android-AppMsg:library', ':miwotreff'
+include ':miwotreff'
