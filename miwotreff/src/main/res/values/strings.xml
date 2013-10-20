@@ -34,7 +34,7 @@
     <string name="no_restore">No files to restore.</string>
     <string name="no_file_selected">No file selected to restore.</string>
     <!-- UndoBar -->
-    <string name="undobar_entry_deleted">Entry deleted.</string>
+    <string name="undobar_entry_deleted">%s deleted.</string>
     <string name="undobar_undo">Undo</string>
     <!-- Done & Discard -->
     <string name="done">Done</string>

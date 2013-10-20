@@ -43,7 +43,7 @@
         ausgewählt.
     </string>
     <!-- UndoBar -->
-    <string name="undobar_entry_deleted">Eintrag gelöscht.</string>
+    <string name="undobar_entry_deleted">%s gelöscht.</string>
     <string name="undobar_undo">Rückgängig</string>
     <!-- Done & Discard -->
     <string name="done">Speichern</string>

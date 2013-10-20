@@ -19,40 +19,27 @@ package de.micmun.android.miwotreff;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
-import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.provider.CalendarContract;
-import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 
 import com.devspark.appmsg.AppMsg;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
 
+import de.micmun.android.miwotreff.utils.ContextActionMode;
 import de.micmun.android.miwotreff.utils.DBConstants;
-import de.micmun.android.miwotreff.utils.DBDateUtility;
 import de.micmun.android.miwotreff.utils.JSONBackupRestore;
 import de.micmun.android.miwotreff.utils.LoaderListener;
 import de.micmun.android.miwotreff.utils.ProgramLoader;
 import de.micmun.android.miwotreff.utils.SpecialCursorAdapter;
-import de.micmun.android.miwotreff.utils.UndoBarController;
 
 /**
  * Main Activity of the app.
@@ -61,16 +48,12 @@ import de.micmun.android.miwotreff.utils.UndoBarController;
  * @version 1.0, 18.01.2013
  */
 public class MainActivity extends ListActivity implements LoaderListener,
-      UndoBarController.UndoListener, LoaderManager.LoaderCallbacks<Cursor> {
+      LoaderManager.LoaderCallbacks<Cursor> {
    private static final String TAG = "MiWoTreff";
    private static final int ACTIVITY_EDIT = 1;
    private SpecialCursorAdapter mAdapter;
    private MenuItem btnRefresh = null;
-   private UndoBarController mUndoBarController;
-   private String tmpDelDatum;
-   private String tmpDelThema;
-   private String tmpDelPerson;
-   private int tmpDelEdit;
+   private ContextActionMode cma;
 
    /**
     * @see android.app.ListActivity#onCreate(android.os.Bundle)
@@ -82,12 +65,13 @@ public class MainActivity extends ListActivity implements LoaderListener,
 
       mAdapter = new SpecialCursorAdapter(this, null);
       setListAdapter(mAdapter);
+      ListView lv = getListView();
+      lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
       getLoaderManager().initLoader(0, null, this);
 
-      registerForContextMenu(getListView());
-
-      mUndoBarController = new UndoBarController(findViewById(R.id.undobar),
-            this);
+      cma = new ContextActionMode(this, lv);
+      lv.setMultiChoiceModeListener(cma);
    }
 
    /**
@@ -132,37 +116,6 @@ public class MainActivity extends ListActivity implements LoaderListener,
    }
 
    /**
-    * @see android.app.Activity#onCreateContextMenu(android.view.ContextMenu,
-    * android.view.View, android.view.ContextMenu.ContextMenuInfo)
-    */
-   @Override
-   public void onCreateContextMenu(ContextMenu menu, View v,
-                                   ContextMenu.ContextMenuInfo menuInfo) {
-      super.onCreateContextMenu(menu, v, menuInfo);
-      MenuInflater inflater = getMenuInflater();
-      inflater.inflate(R.menu.context_menu, menu);
-   }
-
-   /**
-    * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
-    */
-   @Override
-   public boolean onContextItemSelected(MenuItem item) {
-      AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-
-      switch (item.getItemId()) {
-         case R.id.addToCal: // Add to google calendar
-            add2Cal(info);
-            return true;
-         case R.id.delItem: // Delete Item
-            delItem(info);
-            return true;
-         default:
-            return super.onContextItemSelected(item);
-      }
-   }
-
-   /**
     * @see android.app.ListActivity#onListItemClick(android.widget.ListView,
     * android.view.View, int, long)
     */
@@ -196,53 +149,12 @@ public class MainActivity extends ListActivity implements LoaderListener,
    }
 
    /**
-    * Adds the entry to the calendar.
-    *
-    * @param info Info about the entry.
-    */
-   private void add2Cal(AdapterContextMenuInfo info) {
-      Cursor c = getContentResolver().query(Uri.withAppendedPath(DBConstants
-            .TABLE_CONTENT_URI, String.valueOf(info.id)), null, null, null,
-            null);
-
-      // Date and time of the calendar entry
-      long d = c.getLong(c.getColumnIndex(DBConstants.KEY_DATUM));
-      GregorianCalendar start = new GregorianCalendar();
-      GregorianCalendar end = new GregorianCalendar();
-      start.setTimeInMillis(d);
-      start.set(GregorianCalendar.HOUR_OF_DAY, 19);
-      start.set(GregorianCalendar.MINUTE, 30);
-      end.setTimeInMillis(d);
-      end.set(GregorianCalendar.HOUR_OF_DAY, 21);
-
-      // title
-      String title = getResources().getString(R.string.cal_prefix) + " "
-            + c.getString(c.getColumnIndex(DBConstants.KEY_THEMA));
-
-      // location
-      String loc = getResources().getString(R.string.cal_loc);
-
-      // Calendar: Insert per Intent
-      Intent intent = new Intent(Intent.ACTION_INSERT)
-            .setData(CalendarContract.Events.CONTENT_URI)
-            .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-                  start.getTimeInMillis())
-            .putExtra(CalendarContract.EXTRA_EVENT_END_TIME,
-                  end.getTimeInMillis())
-            .putExtra(CalendarContract.Events.TITLE, title)
-            .putExtra(CalendarContract.Events.EVENT_LOCATION, loc)
-            .putExtra(CalendarContract.Events.AVAILABILITY,
-                  CalendarContract.Events.AVAILABILITY_BUSY);
-      startActivity(intent);
-   }
-
-   /**
     * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
     */
    @Override
    protected void onSaveInstanceState(Bundle outState) {
       super.onSaveInstanceState(outState);
-      mUndoBarController.onSaveInstanceState(outState);
+      cma.onSaveInstanceState(outState);
    }
 
    /**
@@ -251,49 +163,7 @@ public class MainActivity extends ListActivity implements LoaderListener,
    @Override
    protected void onRestoreInstanceState(Bundle savedInstanceState) {
       super.onRestoreInstanceState(savedInstanceState);
-      mUndoBarController.onRestoreInstanceState(savedInstanceState);
-   }
-
-   /**
-    * Deletes an item from database and list.
-    *
-    * @param info Info about the entry.
-    */
-   private void delItem(AdapterContextMenuInfo info) {
-        /* Store temporarily */
-      Cursor c = getContentResolver().query(Uri.withAppendedPath(DBConstants
-            .TABLE_CONTENT_URI, String.valueOf(info.id)), null, null, null,
-            null);
-      c.moveToFirst();
-      tmpDelDatum = DBDateUtility.getDateString(c.getLong(c.getColumnIndex
-            (DBConstants.KEY_DATUM)));
-      tmpDelThema = c.getString(c.getColumnIndex(DBConstants.KEY_THEMA));
-      tmpDelPerson = c.getString(c.getColumnIndex(DBConstants.KEY_PERSON));
-      tmpDelEdit = c.getInt(c.getColumnIndex(DBConstants.KEY_EDIT));
-      c.close();
-
-      // delete entry
-      if (getContentResolver().delete(Uri.withAppendedPath(DBConstants
-            .TABLE_CONTENT_URI, String.valueOf(info.id)), null, null) != 1) {
-         String msg = String.format(
-               getResources().getString(R.string.error_delItem), info.id);
-         Log.e(TAG, msg);
-         AppMsg.makeText(this, msg, AppMsg.STYLE_ALERT).show();
-      } else { // successfully deleted
-         mUndoBarController.showUndoBar(false,
-               getString(R.string.undobar_entry_deleted), null);
-         getListView().setOnTouchListener(new View.OnTouchListener() {
-            /**
-             * @see android.view.View.OnTouchListener#onTouch(android.view.View,
-             * android.view.MotionEvent)
-             */
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-               mUndoBarController.hideUndoBar(false);
-               return false;
-            }
-         });
-      }
+      cma.onRestoreInstanceState(savedInstanceState);
    }
 
    /**
@@ -321,18 +191,6 @@ public class MainActivity extends ListActivity implements LoaderListener,
       for (int i = 0; i < fileNames.length; ++i) {
          fileNames[i] = files[i].getName();
       }
-      // sort descend
-      Arrays.sort(fileNames, new Comparator<String>() {
-         @Override
-         public int compare(String lhs, String rhs) {
-            return rhs.compareTo(lhs);
-         }
-
-         @Override
-         public boolean equals(Object object) {
-            return this.equals(object);
-         }
-      });
       // dialog with files, click on file restore data from file.
       AlertDialog.Builder builder = new AlertDialog.Builder(this);
       builder.setTitle(R.string.menu_restore);
@@ -345,30 +203,18 @@ public class MainActivity extends ListActivity implements LoaderListener,
       builder.show();
    }
 
-   /**
-    * @see de.micmun.android.miwotreff.utils.UndoBarController.UndoListener#onUndo(android.os.Parcelable)
-    */
-   @Override
-   public void onUndo(Parcelable token) {
-      ContentValues values = new ContentValues();
-      values.put(DBConstants.KEY_DATUM, DBDateUtility.getDateFromString
-            (tmpDelDatum).getTime());
-      values.put(DBConstants.KEY_THEMA, tmpDelThema);
-      values.put(DBConstants.KEY_PERSON, tmpDelPerson);
-      values.put(DBConstants.KEY_EDIT, tmpDelEdit);
-      getContentResolver().insert(DBConstants.TABLE_CONTENT_URI, values);
-   }
-
-   // *********************************************************************************************
+   // **************************************************************************
    //   CursorLoader
-   // *********************************************************************************************
+   // **************************************************************************
 
    /**
-    * @see android.app.LoaderManager.LoaderCallbacks#onCreateLoader(int, android.os.Bundle)
+    * @see android.app.LoaderManager.LoaderCallbacks#onCreateLoader(int,
+    * android.os.Bundle)
     */
    @Override
    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-      return new CursorLoader(this, DBConstants.TABLE_CONTENT_URI, null, null, null, null);
+      return new CursorLoader(this, DBConstants.TABLE_CONTENT_URI, null,
+            null, null, null);
    }
 
    @Override
