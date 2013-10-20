@@ -82,7 +82,6 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
       try {
          // read json file
          FileInputStream fis = new FileInputStream(mFile);
-         Log.d(TAG, "File: " + mFile.getName());
          isr = new InputStreamReader(fis, ENC);
          int c;
          StringBuffer sb = new StringBuffer();
@@ -93,7 +92,6 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
          JSONArray array = new JSONArray(sb.toString());
          int count = array.length();
          ContentValues[] values = new ContentValues[count];
-         Log.d(TAG, "JSON: " + array);
 
          // insert data into database
          for (int i = 0; i < array.length(); ++i) {
@@ -102,7 +100,6 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
 
             Date d = DBDateUtility.getDateFromString(o.getString
                   (DBConstants.KEY_DATUM));
-            Log.d(TAG, "Date: " + d);
             v.put(DBConstants.KEY_DATUM, d.getTime());
             v.put(DBConstants.KEY_THEMA, o.getString(DBConstants.KEY_THEMA));
             v.put(DBConstants.KEY_PERSON, o.getString(DBConstants.KEY_PERSON));
