@@ -110,12 +110,11 @@ public class SpecialCursorAdapter
                 datum.setText(sd);
 
                 if (isNextWednesday(sd)) {
-                    background.setBackgroundResource
-                            (R.drawable.list_row_background_drawable);
-                    //background.setBackground(ctx.getResources().getDrawable(R.drawable.list_row_background_drawable));
-                    datum.setTextColor(ctx.getResources().getColor(R.color.white));
-                    thema.setTextColor(ctx.getResources().getColor(R.color.white));
-                    person.setTextColor(ctx.getResources().getColor(R.color.white));
+                   background.setBackgroundResource
+                         (R.drawable.next_wednesday_drawable);
+                   datum.setTextColor(ctx.getResources().getColor(R.color.white));
+                   thema.setTextColor(ctx.getResources().getColor(R.color.white));
+                   person.setTextColor(ctx.getResources().getColor(R.color.white));
                 } else if (normalTextColor != null) {
                     background.setBackgroundColor(Color.TRANSPARENT);
                     datum.setTextColor(normalTextColor);
