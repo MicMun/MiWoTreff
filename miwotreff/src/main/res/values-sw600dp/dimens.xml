@@ -1,0 +1,6 @@
+<resources>
+    <!-- Screen margins for 600dp minimum (Nexus 7, ...) PORTRAIT! -->
+    <dimen name="border_horizontal">0dp</dimen>
+    <dimen name="margin_small">24dp</dimen>
+    <dimen name="margin_medium">32dp</dimen>
+</resources>

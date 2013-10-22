@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="40dip"
-    android:paddingLeft="5dip"
-    android:paddingRight="5dip"
+    android:paddingLeft="@dimen/margin_small"
+    android:paddingRight="@dimen/margin_medium"
     android:gravity="center_vertical">
 
     <TextView
@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="@dimen/margin_small"
         android:textSize="16sp" />
 
     <TextView
@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignBaseline="@id/text_datum"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="@dimen/margin_small"
         android:textStyle="italic"
         android:textSize="14sp" />
 

@@ -2,5 +2,6 @@
 <resources>
     <color name="holo_blue_dark">#0099CC</color>
     <color name="holo_blue_light">#33B5E5</color>
-    <color name="white">#ffffff</color>
+    <color name="white">#FFFFFF</color>
+    <color name="lighter_gray">#EDEDED</color>
 </resources>
