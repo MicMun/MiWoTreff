@@ -19,7 +19,6 @@ package de.micmun.android.miwotreff.utils;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Filterable;
@@ -102,6 +101,7 @@ public class SpecialCursorAdapter
          *
          * @param c Cursor.
          */
+        @SuppressWarnings("deprecation")
         public void bind(Cursor c) {
             if (c != null) {
                 // date
@@ -109,18 +109,19 @@ public class SpecialCursorAdapter
                 String sd = DBDateUtility.getDateString(d);
                 datum.setText(sd);
 
-                if (isNextWednesday(sd)) {
-                   background.setBackgroundResource
-                         (R.drawable.next_wednesday_drawable);
-                   datum.setTextColor(ctx.getResources().getColor(R.color.white));
-                   thema.setTextColor(ctx.getResources().getColor(R.color.white));
-                   person.setTextColor(ctx.getResources().getColor(R.color.white));
-                } else if (normalTextColor != null) {
-                    background.setBackgroundColor(Color.TRANSPARENT);
-                    datum.setTextColor(normalTextColor);
-                    thema.setTextColor(normalTextColor);
-                    person.setTextColor(normalTextColor);
-                }
+               if (isNextWednesday(sd)) {
+                  background.setBackgroundDrawable(
+                        ctx.getResources().getDrawable(R.drawable.background_indicator_green));
+                  datum.setTextColor(ctx.getResources().getColor(android.R.color.white));
+                  thema.setTextColor(ctx.getResources().getColor(android.R.color.white));
+                  person.setTextColor(ctx.getResources().getColor(android.R.color.white));
+               } else if (normalTextColor != null) {
+                  background.setBackgroundDrawable(ctx.getResources()
+                        .getDrawable(R.drawable.background_indicator_transparent));
+                  datum.setTextColor(normalTextColor);
+                  thema.setTextColor(normalTextColor);
+                  person.setTextColor(normalTextColor);
+               }
 
                 // topic
                 String t = c.getString(c.getColumnIndex(DBConstants.KEY_THEMA));
@@ -152,11 +153,9 @@ public class SpecialCursorAdapter
                 nextWednesday = DateFormat.format("dd.MM.yyyy", today).toString();
             }
 
-            if (nextWednesday.equals(d)) {
-                return true;
-            }
-
-            return false;
+           return nextWednesday.equals(d);
         }
+
     }
+
 }
