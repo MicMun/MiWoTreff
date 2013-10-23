@@ -4,10 +4,10 @@
             android:id="@+id/addToCal"
             android:title="@string/addToCall"
             android:showAsAction="always|withText"
-            android:icon="@drawable/ic_action_content_event"/>
+            android:icon="@drawable/ic_action_add_to_calendar"/>
     <item
             android:id="@+id/delItem"
             android:title="@string/delItem"
             android:showAsAction="always|withText"
-            android:icon="@drawable/ic_action_content_discard"/>
+            android:icon="@drawable/ic_action_delete"/>
 </menu>
