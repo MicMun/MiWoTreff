@@ -33,6 +33,7 @@ public class ContextActionMode implements ListView
    private ListView lv;
    private Menu menu;
    private UndoBarController mUndoBarController;
+   private String selMsgFormat;
 
    /**
     * Creates a new ContextActionMode.
@@ -45,6 +46,8 @@ public class ContextActionMode implements ListView
       mActivity = context;
       mUndoBarController = new UndoBarController(mActivity.findViewById(R.id
             .undobar), this);
+      selMsgFormat = mActivity.getResources().getString(R.string
+              .title_count_selected);
    }
 
    @Override
@@ -59,6 +62,7 @@ public class ContextActionMode implements ListView
    @Override
    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
       int count = lv.getCheckedItemCount();
+      String selMsg = String.format(selMsgFormat, String.valueOf(count));
 
       if (count == 0) {
          // nothing selected -> hide action mode
@@ -66,9 +70,11 @@ public class ContextActionMode implements ListView
          return true;
       } else if (count == 1) { // show delete and add2Cal
          menu.findItem(R.id.addToCal).setVisible(true);
+         mode.setTitle(selMsg);
          return true;
       } else if (count > 1) { // show only delete
          menu.findItem(R.id.addToCal).setVisible(false);
+         mode.setTitle(selMsg);
          return true;
       }
 

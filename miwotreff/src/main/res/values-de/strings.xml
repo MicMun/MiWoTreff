@@ -52,4 +52,6 @@
     <string name="error_sql">SQL-Fehler: Kann Eintrag mit ID \'%ld\' nicht
         lesen.
     </string>
+    <!-- Contextual Action Mode -->
+    <string name="title_count_selected">%s ausgewählt.</string>
 </resources>

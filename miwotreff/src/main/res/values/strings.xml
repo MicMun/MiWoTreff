@@ -42,4 +42,6 @@
     <!-- EditActivity -->
     <string name="error_sql">SQL-Error: Can\'t read Entry with ID \'%ld\'.
     </string>
+    <!-- Contextual Action Mode -->
+    <string name="title_count_selected">%s selected.</string>
 </resources>
