@@ -8,7 +8,7 @@ Dieses GitHub Repository hostet den Code der Android-App _MiWoTreff_. _MiWoTreff
 
 ## Screenshots
 
-![Screenshot-List and Edit](http://i.imgur.com/zcyChfi.png)
+![Screenshot-List and Edit](screenshot01.png)
 
 ## Compatibility
 
