@@ -13,6 +13,8 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -46,8 +48,18 @@ public class ContextActionMode implements ListView
       mActivity = context;
       mUndoBarController = new UndoBarController(mActivity.findViewById(R.id
             .undobar), this);
+      lv.setOnTouchListener(new View.OnTouchListener() {
+         /**
+          * @see android.view.View.OnTouchListener#onTouch(android.view.View, android.view.MotionEvent)
+          */
+         @Override
+         public boolean onTouch(View v, MotionEvent event) {
+            mUndoBarController.hideUndoBar(true);
+            return false;
+         }
+      });
       selMsgFormat = mActivity.getResources().getString(R.string
-              .title_count_selected);
+            .title_count_selected);
    }
 
    @Override
