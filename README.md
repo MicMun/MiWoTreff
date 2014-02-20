@@ -16,7 +16,7 @@ This app is compatible from sdk version 14 (Android 4.0) upward and requires [An
 
 ## License
 
-**Copyright 2012-2013 MicMun**
+**Copyright 2012-2014 MicMun**
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU
 General Public License as published by the Free Software Foundation, either version 3 of the License, or
