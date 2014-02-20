@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="de.micmun.android.miwotreff"
           android:versionCode="3"
-          android:versionName="3.0">
+          android:versionName="3.1">
 
     <uses-sdk
             android:minSdkVersion="14"
-            android:targetSdkVersion="18"/>
+            android:targetSdkVersion="19"/>
 
     <permission
             android:name="de.micmun.android.miwotreff.permission.ACCESS_DB_PROVIDER"
