@@ -143,6 +143,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
                               null, null);
                      }
                   }
+                  c.close();
                }
             }
          }
