@@ -30,7 +30,7 @@
         android:id="@+id/text_person"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/text_datum"
+        android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="@dimen/margin_small"
         android:layout_marginRight="@dimen/margin_medium"
