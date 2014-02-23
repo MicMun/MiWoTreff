@@ -17,7 +17,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -82,10 +84,12 @@ public class ContextActionMode implements ListView
          return true;
       } else if (count == 1) { // show delete and add2Cal
          menu.findItem(R.id.addToCal).setVisible(true);
+         menu.findItem(R.id.share).setVisible(true);
          mode.setTitle(selMsg);
          return true;
       } else if (count > 1) { // show only delete
          menu.findItem(R.id.addToCal).setVisible(false);
+         menu.findItem(R.id.share).setVisible(false);
          mode.setTitle(selMsg);
          return true;
       }
@@ -105,6 +109,9 @@ public class ContextActionMode implements ListView
          case R.id.delItem:
             // delete items
             delItem(itemIds);
+            return true;
+         case R.id.share:
+            showShareIntent(itemIds[0]);
             return true;
       }
       return false;
@@ -138,6 +145,55 @@ public class ContextActionMode implements ListView
          mActivity.getContentResolver().insert(DBConstants.TABLE_CONTENT_URI,
                values);
       }
+   }
+
+   /**
+    * Opens a standard share intent.
+    *
+    * @param id the ID of the entry to share.
+    */
+   private void showShareIntent(long id) {
+      /* get data */
+      Cursor c = mActivity.getContentResolver().query(
+            Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI,
+                  String.valueOf(id)), null, null, null, null);
+      if (c == null || c.getCount() <= 0) {
+         return;
+      }
+      c.moveToFirst();
+
+      /* date */
+      long timestamp = c.getLong(c.getColumnIndex(DBConstants.KEY_DATUM));
+      Calendar then = GregorianCalendar.getInstance();
+      then.setTimeInMillis(timestamp);
+      Calendar now = GregorianCalendar.getInstance();
+
+      /* topic */
+      String topic = c.getString(c.getColumnIndex(DBConstants.KEY_THEMA));
+
+      String text;
+      /* today */
+      if (then.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH)
+            && then.get(Calendar.MONTH) == now.get(Calendar.MONTH)
+            && then.get(Calendar.YEAR) == now.get(Calendar.YEAR)) {
+         text = mActivity.getString(R.string.shareText_today, topic);
+      } else { /* other day than today */
+         SimpleDateFormat df = new SimpleDateFormat("dd.MM.yy");
+         if (then.compareTo(now) == -1) { /* other day in the past */
+            text = mActivity.getString(
+                  R.string.shareText_past, topic, df.format(then.getTime()));
+         } else { /* other day in the future */
+            text = mActivity.getString(
+                  R.string.shareText_future, topic, df.format(then.getTime()));
+         }
+      }
+
+      Intent shareIntent = new Intent();
+      shareIntent.setAction(Intent.ACTION_SEND);
+      shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+      shareIntent.setType("text/plain");
+      mActivity.startActivity(Intent.createChooser(
+            shareIntent, mActivity.getResources().getText(R.string.shareWith)));
    }
 
    /**

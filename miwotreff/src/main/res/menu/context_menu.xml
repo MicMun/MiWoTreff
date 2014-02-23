@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+   <item
+            android:id="@+id/share"
+            android:title="@string/share"
+            android:showAsAction="always"
+            android:icon="@drawable/ic_action_share"/>
     <item
             android:id="@+id/addToCal"
             android:title="@string/addToCall"
-            android:showAsAction="always|withText"
+            android:showAsAction="always"
             android:icon="@drawable/ic_action_add_to_calendar"/>
     <item
             android:id="@+id/delItem"
             android:title="@string/delItem"
-            android:showAsAction="always|withText"
+            android:showAsAction="always"
             android:icon="@drawable/ic_action_delete"/>
 </menu>

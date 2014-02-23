@@ -14,6 +14,8 @@
     <string name="search_hint">Search Date, Topic, Person</string>
     <string name="menu_backup">Backup</string>
     <string name="menu_restore">Restore</string>
+    <string name="share">Share</string>
+    <string name="shareWith">Share with…</string>
     <string name="addToCall">Add to Calendar</string>
     <string name="cal_prefix">MiWoTreff:</string>
     <string name="cal_loc">Möhlstraße 20, 80935 Munich</string>
@@ -44,4 +46,8 @@
     </string>
     <!-- Contextual Action Mode -->
     <string name="title_count_selected">%s selected.</string>
+
+    <string name="shareText_today">Today the topic on #Mittwochstreff is \"%1$s\".\nEverybody is welcome to join. It starts at 19:30.</string>
+    <string name="shareText_future">On %2$s the topic on #Mittwochstreff is \"%1$s\".\nEverybody is welcome to join. It starts at 19:30.</string>
+    <string name="shareText_past">On %2$s the topic on #Mittwochstreff was \"%1$s\".</string>
 </resources>
