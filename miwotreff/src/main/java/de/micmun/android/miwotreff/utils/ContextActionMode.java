@@ -188,6 +188,8 @@ public class ContextActionMode implements ListView
          }
       }
 
+      c.close();
+
       Intent shareIntent = new Intent();
       shareIntent.setAction(Intent.ACTION_SEND);
       shareIntent.putExtra(Intent.EXTRA_TEXT, text);
@@ -227,6 +229,8 @@ public class ContextActionMode implements ListView
 
       // location
       String loc = mActivity.getResources().getString(R.string.cal_loc);
+
+      c.close();
 
       // Calendar: Insert per Intent
       Intent intent = new Intent(Intent.ACTION_INSERT)
@@ -271,6 +275,8 @@ public class ContextActionMode implements ListView
                String.valueOf(i));
          deletions += mActivity.getContentResolver().delete(delUri, null,
                null);
+
+         c.close();
       }
       // Safe backup into parcel
       ParcelList undoToken = new ParcelList();
