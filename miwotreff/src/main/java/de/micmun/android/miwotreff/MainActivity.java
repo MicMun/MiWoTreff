@@ -54,6 +54,7 @@ public class MainActivity extends ListActivity implements LoaderListener,
    private SpecialCursorAdapter mAdapter;
    private MenuItem btnRefresh = null;
    private ContextActionMode cma;
+   private boolean mustRefresh = false;
 
    /**
     * @see android.app.ListActivity#onCreate(android.os.Bundle)
@@ -87,6 +88,10 @@ public class MainActivity extends ListActivity implements LoaderListener,
       // Inflate the menu; this adds items to the action bar if it is present.
       getMenuInflater().inflate(R.menu.activity_main, menu);
       btnRefresh = menu.findItem(R.id.menu_refresh);
+      if (mustRefresh) {
+         refreshData();
+         mustRefresh = false;
+      }
       return true;
    }
 
@@ -100,9 +105,7 @@ public class MainActivity extends ListActivity implements LoaderListener,
             onSearchRequested();
             return true;
          case R.id.menu_refresh:
-            ProgramLoader pl = new ProgramLoader(this, btnRefresh);
-            pl.addLoaderListener(this);
-            pl.execute(new Void[]{});
+            refreshData();
             return true;
          case R.id.menu_export:
             backupData();
@@ -167,6 +170,15 @@ public class MainActivity extends ListActivity implements LoaderListener,
    }
 
    /**
+    * Refresh the data from the website.
+    */
+   private void refreshData() {
+      ProgramLoader pl = new ProgramLoader(this, btnRefresh);
+      pl.addLoaderListener(this);
+      pl.execute(new Void[]{});
+   }
+
+   /**
     * Backup the data.
     */
    private void backupData() {
@@ -222,6 +234,10 @@ public class MainActivity extends ListActivity implements LoaderListener,
       Cursor old = mAdapter.swapCursor(data);
       if (old != null) {
          old.close();
+      }
+      // if no data -> mustRefresh true
+      if (mAdapter.getCount() <= 0) {
+         mustRefresh = true;
       }
    }
 

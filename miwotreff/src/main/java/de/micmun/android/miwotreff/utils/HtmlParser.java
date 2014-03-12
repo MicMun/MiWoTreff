@@ -112,10 +112,16 @@ public class HtmlParser {
          SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", DEFAULT);
          Date d;
          try {
-            if (datum.length() <= 6) {
-               if (!datum.endsWith("."))
-                  datum += ".";
-               datum += Calendar.getInstance().get(Calendar.YEAR);
+            String[] split = datum.split("\\.");
+            if (split.length == 2) {
+               datum = String.format("%02d.%02d.%04d",
+                     Integer.parseInt(split[0]), Integer.parseInt(split[1]),
+                     Calendar.getInstance().get(Calendar.YEAR));
+
+            } else if (split.length == 3) {
+               datum = String.format("%02d.%02d.%04d",
+                     Integer.parseInt(split[0]), Integer.parseInt(split[1]),
+                     Integer.parseInt(split[2]));
             }
             d = sdf.parse(datum);
          } catch (ParseException e) {

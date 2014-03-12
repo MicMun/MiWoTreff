@@ -178,7 +178,7 @@ public class ContextActionMode implements ListView
             && then.get(Calendar.YEAR) == now.get(Calendar.YEAR)) {
          text = mActivity.getString(R.string.shareText_today, topic);
       } else { /* other day than today */
-         SimpleDateFormat df = new SimpleDateFormat("dd.MM.yy");
+         SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
          if (then.compareTo(now) == -1) { /* other day in the past */
             text = mActivity.getString(
                   R.string.shareText_past, topic, df.format(then.getTime()));
