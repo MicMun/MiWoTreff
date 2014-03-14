@@ -36,6 +36,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
    // Types to execute
    public static final int TYPE_BACKUP = 0; // Type Backup
    public static final int TYPE_RESTORE = 1; // Type Restore
+   public static final int TYPE_DELETE = 2; // Type Delete
    // For Logcat and encoding for file writer
    private static final String TAG = "MiWoTreff.JSONBackupRestore";
    private static final String ENC = "UTF-8"; // Encoding
@@ -59,9 +60,36 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
    }
 
    /**
+    * Returns the existing backup files.
+    *
+    * @return backup files.
+    */
+   public File[] getBackupFiles() {
+      File[] files = null;
+
+      if (DIR.exists()) {
+         files = DIR.listFiles();
+         // sort descend
+         Arrays.sort(files, new Comparator<File>() {
+            @Override
+            public int compare(File lhs, File rhs) {
+               return rhs.compareTo(lhs);
+            }
+
+            @Override
+            public boolean equals(Object object) {
+               return this.equals(object);
+            }
+         });
+      }
+
+      return files;
+   }
+
+   /**
     * Backup the data from cursor in a json file.
     */
-   public int backup() {
+   private int backup() {
       int rc = 0;
       // Loading data and backup
       Cursor c = mContext.getContentResolver().query(DBConstants
@@ -75,7 +103,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
    /**
     * Restore the data from the file.
     */
-   public int restore() {
+   private int restore() {
       int rc = 0;
       InputStreamReader isr = null;
 
@@ -111,15 +139,15 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
          mMessage = getMessage(R.string.restore_success, String.valueOf(rows));
       } catch (FileNotFoundException e) {
          Log.e(TAG, e.getLocalizedMessage());
-         rc = 1;
+         rc = 2;
       } catch (IOException e) {
          Log.e(TAG, e.getLocalizedMessage());
          mMessage = getMessage(R.string.error_read_file, null);
-         rc = 1;
+         rc = 2;
       } catch (JSONException e) {
          Log.e(TAG, e.getLocalizedMessage());
          mMessage = getMessage(R.string.error_parse_file, null);
-         rc = 1;
+         rc = 2;
       } finally {
          if (isr != null)
             try {
@@ -130,32 +158,6 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
       return rc;
    }
 
-   /**
-    * Returns the existing backup files.
-    *
-    * @return backup files.
-    */
-   public File[] getBackupFiles() {
-      File[] files = null;
-
-      if (DIR.exists()) {
-         files = DIR.listFiles();
-         // sort descend
-         Arrays.sort(files, new Comparator<File>() {
-            @Override
-            public int compare(File lhs, File rhs) {
-               return rhs.compareTo(lhs);
-            }
-
-            @Override
-            public boolean equals(Object object) {
-               return this.equals(object);
-            }
-         });
-      }
-
-      return files;
-   }
 
    /**
     * Writes the data from cursor to json file.
@@ -169,7 +171,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
 
       if (cursor.getCount() <= 0) {
          Log.d(TAG, "No DATA!");
-         rc = 2;
+         rc = 1;
       } else {
          // creates the json array for backup to file
          cursor.moveToFirst();
@@ -209,7 +211,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
 
          if (rc == 0) {
             if (dataList.length() <= 0)
-               rc = 2;
+               rc = 1;
          }
 
          if (rc == 0) {
@@ -263,21 +265,44 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
     */
    @Override
    protected Integer doInBackground(Object... params) {
-      int rc;
+      int rc = 0;
 
-      if (mType == TYPE_BACKUP) {
-         rc = backup();
-      } else if (mType == TYPE_RESTORE) {
-         mFile = (File) params[0];
-         if (mFile == null) {
-            mMessage = mContext.getResources().getString(R.string
-                  .no_file_selected);
-            rc = 1;
-         } else
-            rc = restore();
-      } else {
-         Log.e(TAG, "Unknown action type");
-         rc = 2;
+      switch (mType) {
+         case TYPE_BACKUP: // save data in backup file
+            rc = backup();
+            break;
+         case TYPE_RESTORE: // restore backup
+            mFile = (File) params[0];
+            if (mFile == null) {
+               mMessage = mContext.getResources().getString(R.string
+                     .no_file_selected);
+               rc = 2;
+            } else {
+               rc = restore();
+            }
+            break;
+         case TYPE_DELETE: // delete old backup files
+            File[] delFiles = (File[]) params;
+            int count = 0;
+            for (File f : delFiles) {
+               if (f.delete()) {
+                  count++;
+               } else {
+                  break;
+               }
+            }
+            if (count < delFiles.length) {
+               mMessage = mContext.getResources().getString(R.string
+                     .error_delete);
+               rc = 3;
+            } else {
+               mMessage = getMessage(R.string.count_del, String.valueOf(count));
+            }
+            break;
+         default: // unknown type
+            Log.e(TAG, "Unknown action type");
+            rc = 4;
+            break;
       }
 
       return rc;

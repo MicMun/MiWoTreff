@@ -17,4 +17,8 @@
             android:id="@+id/menu_import"
             android:showAsAction="never"
             android:title="@string/menu_import"/>
+    <item
+            android:id="@+id/menu_delete"
+            android:showAsAction="never"
+            android:title="@string/menu_delete_old"/>
 </menu>
