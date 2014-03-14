@@ -172,7 +172,6 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
    protected void onPostExecute(Integer result) {
       btnRefresh.setIcon(btnRefresStaticDrawable);
       btnRefresh.setEnabled(true);
-      Log.d(TAG, "result = " + result);
 
       if (result == 0) {
          notifyLoaderListener();
@@ -189,20 +188,10 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
    }
 
    /**
-    * Removes a LoaderListener from the list of listener.
-    *
-    * @param l {@link LoaderListener} to remove.
-    */
-   public void removeLoaderListener(LoaderListener l) {
-      listener.remove(l);
-   }
-
-   /**
     * Notifies all listener.
     */
    protected void notifyLoaderListener() {
       for (LoaderListener l : listener) {
-         Log.d(TAG, l.toString());
          l.update(counter);
       }
    }

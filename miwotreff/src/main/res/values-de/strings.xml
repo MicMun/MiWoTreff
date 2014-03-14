@@ -27,6 +27,7 @@
     <string name="error_mkdir">Kann Verzeichnis \'%s\' nicht erstellen!</string>
     <string name="info_mkdir">In Datei %s gesichert</string>
     <string name="count_del">%s Dateien gelöscht</string>
+    <string name="no_del">Keine Dateien zu löschen</string>
     <string name="error_write_file">Fehler beim Speichern der Sicherungsdatei!
     </string>
     <string name="error_read_file">Fehler beim Lesen der Sicherungsdatei!

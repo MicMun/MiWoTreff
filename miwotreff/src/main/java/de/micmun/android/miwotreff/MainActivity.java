@@ -227,10 +227,12 @@ public class MainActivity extends ListActivity implements LoaderListener,
       final File[] files = jbr.getBackupFiles();
       if (files.length > 5) {
          File[] delFiles = new File[files.length - 5];
-         for (int i = 5; i < files.length;++i) {
-            delFiles[i-5] = files[i];
+         for (int i = 5; i < files.length; ++i) {
+            delFiles[i - 5] = files[i];
          }
          jbr.execute(delFiles);
+      } else {
+         AppMsg.makeText(this, R.string.no_del, AppMsg.STYLE_INFO).show();
       }
    }
 

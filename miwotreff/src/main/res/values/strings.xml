@@ -25,6 +25,7 @@
     <string name="error_mkdir">Can\'t create directory \'%s\'!</string>
     <string name="info_mkdir">Backup in File %s</string>
     <string name="count_del">%s Files deleted</string>
+    <string name="no_del">No files to delete</string>
     <string name="error_write_file">Error writing backup file!</string>
     <string name="error_read_file">Error reading backup file!</string>
     <string name="error_parse_file">Error parsing json file!</string>
