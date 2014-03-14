@@ -119,9 +119,13 @@ public class HtmlParser {
                      Calendar.getInstance().get(Calendar.YEAR));
 
             } else if (split.length == 3) {
+               int year = Integer.parseInt(split[2]);
+               if (year < 100) {
+                  year += 2000;
+               }
                datum = String.format("%02d.%02d.%04d",
                      Integer.parseInt(split[0]), Integer.parseInt(split[1]),
-                     Integer.parseInt(split[2]));
+                     year);
             }
             d = sdf.parse(datum);
          } catch (ParseException e) {
