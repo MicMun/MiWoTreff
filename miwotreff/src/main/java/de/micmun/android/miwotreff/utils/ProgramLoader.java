@@ -159,6 +159,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
       btnRefresh.setIcon((mCtx.getResources()
             .getDrawable(R.drawable.ic_action_refresh_anim)));
       btnRefresh.setEnabled(false);
+      btnRefresh.getIcon().setAlpha(128); //50% opacity
       AnimationDrawable frameAnimation = (AnimationDrawable) btnRefresh
             .getIcon();
       if (frameAnimation != null)

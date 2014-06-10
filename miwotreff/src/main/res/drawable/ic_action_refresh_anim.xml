@@ -1,23 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/selected"
-	android:oneshot="false" >
-	<item
-		android:drawable="@drawable/ic_action_refresh0"
-		android:duration="50"/>
-	<item
-		android:drawable="@drawable/ic_action_refresh1"
-		android:duration="50"/>
-	<item
-		android:drawable="@drawable/ic_action_refresh2"
-		android:duration="50"/>
-	<item
-		android:drawable="@drawable/ic_action_refresh3"
-		android:duration="50"/>
-	<item
-		android:drawable="@drawable/ic_action_refresh4"
-		android:duration="50"/>
-	<item
-		android:drawable="@drawable/ic_action_refresh5"
-		android:duration="50"/>
+      android:id="@+id/selected"
+      android:oneshot="false">
+   <item android:duration="50">
+      <rotate
+            android:drawable="@drawable/ic_action_refresh"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            android:fromDegrees="0"
+            android:toDegrees="30" />
+   </item>
+   <item android:duration="50">
+      <rotate
+            android:drawable="@drawable/ic_action_refresh"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            android:fromDegrees="30"
+            android:toDegrees="60" />
+   </item>
+   <item android:duration="50">
+      <rotate
+            android:drawable="@drawable/ic_action_refresh"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            android:fromDegrees="60"
+            android:toDegrees="90" />
+   </item>
+   <item android:duration="50">
+      <rotate
+            android:drawable="@drawable/ic_action_refresh"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            android:fromDegrees="90"
+            android:toDegrees="120" />
+   </item>
+   <item android:duration="50">
+      <rotate
+            android:drawable="@drawable/ic_action_refresh"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            android:fromDegrees="120"
+            android:toDegrees="150" />
+   </item>
+   <item android:duration="50">
+      <rotate
+            android:drawable="@drawable/ic_action_refresh"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            android:fromDegrees="150"
+            android:toDegrees="180" />
+   </item>
 </animation-list>
