@@ -2,7 +2,7 @@ apply plugin: 'android'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.3"
+    buildToolsVersion "19.1.0"
 
     defaultConfig {
         minSdkVersion 14
@@ -19,5 +19,4 @@ android {
 
 dependencies {
     compile "com.github.johnkil.android-appmsg:appmsg:1.2.0"
-    compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 }
