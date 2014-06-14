@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2014 MicMun
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU >General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or >(at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * >without even the implied warranty of MERCHANTABILIT or FITNESS FOR A PARTICULAR PURPOSE.
+ * >See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see >http://www.gnu.org/licenses/.
+ */
+
 package de.micmun.android.miwotreff.utils;
 
 import android.content.ContentProvider;
@@ -7,8 +22,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-import org.json.JSONException;
-
 /**
  * Content provider for the miwotreff database.
  *
@@ -16,7 +29,6 @@ import org.json.JSONException;
  * @version 1.0, 12.08.2013
  */
 public class DataProvider extends ContentProvider {
-   private static final String TAG = "MiWoTreff.DataProvider";
    // IDs for matching content
    private static final int ROOT_ID = 0;
    private static final int TABLE_PROGRAM_ID = 10;
@@ -33,11 +45,11 @@ public class DataProvider extends ContentProvider {
       mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME + "/#",
             PROGRAM_POINT_ID);
       mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME + "/"
-            + DBConstants.DATE_QUERY,
-            PROGRAM_DATE_ID);
+                  + DBConstants.DATE_QUERY,
+            PROGRAM_DATE_ID
+      );
    }
 
-   private DbHelper mDbHelper;
    private SQLiteDatabase mDb;
 
    /**
@@ -45,7 +57,7 @@ public class DataProvider extends ContentProvider {
     */
    @Override
    public boolean onCreate() {
-      mDbHelper = new DbHelper(getContext());
+      DbHelper mDbHelper = new DbHelper(getContext());
       mDb = mDbHelper.getWritableDatabase();
       return true;
    }
@@ -125,7 +137,7 @@ public class DataProvider extends ContentProvider {
             long id = mDb.insertWithOnConflict(DBConstants.TABLE_NAME, null,
                   values, SQLiteDatabase.CONFLICT_REPLACE);
             if (id != -1) {
-               res = uri.withAppendedPath(uri, String.valueOf(id));
+               res = Uri.withAppendedPath(uri, String.valueOf(id));
                getContext().getContentResolver().notifyChange(uri, null);
             }
       }
@@ -167,132 +179,4 @@ public class DataProvider extends ContentProvider {
       }
       return count;
    }
-
-   /**
-    * Deletes the entry with the id from database.
-    *
-    * @param rowId id, which will be deleted.
-    * @return <code>true</code> if entry could be deleted, else
-    * <code>false</code>.
-    */
-//    public boolean deleteEntry(long rowId) {
-//        return mDb.delete(DBConstants.TABLE_NAME, DBConstants._ID + "=" + rowId, null) > 0;
-//    }
-
-   /**
-    * Updates an entry with id <code>rowId</code> with the new topic and person.
-    * Returns <code>true</code>, if success.
-    *
-    * @param rowId  id to update.
-    * @param thema  new topic.
-    * @param person new person.
-    * @return <code>true</code> if success, else <code>false</code>.
-    */
-//    public boolean updateEntry(long rowId, String thema, String person) {
-//        ContentValues values = new ContentValues();
-//        values.put(DBConstants.KEY_THEMA, thema);
-//        values.put(DBConstants.KEY_PERSON, person);
-//        return mDb.update(DBConstants.TABLE_NAME, values, DBConstants._ID + "=" + rowId, null) > 0;
-//    }
-
-   /**
-    * Returns Cursor for all entries with query or all.
-    *
-    * @param query Query of the database entries or <code>null</code>.
-    * @return Cursor of table "programm".
-    */
-//    public Cursor fetchAllEntries(String query) {
-//        query = createQuery(query);
-//        return mDb.query(DBConstants.TABLE_NAME, new String[]{DBConstants._ID, DBConstants.KEY_DATUM,
-//                DBConstants.KEY_THEMA, DBConstants.KEY_PERSON}, query, null, null, null, DBConstants.KEY_DATUM
-//                + " desc");
-//    }
-
-   /**
-    * Creates the query from the value.
-    *
-    * @param q Value is a date, a topic or a person with '-'.
-    * @return where-Clause for database query.
-    */
-//    private String createQuery(String q) {
-//        String query = null;
-//
-//        if (q == null) {
-//            // do nothing -> query is null
-//        } else if (q.charAt(0) >= '0' && q.charAt(0) <= '9') {
-//            Date d = getDateFromString(q);
-//            query = "datum = " + d.getTime();
-//        } else {
-//            String s = q.toUpperCase(def);
-//            String tmp = "upper(person) like '%%%s%%' or "
-//                    + "upper(thema) like '%%%s%%'";
-//            query = String.format(def, tmp, s, s);
-//        }
-//
-//        return query;
-//    }
-
-   /**
-    * Returns the cursor for entry with the given id.
-    *
-    * @param rowId id of the selected entry.
-    * @return Cursor of the entry or <code>null</code>, if not found.
-    * @throws android.database.SQLException if an error occurs while reading from database.
-    */
-//    public Cursor fetchEntry(long rowId) throws SQLException {
-//        Cursor mCursor = mDb.query(DBConstants.TABLE_NAME, new String[]{DBConstants._ID,
-//                DBConstants.KEY_DATUM, DBConstants.KEY_THEMA, DBConstants.KEY_PERSON},
-//                DBConstants._ID + "=" + rowId, null,
-//                null, null, null);
-//        if (mCursor != null) {
-//            mCursor.moveToFirst();
-//        }
-//
-//        return mCursor;
-//    }
-
-   /**
-    * Returns the app data as json.
-    *
-    * @return {@link org.json.JSONArray JSONArray}
-    */
-//    public JSONArray getJSonData() {
-//        JSONArray dataList = new JSONArray();
-//        JSONObject data;
-//
-//        Cursor c = fetchAllEntries(null);
-//
-//        while (c.moveToNext()) {
-//            String d = getDateString(c.getLong(1));
-//            String t = c.getString(2);
-//            String p = c.getString(3);
-//            data = new JSONObject();
-//            try {
-//                data.put(DBConstants.KEY_DATUM, d);
-//                data.put(DBConstants.KEY_THEMA, t);
-//                data.put(DBConstants.KEY_PERSON, p);
-//                dataList.put(data);
-//            } catch (JSONException e) {
-//                Log.e(TAG, "ERROR: " + e.getLocalizedMessage());
-//            }
-//        }
-//
-//        return dataList;
-//    }
-
-   /**
-    * Writes the JSON data in the database.
-    *
-    * @param data {@link org.json.JSONArray JSONArray}.
-    * @throws JSONException
-    */
-//    public void writeJSonData(JSONArray data) throws JSONException {
-//        for (int i = 0; i < data.length(); ++i) {
-//            JSONObject o = data.getJSONObject(i);
-//            Date d = getDateFromString(o.getString(DBConstants.KEY_DATUM));
-//            String t = o.getString(DBConstants.KEY_THEMA);
-//            String p = o.getString(DBConstants.KEY_PERSON);
-//            createEntry(d, t, p);
-//        }
-//    }
 }

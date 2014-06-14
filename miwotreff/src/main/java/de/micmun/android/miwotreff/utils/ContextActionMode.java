@@ -1,3 +1,19 @@
+/**
+ * Copyright 2013-2014 MicMun
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU >General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or >
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; >without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. >See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see >http://www.gnu.org/licenses/.
+ */
 package de.micmun.android.miwotreff.utils;
 
 import android.app.Activity;
@@ -28,8 +44,8 @@ import de.micmun.android.miwotreff.R;
 /**
  * Class for handling the contextual action bar.
  *
- * @author: Michael Munzert
- * @version: 1.0, 20.10.13.
+ * @author Michael Munzert
+ * @version 1.0, 20.10.13.
  */
 public class ContextActionMode implements ListView
       .MultiChoiceModeListener, UndoBarController.UndoListener {
@@ -156,7 +172,8 @@ public class ContextActionMode implements ListView
       /* get data */
       Cursor c = mActivity.getContentResolver().query(
             Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI,
-                  String.valueOf(id)), null, null, null, null);
+                  String.valueOf(id)), null, null, null, null
+      );
       if (c == null || c.getCount() <= 0) {
          return;
       }
@@ -205,9 +222,10 @@ public class ContextActionMode implements ListView
     */
    private void add2Cal(long id) {
       Cursor c = mActivity.getContentResolver().query(Uri.withAppendedPath
-            (DBConstants
-                  .TABLE_CONTENT_URI, String.valueOf(id)), null, null, null,
-            null);
+                  (DBConstants
+                        .TABLE_CONTENT_URI, String.valueOf(id)), null, null, null,
+            null
+      );
       if (c == null || c.getCount() <= 0)
          return;
       c.moveToFirst();
@@ -383,7 +401,7 @@ public class ContextActionMode implements ListView
       private List<SingleParcelEntry> arrList = new ArrayList<SingleParcelEntry>();
 
       ParcelList() { // initialization
-         arrList = new ArrayList<SingleParcelEntry>();
+         arrList = new ArrayList<>();
       }
 
       public ParcelList(Parcel in) {
