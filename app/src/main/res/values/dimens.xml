@@ -1,0 +1,10 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <!-- General screen margins (smartphone, etc.) PORTRAIT! -->
+    <dimen name="border_horizontal">0dp</dimen>
+    <dimen name="margin_small">6dp</dimen>
+    <dimen name="margin_medium">10dp</dimen>
+    <dimen name="toast_height">48dp</dimen>
+</resources>

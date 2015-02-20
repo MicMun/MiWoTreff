@@ -1,6 +1,0 @@
-<resources>
-    <!-- General screen margins (smartphone, etc.) POTRAIT! -->
-    <dimen name="border_horizontal">0dp</dimen>
-    <dimen name="margin_small">8dp</dimen>
-    <dimen name="margin_medium">16dp</dimen>
-</resources>

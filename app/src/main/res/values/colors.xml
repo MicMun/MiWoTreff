@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lighter_gray">#ededed</color>
+    <color name="highlight_black">#222222</color>
+    <color name="primary">@color/highlight_black</color>
+    <color name="primaryDark">@android:color/black</color>
+    <color name="textColor">@color/lighter_gray</color>
+
+    <color name="toast_info_green">#4caf50</color>
+    <color name="toast_error_red">#f44336</color>
+</resources>

@@ -1,0 +1,7 @@
+<resources>
+    <!-- Screen margins for 600dp minimum (Nexus 7, ...) LANDSCAPE! -->
+    <dimen name="border_horizontal">96dp</dimen>
+    <dimen name="margin_small">18dp</dimen>
+    <dimen name="margin_medium">20dp</dimen>
+    <dimen name="toast_height">96dp</dimen>
+</resources>

@@ -1,0 +1,7 @@
+<resources>
+    <!-- General screen margins (smartphone, etc.) LANDSCAPE! -->
+    <dimen name="border_horizontal">0dp</dimen>
+    <dimen name="margin_small">12dp</dimen>
+    <dimen name="margin_medium">20dp</dimen>
+    <dimen name="toast_height">48dp</dimen>
+</resources>

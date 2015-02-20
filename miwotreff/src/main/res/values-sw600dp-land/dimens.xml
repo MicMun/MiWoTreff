@@ -1,4 +1,0 @@
-<resources>
-    <!-- Screen margins for 600dp minimum (Nexus 7, ...) LANDSCAPE! -->
-    <dimen name="border_horizontal">96dp</dimen>
-</resources>
