@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MiWoTreff</string>
+    <string name="action_clean">Backup-Dateien löschen</string>
+    <string name="action_restore">Wiederherstellen</string>
+    <string name="action_save">Sichern</string>
+    <string name="action_sync">Mit Kalender synchronisieren</string>
+    <string name="addToCall">Zum Kalender hinzufügen</string>
+    <string name="cal_loc">Möhlstraße 20, 80935 München</string>
+    <string name="count_del">%s Dateien gelöscht</string>
+    <string name="edit_title">Bearbeiten</string>
+    <string name="error_delete">Fehler beim Löschen alter Backup-Dateien</string>
+    <string name="error_mkdir">Kann Verzeichnis \'%s\' nicht erstellen!</string>
+    <string name="error_parse_file">Fehler beim Parsen der JSON-Datei!</string>
+    <string name="error_pl_fetch">Fehler beim Laden von der Webseite.</string>
+    <string name="error_pl_noconnect">Es besteht keine Internetverbindung zum Laden.</string>
+    <string name="error_pl_nodata">Keine Programmdaten auf der Webseite.</string>
+    <string name="error_pl_parse">Fehler beim Parsen der JSON-Daten!</string>
+    <string name="error_read_file">Fehler beim Lesen der Backup-Datei!</string>
+    <string name="error_write_file">Fehler beim Schreiben der Backup-Datei!</string>
+    <string name="info_backup">Backup in Datei %s</string>
+    <string name="load_msg">Lade Programm…</string>
+    <string name="load_success">%d hinzugefügt.</string>
+    <string name="no_del">Keine Dateien zum Löschen</string>
+    <string name="no_file_selected">Keine Datei zum Wiederherstellen ausgewählt.</string>
+    <string name="no_restore">Keine Dateien zum Wiederherstellen vorhanden.</string>
+    <string name="perm_desc">Zugriff auf den Datenbank-Provider von MiWoTreff</string>
+    <string name="restore_success">Wiederherstellen der Daten (%s Einträge) erfolgreich.</string>
+    <string name="search_hint">Suche Datum, Thema, Person</string>
+    <string name="search_title">Suche</string>
+    <string name="share">Teilen</string>
+    <string name="shareText_future">Am %2$s ist das Thema im #Mittwochstreff \"%1$s\".\nJeder ist herzlich eingeladen. Es beginnt um 19:30 Uhr in der Möhlstraße 20, 80935 München.</string>
+    <string name="shareText_past">Am %2$2 war das Thema im #Mittwochstreff \"%1$s\".</string>
+    <string name="shareText_today">Heute ist das Thema im #Mittwochstreff \"%1$s\".\nJeder ist herzlich eingeladen. Es beginnt um 19:30 Uhr in der Möhlstraße 20, 80935 München.</string>
+    <string name="shareWith">Teilen mit…</string>
+    <string name="sync_choose_title">Wähle einen Kalendar</string>
+    <string name="sync_no_calendars">Keine Kalender gefunden!</string>
+    <string name="sync_result">%d Termine hinzugefügt oder geändert.</string>
+    <string name="title_count_selected">%s ausgewählt.</string>
+</resources>

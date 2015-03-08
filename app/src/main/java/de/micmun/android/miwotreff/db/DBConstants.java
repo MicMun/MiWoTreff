@@ -62,4 +62,8 @@ public class DBConstants implements BaseColumns {
     * Name for query with date.
     */
    public static final String DATE_QUERY = "withdate";
+   /**
+    * Name for sync query with date.
+    */
+   public static final String SYNC_QUERY = "syncdate";
 }

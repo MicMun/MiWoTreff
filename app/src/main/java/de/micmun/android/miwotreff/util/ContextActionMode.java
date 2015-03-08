@@ -203,6 +203,9 @@ public class ContextActionMode implements ListView.MultiChoiceModeListener {
 
       c.close();
 
+      // Description
+      String desc = mActivity.getResources().getString(R.string.app_name);
+
       // Calendar: Insert per Intent
       Intent intent = new Intent(Intent.ACTION_INSERT)
             .setData(CalendarContract.Events.CONTENT_URI)
@@ -213,7 +216,8 @@ public class ContextActionMode implements ListView.MultiChoiceModeListener {
             .putExtra(CalendarContract.Events.TITLE, title)
             .putExtra(CalendarContract.Events.EVENT_LOCATION, loc)
             .putExtra(CalendarContract.Events.AVAILABILITY,
-                  CalendarContract.Events.AVAILABILITY_BUSY);
+                  CalendarContract.Events.AVAILABILITY_BUSY)
+            .putExtra(CalendarContract.Events.DESCRIPTION, desc);
       mActivity.startActivity(intent);
    }
 }

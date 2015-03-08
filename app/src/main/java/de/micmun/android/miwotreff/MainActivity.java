@@ -29,10 +29,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
+import de.micmun.android.miwotreff.util.CalendarInfo;
+import de.micmun.android.miwotreff.util.CalendarSyncHelper;
 import de.micmun.android.miwotreff.util.ContextActionMode;
 import de.micmun.android.miwotreff.util.CustomToast;
 import de.micmun.android.miwotreff.util.JSONBackupRestore;
@@ -50,7 +53,10 @@ public class MainActivity
       extends BaseActivity
       implements LoaderManager.LoaderCallbacks<Cursor>, LoaderListener,
       AdapterView.OnItemClickListener {
+   private static final String TAG = "MainActivity"; // for logging
+
    private static final int ACTIVITY_EDIT = 1;
+   private static final int ACTIVITY_ACCOUNT = 2;
    private SpecialCursorAdapter mAdapter;
    private String lastDate;
    private ContextActionMode cma;
@@ -100,6 +106,9 @@ public class MainActivity
          case R.id.action_search:
             onSearchRequested();
             return true;
+         case R.id.action_sync:
+            syncWithCal();
+            return true;
          case R.id.action_backup:
             backupData();
             return true;
@@ -132,6 +141,10 @@ public class MainActivity
    @Override
    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
       super.onActivityResult(requestCode, resultCode, intent);
+
+      if (requestCode == ACTIVITY_ACCOUNT && resultCode == 0) {
+
+      }
    }
 
    /**
@@ -194,6 +207,38 @@ public class MainActivity
       } else {
          CustomToast.makeText(this, getString(R.string.no_del), CustomToast.TYPE_INFO).show();
       }
+   }
+
+   /**
+    * Sync the program with a calendar.
+    */
+   private void syncWithCal() {
+      final ArrayList<CalendarInfo> calendars = CalendarSyncHelper.getCalendars(this);
+      if (calendars.size() <= 0) {
+         CustomToast.makeText(this, getString(R.string.sync_no_calendars),
+               CustomToast.TYPE_INFO).show();
+      } else if (calendars.size() > 1) {
+         // Array with calendar names
+         String[] calNames = new String[calendars.size()];
+         for (int i = 0; i < calNames.length; ++i) {
+            calNames[i] = calendars.get(i).getDisplayName();
+         }
+         // Dialog with calendars to choose
+         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+         builder.setTitle(R.string.sync_choose_title);
+         builder.setItems(calNames, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+               CalendarSyncHelper.syncCalendar(getApplicationContext(), calendars.get(which));
+            }
+         });
+         builder.show();
+      } else { // only one calendar -> sync with that
+         CalendarSyncHelper.syncCalendar(this, calendars.get(0));
+      }
+
+
+      // TODO: Sync with choosen calendar
    }
 
    @Override

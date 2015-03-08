@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Permission -->
-    <string name="perm_desc">Access to the db provider of MIWOTREFF</string>
+    <string name="perm_desc">Access to the db provider of MiWoTreff</string>
 
-    <string name="app_name">MiWoTreff</string>
+    <string name="app_name" translatable="false">MiWoTreff</string>
     <!-- Menu items -->
+    <string name="action_sync">Sync with calendar</string>
     <string name="action_save">Backup</string>
     <string name="action_restore">Restore</string>
     <string name="action_clean">Clean backup</string>
 
     <!-- backup and restore -->
-    <string name="error_delete">Error deleting old files</string>
+    <string name="error_delete">Error deleting old backup files</string>
     <string name="load_success">%d added.</string>
     <string name="restore_success">Restore data (%s entries) successfully.
     </string>
@@ -18,19 +19,18 @@
     <string name="no_file_selected">No file selected to restore.</string>
     <string name="error_delItem">Error: %ld wasn\'t deleted.</string>
     <string name="error_mkdir">Can\'t create directory \'%s\'!</string>
-    <string name="info_mkdir">Backup in File %s</string>
+    <string name="info_backup">Backup in File %s</string>
     <string name="count_del">%s Files deleted</string>
     <string name="no_del">No files to delete</string>
     <string name="error_write_file">Error writing backup file!</string>
     <string name="error_read_file">Error reading backup file!</string>
     <string name="error_parse_file">Error parsing json file!</string>
     <!-- load program -->
-    <string name="load_msg">Loading program...</string>
+    <string name="load_msg">Loading program…</string>
     <string name="error_pl_noconnect">There is no internet connection to load.
     </string>
     <string name="error_pl_fetch">Error fetching data from website.</string>
     <string name="error_pl_nodata">There is no data on the website.</string>
-    <string name="error_pl_parse">FEHLER beim Parsen der JSON-Daten!</string>
     <!-- Search -->
     <string name="search_hint">Search Date, Topic, Person</string>
     <string name="search_title">Search</string>
@@ -40,10 +40,15 @@
     <string name="share">Share</string>
     <string name="shareWith">Share with…</string>
     <string name="addToCall">Add to Calendar</string>
-    <string name="cal_prefix">MiWoTreff:</string>
+    <string name="cal_prefix" translatable="false">Mittwochstreff:</string>
     <string name="cal_loc">Möhlstraße 20, 80935 Munich</string>
     <string name="title_count_selected">%s selected.</string>
-    <string name="shareText_today">Today the topic on #Mittwochstreff is \"%1$s\".\nEverybody is welcome to join. It starts at 19:30.</string>
-    <string name="shareText_future">On %2$s the topic on #Mittwochstreff is \"%1$s\".\nEverybody is welcome to join. It starts at 19:30.</string>
+    <string name="shareText_today">Today the topic on #Mittwochstreff is \"%1$s\".\nEverybody is welcome to join. It starts at 19:30 o'clock in Möhlstraße 20, 80935 Munich.</string>
+    <string name="shareText_future">On %2$s the topic on #Mittwochstreff is \"%1$s\".\nEverybody is welcome to join. It starts at 19:30 o'clock in Möhlstraße 20, 80935 Munich.</string>
     <string name="shareText_past">On %2$s the topic on #Mittwochstreff was \"%1$s\".</string>
+    <!-- calendar syncing -->
+    <string name="sync_choose_title">Choose a calendar</string>
+    <string name="sync_no_calendars">No calendars found!</string>
+    <string name="sync_result">%d events added or updated.</string>
+    <string name="error_pl_parse">Error parsing json data!</string>
 </resources>

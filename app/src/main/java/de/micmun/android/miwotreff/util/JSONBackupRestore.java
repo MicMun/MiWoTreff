@@ -240,7 +240,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
                osw.write(dataList.toString());
                osw.flush();
                osw.close();
-               mMessage = getMessage(R.string.info_mkdir, file.toString());
+               mMessage = getMessage(R.string.info_backup, file.toString());
             } catch (FileNotFoundException e) {
                Log.e(TAG, "FileNotFoundException -> " + e.getLocalizedMessage
                      ());

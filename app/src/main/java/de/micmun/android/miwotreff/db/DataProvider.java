@@ -34,6 +34,7 @@ public class DataProvider extends ContentProvider {
    private static final int TABLE_PROGRAM_ID = 10;
    private static final int PROGRAM_POINT_ID = 11;
    private static final int PROGRAM_DATE_ID = 12;
+   private static final int PROGAM_SYNC_DATE = 13;
    private static final UriMatcher mUriMatcher = new UriMatcher(ROOT_ID);
 
    /**
@@ -45,9 +46,9 @@ public class DataProvider extends ContentProvider {
       mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME + "/#",
             PROGRAM_POINT_ID);
       mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME + "/"
-                  + DBConstants.DATE_QUERY,
-            PROGRAM_DATE_ID
-      );
+            + DBConstants.DATE_QUERY, PROGRAM_DATE_ID);
+      mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME + "/"
+            + DBConstants.SYNC_QUERY, PROGAM_SYNC_DATE);
    }
 
    private SQLiteDatabase mDb;
@@ -92,8 +93,16 @@ public class DataProvider extends ContentProvider {
          case PROGRAM_DATE_ID:
             projection = new String[]{DBConstants._ID, DBConstants.KEY_EDIT};
             selection = DBConstants.KEY_DATUM + " = ?";
-            res = mDb.query(DBConstants.TABLE_NAME, projection, selection,
-                  selectionArgs, null, null, null);
+            res = mDb.query(DBConstants.TABLE_NAME, projection, selection, selectionArgs,
+                  null, null, null);
+            break;
+         case PROGAM_SYNC_DATE:
+            projection = new String[]{DBConstants.KEY_DATUM, DBConstants.KEY_THEMA,
+                  DBConstants.KEY_PERSON};
+            selection = DBConstants.KEY_DATUM + " >= ?";
+            sortOrder = DBConstants.KEY_DATUM;
+            res = mDb.query(DBConstants.TABLE_NAME, projection, selection, selectionArgs,
+                  null, null, sortOrder);
             break;
       }
       return res;
@@ -118,6 +127,10 @@ public class DataProvider extends ContentProvider {
          case PROGRAM_DATE_ID:
             type = "vnd.android.cursor.item/vnd." + DBConstants.AUTHORITY + "" +
                   "." + DBConstants.TABLE_NAME + "." + DBConstants.DATE_QUERY;
+            break;
+         case PROGAM_SYNC_DATE:
+            type = "vnd.android.cursor.dir/vnd." + DBConstants.AUTHORITY + "."
+                  + DBConstants.TABLE_NAME;
             break;
       }
 

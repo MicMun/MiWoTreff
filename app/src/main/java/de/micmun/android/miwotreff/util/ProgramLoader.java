@@ -63,9 +63,10 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
       mVon = von;
       mConManager = (ConnectivityManager) ctx.getSystemService(Context
             .CONNECTIVITY_SERVICE);
-      mProgressBar = new ProgressDialog(mCtx, ProgressDialog.STYLE_SPINNER);
+      mProgressBar = new ProgressDialog(mCtx, ProgressDialog.THEME_DEVICE_DEFAULT_LIGHT);
+      mProgressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+      mProgressBar.setMessage(mCtx.getString(R.string.load_msg));
       mProgressBar.setIndeterminate(true);
-      mProgressBar.setMessage(mCtx.getResources().getString(R.string.load_msg));
    }
 
    /**
