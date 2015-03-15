@@ -8,4 +8,6 @@
 
     <color name="toast_info_green">#4caf50</color>
     <color name="toast_error_red">#f44336</color>
+
+    <color name="transparent_white">@android:color/transparent</color>
 </resources>

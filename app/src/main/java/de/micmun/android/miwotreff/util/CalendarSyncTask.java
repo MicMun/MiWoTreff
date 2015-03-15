@@ -1,6 +1,5 @@
 package de.micmun.android.miwotreff.util;
 
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -34,7 +33,7 @@ public class CalendarSyncTask extends AsyncTask<Void, Integer, Integer> {
    private final long TODAY_MILLIS;
    private int counter;
    private int gesamt;
-   private ProgressDialog mProgressBar;
+   private CustomProgressDialog mProgressBar;
 
    public CalendarSyncTask(Context ctx, CalendarInfo calendarInfo) {
       mCtx = ctx;
@@ -47,10 +46,8 @@ public class CalendarSyncTask extends AsyncTask<Void, Integer, Integer> {
       EVENT_DESC = mCtx.getString(R.string.app_name);
       TODAY_MILLIS = Calendar.getInstance().getTime().getTime();
 
-      mProgressBar = new ProgressDialog(mCtx, ProgressDialog.THEME_DEVICE_DEFAULT_LIGHT);
+      mProgressBar = new CustomProgressDialog(mCtx);
       mProgressBar.setIndeterminate(false);
-      mProgressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-      mProgressBar.setCancelable(false);
    }
 
    @Override
@@ -170,17 +167,20 @@ public class CalendarSyncTask extends AsyncTask<Void, Integer, Integer> {
 
    @Override
    protected void onProgressUpdate(Integer... values) {
-      mProgressBar.setProgress(values[0]);
       if (!mProgressBar.isShowing()) {
-         mProgressBar.setMax(values[1]);
+         mProgressBar.spin();
          mProgressBar.show();
       }
+      float progress = (float) values[0] / values[1] * 100;
+      mProgressBar.setProgress(progress);
    }
 
    @Override
    protected void onPostExecute(Integer integer) {
-      if (mProgressBar.isShowing())
-         mProgressBar.hide();
+      if (mProgressBar.isShowing()) {
+         mProgressBar.stop();
+         mProgressBar.cancel();
+      }
       // result message
       String resultMsg = String.format(mCtx.getString(R.string.sync_result), integer);
       CustomToast.makeText((BaseActivity) mCtx, resultMsg, CustomToast.TYPE_INFO).show();

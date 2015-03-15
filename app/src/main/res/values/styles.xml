@@ -12,4 +12,11 @@
         <item name="actionModeBackground">@color/primary</item>
     </style>
 
+
+    <!-- custom dialog theme -->
+    <style name="CustomDialogStyle" parent="Base.V14.Theme.AppCompat.Dialog">
+        <item name="android:windowBackground">@color/transparent_white</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
 </resources>

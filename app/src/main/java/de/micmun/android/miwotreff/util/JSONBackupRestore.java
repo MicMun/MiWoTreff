@@ -47,7 +47,7 @@ import de.micmun.android.miwotreff.db.DBDateUtility;
  * @author Michael Munzert
  * @version 1.0, 31.01.2015
  */
-public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
+public class JSONBackupRestore extends AsyncTask<Object, Float, Integer> {
    // Types to execute
    public static final int TYPE_BACKUP = 0; // Type Backup
    public static final int TYPE_RESTORE = 1; // Type Restore
@@ -63,6 +63,8 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
    private File mFile;
    private String mMessage = null;
 
+   private CustomProgressDialog mProgressDialog;
+
    /**
     * Creates a new JSONBackupRestore object.
     *
@@ -72,6 +74,9 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
    public JSONBackupRestore(MainActivity context, int type) {
       mContext = context;
       mType = type;
+
+      mProgressDialog = new CustomProgressDialog(context);
+      mProgressDialog.setIndeterminate(false);
    }
 
    /**
@@ -138,6 +143,8 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
 
          // insert data into database
          for (int i = 0; i < array.length(); ++i) {
+            float progress = (float) i / array.length();
+            publishProgress(progress);
             JSONObject o = array.getJSONObject(i);
             ContentValues v = new ContentValues();
 
@@ -183,14 +190,19 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
       int rc = 0;
       JSONArray dataList = new JSONArray();
       JSONObject data;
+      int gesamt = cursor.getCount();
+      int count = 0;
 
-      if (cursor.getCount() <= 0) {
+      if (gesamt <= 0) {
          Log.d(TAG, "No DATA!");
          rc = 1;
       } else {
          // creates the json array for backup to file
          cursor.moveToFirst();
          do {
+            float progress = (float) count / gesamt;
+            publishProgress(progress);
+
             String d = DBDateUtility.getDateString(cursor.getLong(cursor
                   .getColumnIndex(DBConstants.KEY_DATUM)));
             String t = cursor.getString(cursor.getColumnIndex(DBConstants
@@ -212,6 +224,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
                rc = 1;
                break;
             }
+            count++;
          } while (cursor.moveToNext());
          cursor.close();
 
@@ -301,6 +314,8 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
             int count = 0;
             for (File f : delFiles) {
                if (f.delete()) {
+                  float progress = (float) count / delFiles.length;
+                  publishProgress(progress);
                   count++;
                } else {
                   break;
@@ -322,11 +337,23 @@ public class JSONBackupRestore extends AsyncTask<Object, Void, Integer> {
       return rc;
    }
 
+   @Override
+   protected void onProgressUpdate(Float... values) {
+      if (!mProgressDialog.isShowing()) {
+         mProgressDialog.show();
+         mProgressDialog.spin();
+      }
+      mProgressDialog.setProgress(values[0]);
+   }
+
    /**
     * @see android.os.AsyncTask#onPostExecute(Object)
     */
    @Override
    protected void onPostExecute(Integer result) {
+      mProgressDialog.setProgress(1.0f);
+      mProgressDialog.stop();
+      mProgressDialog.cancel();
       if (mMessage == null)
          return;
 

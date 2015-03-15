@@ -14,7 +14,6 @@
  */
 package de.micmun.android.miwotreff.util;
 
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -55,7 +54,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
    private ArrayList<LoaderListener> listener = new ArrayList<>();
    private ConnectivityManager mConManager;
    private int counter;
-   private ProgressDialog mProgressBar;
+   private CustomProgressDialog mCustomProgressDialog;
 
    public ProgramLoader(Context ctx, String von) {
       super();
@@ -63,10 +62,8 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
       mVon = von;
       mConManager = (ConnectivityManager) ctx.getSystemService(Context
             .CONNECTIVITY_SERVICE);
-      mProgressBar = new ProgressDialog(mCtx, ProgressDialog.THEME_DEVICE_DEFAULT_LIGHT);
-      mProgressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-      mProgressBar.setMessage(mCtx.getString(R.string.load_msg));
-      mProgressBar.setIndeterminate(true);
+      mCustomProgressDialog = new CustomProgressDialog(mCtx);
+      mCustomProgressDialog.setIndeterminate(true);
    }
 
    /**
@@ -222,7 +219,8 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
 
    @Override
    protected void onProgressUpdate(Void... values) {
-      mProgressBar.show();
+      mCustomProgressDialog.show();
+      mCustomProgressDialog.spin();
    }
 
    /**
@@ -230,7 +228,8 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
     */
    @Override
    protected void onPostExecute(Integer result) {
-      mProgressBar.dismiss();
+      mCustomProgressDialog.stop();
+      mCustomProgressDialog.cancel();
 
       if (result == 0) {
          notifyLoaderListener();

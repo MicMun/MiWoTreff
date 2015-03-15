@@ -4,4 +4,7 @@
     <dimen name="margin_small">18dp</dimen>
     <dimen name="margin_medium">20dp</dimen>
     <dimen name="toast_height">96dp</dimen>
+    <!-- text sizes -->
+    <dimen name="text_size_normal">18sp</dimen>
+    <dimen name="text_size_small">16sp</dimen>
 </resources>
