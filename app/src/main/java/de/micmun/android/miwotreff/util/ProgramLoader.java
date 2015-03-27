@@ -62,8 +62,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
       mVon = von;
       mConManager = (ConnectivityManager) ctx.getSystemService(Context
             .CONNECTIVITY_SERVICE);
-      mCustomProgressDialog = new CustomProgressDialog(mCtx);
-      mCustomProgressDialog.setIndeterminate(true);
+      mCustomProgressDialog = new CustomProgressDialog(mCtx, true);
    }
 
    /**
@@ -220,7 +219,6 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
    @Override
    protected void onProgressUpdate(Void... values) {
       mCustomProgressDialog.show();
-      mCustomProgressDialog.spin();
    }
 
    /**
@@ -228,7 +226,6 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
     */
    @Override
    protected void onPostExecute(Integer result) {
-      mCustomProgressDialog.stop();
       mCustomProgressDialog.cancel();
 
       if (result == 0) {

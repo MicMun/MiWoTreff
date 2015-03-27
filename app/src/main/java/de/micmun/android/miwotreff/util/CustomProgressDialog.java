@@ -17,8 +17,8 @@ package de.micmun.android.miwotreff.util;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 
@@ -39,9 +39,9 @@ public class CustomProgressDialog extends Dialog {
     *
     * @param ctx context of the app.
     */
-   public CustomProgressDialog(Context ctx) {
+   public CustomProgressDialog(Context ctx, boolean isIndeterminate) {
       super(ctx, R.style.CustomDialogStyle);
-      isIndeterminate = true;
+      this.isIndeterminate = isIndeterminate;
    }
 
    @Override
@@ -50,30 +50,11 @@ public class CustomProgressDialog extends Dialog {
       setContentView(R.layout.custom_progress);
 
       mProgressBar = (ProgressWheel) findViewById(R.id.progress);
+      mProgressBar.setBarColor(Color.BLUE);
+      if (isIndeterminate)
+         mProgressBar.spin();
+
       setCancelable(false);
-   }
-
-   /**
-    * Sets the indeterminate status.
-    *
-    * @param isIndeterminate <<code>true</code>, if the progress bar is indeterminate.
-    */
-   public void setIndeterminate(boolean isIndeterminate) {
-      this.isIndeterminate = isIndeterminate;
-   }
-
-   /**
-    * Progress wheel in indeterminate mode is spinning.
-    */
-   public void spin() {
-      mProgressBar.spin();
-   }
-
-   /**
-    * Stop spinning.
-    */
-   public void stop() {
-      mProgressBar.stopSpinning();
    }
 
    /**
@@ -81,7 +62,7 @@ public class CustomProgressDialog extends Dialog {
     *
     * @param value value of the progress.
     */
-   public void setProgress(float value) {
-      mProgressBar.setProgress(value);
+   public void setProgress(int value) {
+      mProgressBar.setProgress(value / 100.0f);
    }
 }

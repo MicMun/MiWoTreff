@@ -15,6 +15,7 @@
 
 package de.micmun.android.miwotreff.util;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -47,7 +48,7 @@ import de.micmun.android.miwotreff.db.DBDateUtility;
  * @author Michael Munzert
  * @version 1.0, 31.01.2015
  */
-public class JSONBackupRestore extends AsyncTask<Object, Float, Integer> {
+public class JSONBackupRestore extends AsyncTask<Object, Integer, Integer> {
    // Types to execute
    public static final int TYPE_BACKUP = 0; // Type Backup
    public static final int TYPE_RESTORE = 1; // Type Restore
@@ -75,8 +76,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Float, Integer> {
       mContext = context;
       mType = type;
 
-      mProgressDialog = new CustomProgressDialog(context);
-      mProgressDialog.setIndeterminate(false);
+      mProgressDialog = new CustomProgressDialog(context, false);
    }
 
    /**
@@ -139,12 +139,11 @@ public class JSONBackupRestore extends AsyncTask<Object, Float, Integer> {
          }
          JSONArray array = new JSONArray(sb.toString());
          int count = array.length();
-         ContentValues[] values = new ContentValues[count];
+         ContentResolver cr = mContext.getContentResolver();
+         int progress;
 
          // insert data into database
-         for (int i = 0; i < array.length(); ++i) {
-            float progress = (float) i / array.length();
-            publishProgress(progress);
+         for (int i = 0; i < count; ++i) {
             JSONObject o = array.getJSONObject(i);
             ContentValues v = new ContentValues();
 
@@ -154,11 +153,12 @@ public class JSONBackupRestore extends AsyncTask<Object, Float, Integer> {
             v.put(DBConstants.KEY_THEMA, o.getString(DBConstants.KEY_THEMA));
             v.put(DBConstants.KEY_PERSON, o.getString(DBConstants.KEY_PERSON));
             v.put(DBConstants.KEY_EDIT, o.getInt(DBConstants.KEY_EDIT));
-            values[i] = v;
+            cr.insert(DBConstants.TABLE_CONTENT_URI, v);
+
+            progress = (int) ((float) i / array.length() * 100);
+            publishProgress(progress);
          }
-         int rows = mContext.getContentResolver().bulkInsert(DBConstants
-               .TABLE_CONTENT_URI, values);
-         mMessage = getMessage(R.string.restore_success, String.valueOf(rows));
+         mMessage = getMessage(R.string.restore_success, String.valueOf(count));
       } catch (FileNotFoundException e) {
          Log.e(TAG, e.getLocalizedMessage());
          rc = 2;
@@ -200,7 +200,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Float, Integer> {
          // creates the json array for backup to file
          cursor.moveToFirst();
          do {
-            float progress = (float) count / gesamt;
+            int progress = (int) ((float) count / gesamt * 100);
             publishProgress(progress);
 
             String d = DBDateUtility.getDateString(cursor.getLong(cursor
@@ -314,7 +314,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Float, Integer> {
             int count = 0;
             for (File f : delFiles) {
                if (f.delete()) {
-                  float progress = (float) count / delFiles.length;
+                  int progress = (int) ((float) count / delFiles.length * 100);
                   publishProgress(progress);
                   count++;
                } else {
@@ -338,10 +338,9 @@ public class JSONBackupRestore extends AsyncTask<Object, Float, Integer> {
    }
 
    @Override
-   protected void onProgressUpdate(Float... values) {
+   protected void onProgressUpdate(Integer... values) {
       if (!mProgressDialog.isShowing()) {
          mProgressDialog.show();
-         mProgressDialog.spin();
       }
       mProgressDialog.setProgress(values[0]);
    }
@@ -351,8 +350,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Float, Integer> {
     */
    @Override
    protected void onPostExecute(Integer result) {
-      mProgressDialog.setProgress(1.0f);
-      mProgressDialog.stop();
+      mProgressDialog.setProgress(100);
       mProgressDialog.cancel();
       if (mMessage == null)
          return;

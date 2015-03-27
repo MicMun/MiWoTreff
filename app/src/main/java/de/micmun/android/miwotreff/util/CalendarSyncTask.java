@@ -46,8 +46,7 @@ public class CalendarSyncTask extends AsyncTask<Void, Integer, Integer> {
       EVENT_DESC = mCtx.getString(R.string.app_name);
       TODAY_MILLIS = Calendar.getInstance().getTime().getTime();
 
-      mProgressBar = new CustomProgressDialog(mCtx);
-      mProgressBar.setIndeterminate(false);
+      mProgressBar = new CustomProgressDialog(mCtx, false);
    }
 
    @Override
@@ -168,17 +167,15 @@ public class CalendarSyncTask extends AsyncTask<Void, Integer, Integer> {
    @Override
    protected void onProgressUpdate(Integer... values) {
       if (!mProgressBar.isShowing()) {
-         mProgressBar.spin();
          mProgressBar.show();
       }
-      float progress = (float) values[0] / values[1] * 100;
+      int progress = (int) ((float) values[0] / values[1] * 100);
       mProgressBar.setProgress(progress);
    }
 
    @Override
    protected void onPostExecute(Integer integer) {
       if (mProgressBar.isShowing()) {
-         mProgressBar.stop();
          mProgressBar.cancel();
       }
       // result message
