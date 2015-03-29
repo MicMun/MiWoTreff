@@ -10,7 +10,7 @@
         android:id="@+id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:matProg_circleRadius="90dp"
+        app:matProg_circleRadius="@dimen/progress_radius"
         app:matProg_barWidth="10dp"
-        app:matProg_barSpinCycleTime="800"/>
+        app:matProg_barSpinCycleTime="500"/>
 </LinearLayout>

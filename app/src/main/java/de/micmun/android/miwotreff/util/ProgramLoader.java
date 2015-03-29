@@ -55,6 +55,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
    private ConnectivityManager mConManager;
    private int counter;
    private CustomProgressDialog mCustomProgressDialog;
+   private String mErrorMsg;
 
    public ProgramLoader(Context ctx, String von) {
       super();
@@ -89,16 +90,14 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
 
       if (!isOnline()) {
          Log.e(TAG, "No Internet connection!");
-         CustomToast.makeText((BaseActivity) mCtx, mCtx.getString(R.string.error_pl_noconnect),
-               CustomToast.TYPE_ERROR).show();
+         mErrorMsg = mCtx.getString(R.string.error_pl_noconnect);
          return 1;
       } else {
          String result = readProgramm("http://www.mittwochstreff-muenchen.de/program/api/index.php?op=0&von=" + mVon);
 
          if (result == null) {
             Log.e(TAG, "Can't fetch program!");
-            CustomToast.makeText((BaseActivity) mCtx, mCtx.getString(R.string.error_pl_fetch),
-                  CustomToast.TYPE_ERROR).show();
+            mErrorMsg = mCtx.getString(R.string.error_pl_fetch);
             return 1;
          } else {
             JSONArray progList;
@@ -106,8 +105,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
                progList = new JSONArray(result);
             } catch (JSONException e) {
                Log.e(TAG, "No data!");
-               CustomToast.makeText((BaseActivity) mCtx, mCtx.getString(R.string.error_pl_parse),
-                     CustomToast.TYPE_ERROR).show();
+               mErrorMsg = mCtx.getString(R.string.error_pl_parse);
                return 1;
             }
             counter = 0;
@@ -118,8 +116,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
                   progPoint = progList.getJSONObject(i);
                } catch (JSONException e) {
                   Log.e(TAG, "Wrong JSON-Format!\n" + e.getLocalizedMessage());
-                  CustomToast.makeText((BaseActivity) mCtx, mCtx.getString(R.string.error_pl_parse),
-                        CustomToast.TYPE_ERROR).show();
+                  mErrorMsg = mCtx.getString(R.string.error_pl_parse);
                   return 1;
                }
 
@@ -133,8 +130,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
                   person = (String) progPoint.get(DBConstants.KEY_PERSON);
                } catch (JSONException e) {
                   Log.e(TAG, "Wrong JSON-Format!\n" + e.getLocalizedMessage());
-                  CustomToast.makeText((BaseActivity) mCtx, mCtx.getString(R.string.error_pl_parse),
-                        CustomToast.TYPE_ERROR).show();
+                  mErrorMsg = mCtx.getString(R.string.error_pl_parse);
                   return 1;
                }
                String[] selArgs = {String.valueOf(date)};
@@ -230,6 +226,8 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
 
       if (result == 0) {
          notifyLoaderListener();
+      } else {
+         CustomToast.makeText((BaseActivity) mCtx, mErrorMsg, CustomToast.TYPE_ERROR).show();
       }
    }
 

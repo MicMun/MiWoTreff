@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.CalendarContract;
-import android.text.format.Time;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -141,9 +140,8 @@ public class CalendarSyncTask extends AsyncTask<Void, Integer, Integer> {
       String selection = CalendarContract.Events.DTSTART + " >= ? AND "
             + CalendarContract.Events.DESCRIPTION + " = ? AND "
             + CalendarContract.Events.EVENT_LOCATION + " = ?";
-      Time t = new Time();
-      t.setToNow();
-      String dtstart = Long.toString(t.toMillis(false));
+      // Start time from now
+      String dtstart = Long.toString(Calendar.getInstance().getTimeInMillis());
       String[] selArgs = new String[]{dtstart, EVENT_DESC, EVENT_LOC};
       String orderBy = CalendarContract.Events.DTSTART + " asc";
 

@@ -11,4 +11,6 @@
     <!-- text sizes -->
     <dimen name="text_size_normal">15sp</dimen>
     <dimen name="text_size_small">13sp</dimen>
+    <!-- radius for progress circle -->
+    <dimen name="progress_radius">90dp</dimen>
 </resources>
