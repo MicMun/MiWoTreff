@@ -48,22 +48,25 @@ import de.micmun.android.miwotreff.db.DBDateUtility;
  * @version 1.0, 31.01.2015
  */
 public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
+
+   /**
+    * The program refreshed callback.
+    */
+   protected OnProgramRefreshedListener mOnProgramRefreshedListener = sDummyListener;
+
    private final String TAG = "MiWoTreff.ProgramLoader";
    private final Context mCtx;
    private final String mVon;
    private ArrayList<LoaderListener> listener = new ArrayList<>();
    private ConnectivityManager mConManager;
    private int counter;
-   private CustomProgressDialog mCustomProgressDialog;
    private String mErrorMsg;
 
    public ProgramLoader(Context ctx, String von) {
       super();
       mCtx = ctx;
       mVon = von;
-      mConManager = (ConnectivityManager) ctx.getSystemService(Context
-            .CONNECTIVITY_SERVICE);
-      mCustomProgressDialog = new CustomProgressDialog(mCtx, true);
+      mConManager = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
    }
 
    /**
@@ -214,7 +217,6 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
 
    @Override
    protected void onProgressUpdate(Void... values) {
-      mCustomProgressDialog.show();
    }
 
    /**
@@ -222,8 +224,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
     */
    @Override
    protected void onPostExecute(Integer result) {
-      mCustomProgressDialog.cancel();
-
+      mOnProgramRefreshedListener.onProgramRefreshed();
       if (result == 0) {
          notifyLoaderListener();
       } else {
@@ -247,5 +248,36 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
       for (LoaderListener l : listener) {
          l.update(counter);
       }
+   }
+
+   /**
+    * Registers a callback, to be triggered when the color changes.
+    */
+   public void setOnProgramRefreshedListener(OnProgramRefreshedListener listener) {
+      if (listener == null) {
+         listener = sDummyListener;
+      }
+
+      mOnProgramRefreshedListener = listener;
+   }
+
+   /**
+    * A dummy no-op callback for use when there is no other listener set.
+    */
+   private static OnProgramRefreshedListener sDummyListener = new OnProgramRefreshedListener() {
+      @Override
+      public void onProgramRefreshed() {
+      }
+   };
+
+   /**
+    * A callback interface used to listen for program refreshes
+    */
+   public interface OnProgramRefreshedListener {
+
+      /**
+       * Called when the program was refreshed.
+       */
+      void onProgramRefreshed();
    }
 }

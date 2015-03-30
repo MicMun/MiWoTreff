@@ -3,8 +3,11 @@
     android:id="@+id/row_background"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:minHeight="@dimen/row_height">
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/row_height"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin">
 
     <TextView
         android:id="@+id/text_datum"
@@ -15,7 +18,8 @@
         android:layout_marginRight="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginTop="@dimen/margin_small"
-        android:textSize="@dimen/text_size_normal"/>
+        android:textSize="@dimen/text_size_normal"
+        android:textColor="?android:attr/textColorPrimary"/>
 
     <TextView
         android:id="@+id/text_thema"
@@ -27,6 +31,7 @@
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginTop="@dimen/margin_small"
         android:textSize="@dimen/text_size_normal"
+        android:textColor="?android:attr/textColorPrimary"
         android:textStyle="bold"/>
 
     <TextView
@@ -37,6 +42,6 @@
         android:layout_toRightOf="@id/text_datum"
         android:layout_toEndOf="@id/text_datum"
         android:textSize="@dimen/text_size_small"
-        android:textStyle="italic"/>
+        android:textColor="?android:attr/textColorSecondary"/>
 
 </RelativeLayout>
