@@ -127,7 +127,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
                   date = DBDateUtility.getDateFromString((String) progPoint
                         .get(DBConstants.KEY_DATUM)).getTime();
                   topic = (String) progPoint.get(DBConstants.KEY_THEMA);
-                  person = (String) progPoint.get(DBConstants.KEY_PERSON);
+                  person = ((String) progPoint.get(DBConstants.KEY_PERSON)).trim();
                } catch (JSONException e) {
                   Log.e(TAG, "Wrong JSON-Format!\n" + e.getLocalizedMessage());
                   mErrorMsg = mCtx.getString(R.string.error_pl_parse);
