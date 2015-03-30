@@ -114,15 +114,9 @@ public class SpecialCursorAdapter
             if (isNextWednesday(sd)) {
                background.setBackgroundDrawable(
                      ctx.getResources().getDrawable(R.drawable.background_indicator_green));
-               datum.setTextColor(ctx.getResources().getColor(android.R.color.white));
-               thema.setTextColor(ctx.getResources().getColor(android.R.color.white));
-               person.setTextColor(ctx.getResources().getColor(android.R.color.white));
             } else if (normalTextColor != null) {
                background.setBackgroundDrawable(ctx.getResources()
                      .getDrawable(R.drawable.background_indicator_transparent));
-               datum.setTextColor(normalTextColor);
-               thema.setTextColor(normalTextColor);
-               person.setTextColor(normalTextColor);
             }
 
             // topic
