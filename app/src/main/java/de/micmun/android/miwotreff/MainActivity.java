@@ -290,7 +290,8 @@ public class MainActivity
    public void onRefresh() {
       // start loading: show the indicator and disable the "refresh" menu icon
       mSwipeLayout.setRefreshing(true);
-      mMenuItemRefresh.setEnabled(false);
+      if (mMenuItemRefresh != null)
+         mMenuItemRefresh.setEnabled(false);
       // load new data
       ProgramLoader pl = new ProgramLoader(this, lastDate);
       pl.execute();
@@ -300,7 +301,8 @@ public class MainActivity
          public void onProgramRefreshed(int count) {
             // finished loading: remove the indicator and enable the menu icon again
             mSwipeLayout.setRefreshing(false);
-            mMenuItemRefresh.setEnabled(true);
+            if (mMenuItemRefresh != null)
+               mMenuItemRefresh.setEnabled(true);
             if (count != -1) {
                String msg = String.format(getString(R.string.load_success), count);
                CustomToast.makeText(context, msg, CustomToast.TYPE_INFO).show();
