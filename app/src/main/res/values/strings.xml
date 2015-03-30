@@ -9,7 +9,9 @@
     <string name="action_save">Backup</string>
     <string name="action_restore">Restore</string>
     <string name="action_clean">Clean backup</string>
-
+    <string name="action_search">Search entry</string>
+    <string name="action_refresh">Load new data</string>
+    <string name="action_done">Save changes</string>
     <!-- backup and restore -->
     <string name="error_delete">Error deleting old backup files</string>
     <string name="load_success">%d added.</string>

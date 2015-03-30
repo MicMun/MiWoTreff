@@ -5,6 +5,9 @@
     <string name="action_restore">Wiederherstellen</string>
     <string name="action_save">Sichern</string>
     <string name="action_sync">Mit Kalender synchronisieren</string>
+    <string name="action_search">Suche Eintrag</string>
+    <string name="action_refresh">Lade Daten</string>
+    <string name="action_done">Speichern</string>
     <string name="addToCall">Zum Kalender hinzufügen</string>
     <string name="cal_loc">Möhlstraße 20, 80935 München</string>
     <string name="count_del">%s Dateien gelöscht</string>
