@@ -34,7 +34,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 
 import de.micmun.android.miwotreff.BaseActivity;
 import de.micmun.android.miwotreff.R;
@@ -126,9 +125,9 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
                String topic;
                String person;
                try {
-                  date = DBDateUtility.getDateFromString((String) progPoint
-                        .get(DBConstants.KEY_DATUM)).getTime();
-                  topic = (String) progPoint.get(DBConstants.KEY_THEMA);
+                  date = DBDateUtility.getDateFromString(((String) progPoint
+                        .get(DBConstants.KEY_DATUM)).trim()).getTime();
+                  topic = ((String) progPoint.get(DBConstants.KEY_THEMA)).trim();
                   person = ((String) progPoint.get(DBConstants.KEY_PERSON)).trim();
                } catch (JSONException e) {
                   Log.e(TAG, "Wrong JSON-Format!\n" + e.getLocalizedMessage());

@@ -48,7 +48,7 @@ import de.micmun.android.miwotreff.db.DBDateUtility;
  * @author Michael Munzert
  * @version 1.0, 31.01.2015
  */
-public class JSONBackupRestore extends AsyncTask<Object, Integer, Integer> {
+public class JSONBackupRestore extends AsyncTask<File, Integer, Integer> {
    // Types to execute
    public static final int TYPE_BACKUP = 0; // Type Backup
    public static final int TYPE_RESTORE = 1; // Type Restore
@@ -292,7 +292,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Integer, Integer> {
     * @see android.os.AsyncTask#doInBackground(Object[])
     */
    @Override
-   protected Integer doInBackground(Object... params) {
+   protected Integer doInBackground(File... params) {
       int rc = 0;
 
       switch (mType) {
@@ -300,7 +300,7 @@ public class JSONBackupRestore extends AsyncTask<Object, Integer, Integer> {
             rc = backup();
             break;
          case TYPE_RESTORE: // restore backup
-            mFile = (File) params[0];
+            mFile = params[0];
             if (mFile == null) {
                mMessage = mContext.getResources().getString(R.string
                      .no_file_selected);
@@ -310,18 +310,17 @@ public class JSONBackupRestore extends AsyncTask<Object, Integer, Integer> {
             }
             break;
          case TYPE_DELETE: // delete old backup files
-            File[] delFiles = (File[]) params;
             int count = 0;
-            for (File f : delFiles) {
+            for (File f : params) {
                if (f.delete()) {
-                  int progress = (int) ((float) count / delFiles.length * 100);
+                  int progress = (int) ((float) count / params.length * 100);
                   publishProgress(progress);
                   count++;
                } else {
                   break;
                }
             }
-            if (count < delFiles.length) {
+            if (count < params.length) {
                mMessage = getMessage(R.string.error_delete, null);
                rc = 3;
             } else {

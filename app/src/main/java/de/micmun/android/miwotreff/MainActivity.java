@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,7 +57,6 @@ public class MainActivity
    private static final int ACTIVITY_EDIT = 1;
    private SpecialCursorAdapter mAdapter;
    private String lastDate;
-   private ContextActionMode cma;
 
    private MenuItem mMenuItemRefresh;
    private SwipeRefreshLayout mSwipeLayout;
@@ -70,7 +70,7 @@ public class MainActivity
       lv.setAdapter(mAdapter);
       lv.setOnItemClickListener(this);
       lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-      cma = new ContextActionMode(this, lv);
+      ContextActionMode cma = new ContextActionMode(this, lv);
       lv.setMultiChoiceModeListener(cma);
 
       // Swipe Layout
@@ -245,7 +245,7 @@ public class MainActivity
     * @see android.app.ListActivity#onRestoreInstanceState(android.os.Bundle)
     */
    @Override
-   protected void onRestoreInstanceState(Bundle savedInstanceState) {
+   protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
       super.onRestoreInstanceState(savedInstanceState);
    }
 

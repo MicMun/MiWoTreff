@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MiWoTreff</string>
     <string name="action_clean">Backup-Dateien löschen</string>
     <string name="action_restore">Wiederherstellen</string>
     <string name="action_save">Sichern</string>
@@ -40,4 +39,5 @@
     <string name="sync_no_calendars">Keine Kalender gefunden!</string>
     <string name="sync_result">%d Termine hinzugefügt oder geändert.</string>
     <string name="title_count_selected">%s ausgewählt.</string>
+    <string name="error_delItem">Fehler: %ld wurde nicht gelöscht.</string>
 </resources>
