@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,7 +53,7 @@ import de.micmun.android.miwotreff.util.SpecialCursorAdapter;
 public class MainActivity
       extends BaseActivity
       implements LoaderManager.LoaderCallbacks<Cursor>, LoaderListener,
-      AdapterView.OnItemClickListener {
+      AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
    private static final String TAG = "MainActivity"; // for logging
 
    private static final int ACTIVITY_EDIT = 1;
@@ -60,6 +61,9 @@ public class MainActivity
    private SpecialCursorAdapter mAdapter;
    private String lastDate;
    private ContextActionMode cma;
+
+   private MenuItem mMenuItemRefresh;
+   private SwipeRefreshLayout mSwipeLayout;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,13 @@ public class MainActivity
       lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
       cma = new ContextActionMode(this, lv);
       lv.setMultiChoiceModeListener(cma);
+
+      // Swipe Layout
+      mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+      mSwipeLayout.setOnRefreshListener(this);
+      mSwipeLayout.setColorSchemeResources(
+              R.color.primary,
+              R.color.accent);
 
       getLoaderManager().initLoader(0, null, this);
    }
@@ -89,6 +100,7 @@ public class MainActivity
    public boolean onCreateOptionsMenu(Menu menu) {
       // Inflate the menu; this adds items to the action bar if it is present.
       getMenuInflater().inflate(R.menu.menu_main, menu);
+      mMenuItemRefresh = menu.findItem(R.id.action_refresh);
       return true;
    }
 
@@ -101,7 +113,7 @@ public class MainActivity
 
       switch (id) {
          case R.id.action_refresh:
-            refreshData();
+            onRefresh();
             return true;
          case R.id.action_search:
             onSearchRequested();
@@ -145,15 +157,6 @@ public class MainActivity
       if (requestCode == ACTIVITY_ACCOUNT && resultCode == 0) {
 
       }
-   }
-
-   /**
-    * Refresh the data from the website.
-    */
-   private void refreshData() {
-      ProgramLoader pl = new ProgramLoader(this, lastDate);
-      pl.addLoaderListener(this);
-      pl.execute();
    }
 
    /**
@@ -282,7 +285,7 @@ public class MainActivity
       // if no data -> mustRefresh true
       if (mAdapter.getCount() <= 0) {
          lastDate = DBDateUtility.getDateString(Calendar.getInstance().getTimeInMillis());
-         refreshData();
+         onRefresh();
       } else {
          lastDate = DBDateUtility.getDateString(((Cursor) mAdapter.getItem(0)).getLong(1));
       }
@@ -294,5 +297,29 @@ public class MainActivity
       if (old != null) {
          old.close();
       }
+   }
+
+   /* =========================================================================================== */
+   /*  Swipe Refresh Layout                                                                       */
+   /* =========================================================================================== */
+
+   @Override
+   public void onRefresh() {
+      // start loading: show the indicator and disable the "refresh" menu icon
+      mSwipeLayout.setRefreshing(true);
+      mMenuItemRefresh.setEnabled(false);
+      // load new data
+      ProgramLoader pl = new ProgramLoader(this, lastDate);
+      pl.addLoaderListener(this);
+      pl.execute();
+      pl.setOnProgramRefreshedListener(new ProgramLoader.OnProgramRefreshedListener() {
+         @Override
+         public void onProgramRefreshed() {
+            // finished loading: remove the indicator and enable the menu icon again
+            mSwipeLayout.setRefreshing(false);
+            mMenuItemRefresh.setEnabled(true);
+         }
+      });
+
    }
 }
