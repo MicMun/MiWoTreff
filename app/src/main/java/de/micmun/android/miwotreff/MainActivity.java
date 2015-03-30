@@ -40,7 +40,6 @@ import de.micmun.android.miwotreff.util.CalendarSyncHelper;
 import de.micmun.android.miwotreff.util.ContextActionMode;
 import de.micmun.android.miwotreff.util.CustomToast;
 import de.micmun.android.miwotreff.util.JSONBackupRestore;
-import de.micmun.android.miwotreff.util.LoaderListener;
 import de.micmun.android.miwotreff.util.ProgramLoader;
 import de.micmun.android.miwotreff.util.SpecialCursorAdapter;
 
@@ -52,12 +51,9 @@ import de.micmun.android.miwotreff.util.SpecialCursorAdapter;
  */
 public class MainActivity
       extends BaseActivity
-      implements LoaderManager.LoaderCallbacks<Cursor>, LoaderListener,
+      implements LoaderManager.LoaderCallbacks<Cursor>,
       AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
-   private static final String TAG = "MainActivity"; // for logging
-
    private static final int ACTIVITY_EDIT = 1;
-   private static final int ACTIVITY_ACCOUNT = 2;
    private SpecialCursorAdapter mAdapter;
    private String lastDate;
    private ContextActionMode cma;
@@ -81,8 +77,8 @@ public class MainActivity
       mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
       mSwipeLayout.setOnRefreshListener(this);
       mSwipeLayout.setColorSchemeResources(
-              R.color.primary,
-              R.color.accent);
+            R.color.primary,
+            R.color.accent);
 
       getLoaderManager().initLoader(0, null, this);
    }
@@ -153,10 +149,6 @@ public class MainActivity
    @Override
    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
       super.onActivityResult(requestCode, resultCode, intent);
-
-      if (requestCode == ACTIVITY_ACCOUNT && resultCode == 0) {
-
-      }
    }
 
    /**
@@ -239,15 +231,6 @@ public class MainActivity
       } else { // only one calendar -> sync with that
          CalendarSyncHelper.syncCalendar(this, calendars.get(0));
       }
-
-
-      // TODO: Sync with choosen calendar
-   }
-
-   @Override
-   public void update(int c) {
-      String msg = String.format(getString(R.string.load_success), c);
-      CustomToast.makeText(this, msg, CustomToast.TYPE_INFO).show();
    }
 
    /**
@@ -310,14 +293,18 @@ public class MainActivity
       mMenuItemRefresh.setEnabled(false);
       // load new data
       ProgramLoader pl = new ProgramLoader(this, lastDate);
-      pl.addLoaderListener(this);
       pl.execute();
+      final BaseActivity context = this;
       pl.setOnProgramRefreshedListener(new ProgramLoader.OnProgramRefreshedListener() {
          @Override
-         public void onProgramRefreshed() {
+         public void onProgramRefreshed(int count) {
             // finished loading: remove the indicator and enable the menu icon again
             mSwipeLayout.setRefreshing(false);
             mMenuItemRefresh.setEnabled(true);
+            if (count != -1) {
+               String msg = String.format(getString(R.string.load_success), count);
+               CustomToast.makeText(context, msg, CustomToast.TYPE_INFO).show();
+            }
          }
       });
 

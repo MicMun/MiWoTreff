@@ -57,7 +57,6 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
    private final String TAG = "MiWoTreff.ProgramLoader";
    private final Context mCtx;
    private final String mVon;
-   private ArrayList<LoaderListener> listener = new ArrayList<>();
    private ConnectivityManager mConManager;
    private int counter;
    private String mErrorMsg;
@@ -224,29 +223,9 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
     */
    @Override
    protected void onPostExecute(Integer result) {
-      mOnProgramRefreshedListener.onProgramRefreshed();
-      if (result == 0) {
-         notifyLoaderListener();
-      } else {
+      mOnProgramRefreshedListener.onProgramRefreshed(result == 0 ? counter : -1);
+      if (result != 0) {
          CustomToast.makeText((BaseActivity) mCtx, mErrorMsg, CustomToast.TYPE_ERROR).show();
-      }
-   }
-
-   /**
-    * Adds a LoaderListener to the list of listener.
-    *
-    * @param l {@link LoaderListener} to add.
-    */
-   public void addLoaderListener(LoaderListener l) {
-      listener.add(l);
-   }
-
-   /**
-    * Notifies all listener.
-    */
-   protected void notifyLoaderListener() {
-      for (LoaderListener l : listener) {
-         l.update(counter);
       }
    }
 
@@ -266,7 +245,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
     */
    private static OnProgramRefreshedListener sDummyListener = new OnProgramRefreshedListener() {
       @Override
-      public void onProgramRefreshed() {
+      public void onProgramRefreshed(int count) {
       }
    };
 
@@ -278,6 +257,6 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
       /**
        * Called when the program was refreshed.
        */
-      void onProgramRefreshed();
+      void onProgramRefreshed(int count);
    }
 }
