@@ -16,6 +16,8 @@ package de.micmun.android.miwotreff;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,7 +25,9 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -96,7 +100,12 @@ public class MainActivity
    public boolean onCreateOptionsMenu(Menu menu) {
       // Inflate the menu; this adds items to the action bar if it is present.
       getMenuInflater().inflate(R.menu.menu_main, menu);
-      mMenuItemRefresh = menu.findItem(R.id.action_refresh);
+      mMenuItemRefresh = menu.findItem(R.id.action_refresh); // refresh action
+      // search action
+      SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+      SearchView searchView = (SearchView) MenuItemCompat.getActionView(
+            menu.findItem(R.id.action_search));
+      searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
       return true;
    }
 
@@ -110,9 +119,6 @@ public class MainActivity
       switch (id) {
          case R.id.action_refresh:
             onRefresh();
-            return true;
-         case R.id.action_search:
-            onSearchRequested();
             return true;
          case R.id.action_sync:
             syncWithCal();
