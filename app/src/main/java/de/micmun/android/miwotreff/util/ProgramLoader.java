@@ -51,7 +51,7 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
    /**
     * The program refreshed callback.
     */
-   protected OnProgramRefreshedListener mOnProgramRefreshedListener = sDummyListener;
+   protected OnProgramRefreshListener mOnProgramRefreshListener = sDummyListener;
 
    private final String TAG = "MiWoTreff.ProgramLoader";
    private final Context mCtx;
@@ -222,37 +222,36 @@ public class ProgramLoader extends AsyncTask<Void, Void, Integer> {
     */
    @Override
    protected void onPostExecute(Integer result) {
-      mOnProgramRefreshedListener.onProgramRefreshed(result == 0 ? counter : -1);
+      mOnProgramRefreshListener.onProgramRefreshed(result == 0 ? counter : -1);
       if (result != 0) {
          CustomToast.makeText((BaseActivity) mCtx, mErrorMsg, CustomToast.TYPE_ERROR).show();
       }
    }
 
    /**
-    * Registers a callback, to be triggered when the color changes.
+    * Registers a callback, to be triggered when the loading is finished.
     */
-   public void setOnProgramRefreshedListener(OnProgramRefreshedListener listener) {
+   public void setOnProgramRefreshedListener(OnProgramRefreshListener listener) {
       if (listener == null) {
          listener = sDummyListener;
       }
 
-      mOnProgramRefreshedListener = listener;
+      mOnProgramRefreshListener = listener;
    }
 
    /**
     * A dummy no-op callback for use when there is no other listener set.
     */
-   private static OnProgramRefreshedListener sDummyListener = new OnProgramRefreshedListener() {
+   private static OnProgramRefreshListener sDummyListener = new OnProgramRefreshListener() {
       @Override
       public void onProgramRefreshed(int count) {
       }
    };
 
    /**
-    * A callback interface used to listen for program refreshes
+    * A callback interface used to listen for program refreshes.
     */
-   public interface OnProgramRefreshedListener {
-
+   public interface OnProgramRefreshListener {
       /**
        * Called when the program was refreshed.
        */

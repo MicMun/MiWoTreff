@@ -73,9 +73,11 @@ public class CalendarSyncHelper {
     *
     * @param calendarInfo calendar info with the calendar to sync.
     */
-   public static void syncCalendar(Context context, CalendarInfo calendarInfo) {
+   public static void syncCalendar(Context context, CalendarInfo calendarInfo,
+                                   CalendarSyncTask.OnEventRefreshListener listener) {
       // sync program with the choosen calendar
       CalendarSyncTask cst = new CalendarSyncTask(context, calendarInfo);
+      cst.setOnEventRefreshedListener(listener);
       cst.execute();
    }
 }

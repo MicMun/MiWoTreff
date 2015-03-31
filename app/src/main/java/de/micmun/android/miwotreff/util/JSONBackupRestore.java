@@ -48,7 +48,7 @@ import de.micmun.android.miwotreff.db.DBDateUtility;
  * @author Michael Munzert
  * @version 1.0, 31.01.2015
  */
-public class JSONBackupRestore extends AsyncTask<File, Integer, Integer> {
+public class JSONBackupRestore extends AsyncTask<File, Void, Integer> {
    // Types to execute
    public static final int TYPE_BACKUP = 0; // Type Backup
    public static final int TYPE_RESTORE = 1; // Type Restore
@@ -64,7 +64,7 @@ public class JSONBackupRestore extends AsyncTask<File, Integer, Integer> {
    private File mFile;
    private String mMessage = null;
 
-   private CustomProgressDialog mProgressDialog;
+   private OnDataRefreshListener mOnDataRefreshListener;
 
    /**
     * Creates a new JSONBackupRestore object.
@@ -75,8 +75,6 @@ public class JSONBackupRestore extends AsyncTask<File, Integer, Integer> {
    public JSONBackupRestore(MainActivity context, int type) {
       mContext = context;
       mType = type;
-
-      mProgressDialog = new CustomProgressDialog(context, false);
    }
 
    /**
@@ -140,7 +138,6 @@ public class JSONBackupRestore extends AsyncTask<File, Integer, Integer> {
          JSONArray array = new JSONArray(sb.toString());
          int count = array.length();
          ContentResolver cr = mContext.getContentResolver();
-         int progress;
 
          // insert data into database
          for (int i = 0; i < count; ++i) {
@@ -154,9 +151,6 @@ public class JSONBackupRestore extends AsyncTask<File, Integer, Integer> {
             v.put(DBConstants.KEY_PERSON, o.getString(DBConstants.KEY_PERSON));
             v.put(DBConstants.KEY_EDIT, o.getInt(DBConstants.KEY_EDIT));
             cr.insert(DBConstants.TABLE_CONTENT_URI, v);
-
-            progress = (int) ((float) i / array.length() * 100);
-            publishProgress(progress);
          }
          mMessage = getMessage(R.string.restore_success, String.valueOf(count));
       } catch (FileNotFoundException e) {
@@ -190,19 +184,14 @@ public class JSONBackupRestore extends AsyncTask<File, Integer, Integer> {
       int rc = 0;
       JSONArray dataList = new JSONArray();
       JSONObject data;
-      int gesamt = cursor.getCount();
-      int count = 0;
 
-      if (gesamt <= 0) {
+      if (cursor.getCount() <= 0) {
          Log.d(TAG, "No DATA!");
          rc = 1;
       } else {
          // creates the json array for backup to file
          cursor.moveToFirst();
          do {
-            int progress = (int) ((float) count / gesamt * 100);
-            publishProgress(progress);
-
             String d = DBDateUtility.getDateString(cursor.getLong(cursor
                   .getColumnIndex(DBConstants.KEY_DATUM)));
             String t = cursor.getString(cursor.getColumnIndex(DBConstants
@@ -224,7 +213,6 @@ public class JSONBackupRestore extends AsyncTask<File, Integer, Integer> {
                rc = 1;
                break;
             }
-            count++;
          } while (cursor.moveToNext());
          cursor.close();
 
@@ -313,8 +301,6 @@ public class JSONBackupRestore extends AsyncTask<File, Integer, Integer> {
             int count = 0;
             for (File f : params) {
                if (f.delete()) {
-                  int progress = (int) ((float) count / params.length * 100);
-                  publishProgress(progress);
                   count++;
                } else {
                   break;
@@ -336,12 +322,17 @@ public class JSONBackupRestore extends AsyncTask<File, Integer, Integer> {
       return rc;
    }
 
+   /**
+    * Registers a callback, to be triggered when the loading is finished.
+    */
+   public void setOnRefreshListener(OnDataRefreshListener listener) {
+      if (listener == null)
+         listener = sDummyListener;
+      mOnDataRefreshListener = listener;
+   }
+
    @Override
-   protected void onProgressUpdate(Integer... values) {
-      if (!mProgressDialog.isShowing()) {
-         mProgressDialog.show();
-      }
-      mProgressDialog.setProgress(values[0]);
+   protected void onProgressUpdate(Void... values) {
    }
 
    /**
@@ -349,16 +340,27 @@ public class JSONBackupRestore extends AsyncTask<File, Integer, Integer> {
     */
    @Override
    protected void onPostExecute(Integer result) {
-      mProgressDialog.setProgress(100);
-      mProgressDialog.cancel();
       if (mMessage == null)
          return;
+      mOnDataRefreshListener.onDataRefreshed(result, mMessage);
+   }
 
-      if (result == 0) {
-         // Show success message
-         CustomToast.makeText(mContext, mMessage, CustomToast.TYPE_INFO).show();
-      } else if (result == 1) {
-         CustomToast.makeText(mContext, mMessage, CustomToast.TYPE_ERROR).show();
+   /**
+    * A dummy no-op callback for use when there is no other listener set.
+    */
+   private static OnDataRefreshListener sDummyListener = new OnDataRefreshListener() {
+      @Override
+      public void onDataRefreshed(int rc, String msg) {
       }
+   };
+
+   /**
+    * A callback interface used to listen for program refreshes.
+    */
+   public interface OnDataRefreshListener {
+      /**
+       * Called when the program was refreshed.
+       */
+      void onDataRefreshed(int rc, String msg);
    }
 }

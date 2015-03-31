@@ -1,3 +1,17 @@
+/*
+ * Copyright 2015 MicMun
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU >General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or >(at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * >without even the implied warranty of MERCHANTABILIT or FITNESS FOR A PARTICULAR PURPOSE.
+ * >See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see >http://www.gnu.org/licenses/.
+ */
 package de.micmun.android.miwotreff.util;
 
 import android.content.ContentResolver;
@@ -12,40 +26,32 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.TimeZone;
 
-import de.micmun.android.miwotreff.BaseActivity;
 import de.micmun.android.miwotreff.R;
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
 
 /**
- * BESCHREIBUNG.
+ * Background to synchronise events with calendar.
  *
  * @author MicMun
- * @version 1.0, 27.02.15
+ * @version 1.0, 27.02.2015
  */
-public class CalendarSyncTask extends AsyncTask<Void, Integer, Integer> {
-   private final String TAG = "MiWoTreff.ProgramLoader";
+public class CalendarSyncTask extends AsyncTask<Void, Void, Integer> {
    private final String EVENT_LOC;
    private final String EVENT_DESC;
    private final Context mCtx;
    private final CalendarInfo mCalInfo;
    private final long TODAY_MILLIS;
-   private int counter;
-   private int gesamt;
-   private CustomProgressDialog mProgressBar;
+   private OnEventRefreshListener mOnEventRefreshListener;
 
    public CalendarSyncTask(Context ctx, CalendarInfo calendarInfo) {
       mCtx = ctx;
       mCalInfo = calendarInfo;
-      counter = 0;
-      gesamt = 0;
 
       // Constant values
       EVENT_LOC = mCtx.getString(R.string.cal_loc);
       EVENT_DESC = mCtx.getString(R.string.app_name);
       TODAY_MILLIS = Calendar.getInstance().getTime().getTime();
-
-      mProgressBar = new CustomProgressDialog(mCtx, false);
    }
 
    @Override
@@ -56,10 +62,8 @@ public class CalendarSyncTask extends AsyncTask<Void, Integer, Integer> {
             cProg.close();
          return 0;
       }
-      gesamt = cProg.getCount();
-      publishProgress(counter, gesamt);
-
       HashMap<String, Long> eventMap = getEvents();
+      int counter = 0;
 
       while (cProg.moveToNext()) {
          long date = cProg.getLong(0);
@@ -105,9 +109,7 @@ public class CalendarSyncTask extends AsyncTask<Void, Integer, Integer> {
             Uri uri = Uri.withAppendedPath(CalendarContract.Events.CONTENT_URI, String.valueOf(id));
             cr.update(uri, cv, null, null);
          }
-
          counter++;
-         publishProgress(counter, gesamt);
       }
       cProg.close();
 
@@ -163,21 +165,41 @@ public class CalendarSyncTask extends AsyncTask<Void, Integer, Integer> {
    }
 
    @Override
-   protected void onProgressUpdate(Integer... values) {
-      if (!mProgressBar.isShowing()) {
-         mProgressBar.show();
-      }
-      int progress = (int) ((float) values[0] / values[1] * 100);
-      mProgressBar.setProgress(progress);
+   protected void onProgressUpdate(Void... values) {
    }
 
    @Override
    protected void onPostExecute(Integer integer) {
-      if (mProgressBar.isShowing()) {
-         mProgressBar.cancel();
+      mOnEventRefreshListener.onEventsRefreshed(integer);
+   }
+
+   /**
+    * Registers a callback, to be triggered when the loading is finished.
+    */
+   public void setOnEventRefreshedListener(OnEventRefreshListener listener) {
+      if (listener == null) {
+         listener = sDummyListener;
       }
-      // result message
-      String resultMsg = String.format(mCtx.getString(R.string.sync_result), integer);
-      CustomToast.makeText((BaseActivity) mCtx, resultMsg, CustomToast.TYPE_INFO).show();
+
+      mOnEventRefreshListener = listener;
+   }
+
+   /**
+    * A dummy no-op callback for use when there is no other listener set.
+    */
+   private static OnEventRefreshListener sDummyListener = new OnEventRefreshListener() {
+      @Override
+      public void onEventsRefreshed(int count) {
+      }
+   };
+
+   /**
+    * A callback interface used to listen for program refreshes.
+    */
+   public interface OnEventRefreshListener {
+      /**
+       * Called when the program was refreshed.
+       */
+      void onEventsRefreshed(int count);
    }
 }

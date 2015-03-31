@@ -42,6 +42,7 @@ import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
 import de.micmun.android.miwotreff.util.CalendarInfo;
 import de.micmun.android.miwotreff.util.CalendarSyncHelper;
+import de.micmun.android.miwotreff.util.CalendarSyncTask;
 import de.micmun.android.miwotreff.util.ContextActionMode;
 import de.micmun.android.miwotreff.util.CustomToast;
 import de.micmun.android.miwotreff.util.JSONBackupRestore;
@@ -161,8 +162,26 @@ public class MainActivity
     * Backup the data.
     */
    private void backupData() {
+      // start loading: show the indicator and disable the "refresh" menu icon
+      mSwipeLayout.setRefreshing(true);
+
       JSONBackupRestore jbr = new JSONBackupRestore(this,
             JSONBackupRestore.TYPE_BACKUP);
+      final BaseActivity context = this;
+
+      jbr.setOnRefreshListener(new JSONBackupRestore.OnDataRefreshListener() {
+         @Override
+         public void onDataRefreshed(int rc, String msg) {
+            // finished loading: remove the indicator and enable the menu icon again
+            mSwipeLayout.setRefreshing(false);
+            if (rc == 0) {
+               // Show success message
+               CustomToast.makeText(context, msg, CustomToast.TYPE_INFO).show();
+            } else {
+               CustomToast.makeText(context, msg, CustomToast.TYPE_ERROR).show();
+            }
+         }
+      });
       jbr.execute();
    }
 
@@ -170,8 +189,28 @@ public class MainActivity
     * Restores the data.
     */
    private void restoreData() {
+      // start loading: show the indicator and disable the "refresh" menu icon
+      mSwipeLayout.setRefreshing(true);
+
       final JSONBackupRestore jbr = new JSONBackupRestore(this,
             JSONBackupRestore.TYPE_RESTORE);
+      final BaseActivity context = this;
+
+      jbr.setOnRefreshListener(new JSONBackupRestore.OnDataRefreshListener() {
+         @Override
+         public void onDataRefreshed(int rc, String msg) {
+            // finished loading: remove the indicator and enable the menu icon again
+            mSwipeLayout.setRefreshing(false);
+            if (rc == 0) {
+               // Show success message
+               CustomToast.makeText(context, msg, CustomToast.TYPE_INFO).show();
+            } else {
+               CustomToast.makeText(context, msg, CustomToast.TYPE_ERROR).show();
+            }
+         }
+      });
+
+      // get files to restore
       final File[] files = jbr.getBackupFiles();
       if (files == null || files.length <= 0) {
          CustomToast.makeText(this, getString(R.string.no_restore), CustomToast.TYPE_INFO).show();
@@ -198,8 +237,27 @@ public class MainActivity
     * Deletes old backup files.
     */
    private void deleteOld() {
+      // start loading: show the indicator and disable the "refresh" menu icon
+      mSwipeLayout.setRefreshing(true);
+
       final JSONBackupRestore jbr = new JSONBackupRestore(this,
             JSONBackupRestore.TYPE_DELETE);
+      final BaseActivity context = this;
+
+      jbr.setOnRefreshListener(new JSONBackupRestore.OnDataRefreshListener() {
+         @Override
+         public void onDataRefreshed(int rc, String msg) {
+            // finished loading: remove the indicator and enable the menu icon again
+            mSwipeLayout.setRefreshing(false);
+            if (rc == 0) {
+               // Show success message
+               CustomToast.makeText(context, msg, CustomToast.TYPE_INFO).show();
+            } else {
+               CustomToast.makeText(context, msg, CustomToast.TYPE_ERROR).show();
+            }
+         }
+      });
+
       final File[] files = jbr.getBackupFiles();
       if (files.length > 5) {
          File[] delFiles = new File[files.length - 5];
@@ -214,6 +272,21 @@ public class MainActivity
     * Sync the program with a calendar.
     */
    private void syncWithCal() {
+      // start loading: show the indicator and disable the "refresh" menu icon
+      mSwipeLayout.setRefreshing(true);
+      final BaseActivity context = this;
+
+      final CalendarSyncTask.OnEventRefreshListener listener = new CalendarSyncTask.OnEventRefreshListener() {
+         @Override
+         public void onEventsRefreshed(int count) {
+            // finished loading: remove the indicator and enable the menu icon again
+            mSwipeLayout.setRefreshing(false);
+            // result message
+            String resultMsg = String.format(context.getString(R.string.sync_result), count);
+            CustomToast.makeText(context, resultMsg, CustomToast.TYPE_INFO).show();
+         }
+      };
+
       final ArrayList<CalendarInfo> calendars = CalendarSyncHelper.getCalendars(this);
       if (calendars.size() <= 0) {
          CustomToast.makeText(this, getString(R.string.sync_no_calendars),
@@ -230,12 +303,12 @@ public class MainActivity
          builder.setItems(calNames, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-               CalendarSyncHelper.syncCalendar(getApplicationContext(), calendars.get(which));
+               CalendarSyncHelper.syncCalendar(context, calendars.get(which), listener);
             }
          });
          builder.show();
       } else { // only one calendar -> sync with that
-         CalendarSyncHelper.syncCalendar(this, calendars.get(0));
+         CalendarSyncHelper.syncCalendar(context, calendars.get(0), listener);
       }
    }
 
@@ -302,7 +375,7 @@ public class MainActivity
       ProgramLoader pl = new ProgramLoader(this, lastDate);
       pl.execute();
       final BaseActivity context = this;
-      pl.setOnProgramRefreshedListener(new ProgramLoader.OnProgramRefreshedListener() {
+      pl.setOnProgramRefreshedListener(new ProgramLoader.OnProgramRefreshListener() {
          @Override
          public void onProgramRefreshed(int count) {
             // finished loading: remove the indicator and enable the menu icon again
