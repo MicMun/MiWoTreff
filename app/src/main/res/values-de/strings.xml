@@ -32,7 +32,7 @@
     <string name="search_title">Suche</string>
     <string name="share">Teilen</string>
     <string name="shareText_future">Am %2$s ist das Thema im #Mittwochstreff \"%1$s\".\nJeder ist herzlich eingeladen. Es beginnt um 19:30 Uhr in der Möhlstraße 20, 80935 München.</string>
-    <string name="shareText_past">Am %2$2 war das Thema im #Mittwochstreff \"%1$s\".</string>
+    <string name="shareText_past">Am %2$s war das Thema im #Mittwochstreff \"%1$s\".</string>
     <string name="shareText_today">Heute ist das Thema im #Mittwochstreff \"%1$s\".\nJeder ist herzlich eingeladen. Es beginnt um 19:30 Uhr in der Möhlstraße 20, 80935 München.</string>
     <string name="shareWith">Teilen mit…</string>
     <string name="sync_choose_title">Wähle einen Kalendar</string>
