@@ -189,9 +189,6 @@ public class MainActivity
     * Restores the data.
     */
    private void restoreData() {
-      // start loading: show the indicator and disable the "refresh" menu icon
-      mSwipeLayout.setRefreshing(true);
-
       final JSONBackupRestore jbr = new JSONBackupRestore(this,
             JSONBackupRestore.TYPE_RESTORE);
       final BaseActivity context = this;
@@ -227,6 +224,8 @@ public class MainActivity
       builder.setItems(fileNames, new DialogInterface.OnClickListener() {
          @Override
          public void onClick(DialogInterface dialog, int which) {
+            // start loading: show the indicator and disable the "refresh" menu icon
+            mSwipeLayout.setRefreshing(true);
             jbr.execute(files[which]);
          }
       });
@@ -237,9 +236,6 @@ public class MainActivity
     * Deletes old backup files.
     */
    private void deleteOld() {
-      // start loading: show the indicator and disable the "refresh" menu icon
-      mSwipeLayout.setRefreshing(true);
-
       final JSONBackupRestore jbr = new JSONBackupRestore(this,
             JSONBackupRestore.TYPE_DELETE);
       final BaseActivity context = this;
@@ -262,6 +258,8 @@ public class MainActivity
       if (files.length > 5) {
          File[] delFiles = new File[files.length - 5];
          System.arraycopy(files, 5, delFiles, 0, files.length - 5);
+         // start loading: show the indicator and disable the "refresh" menu icon
+         mSwipeLayout.setRefreshing(true);
          jbr.execute(delFiles);
       } else {
          CustomToast.makeText(this, getString(R.string.no_del), CustomToast.TYPE_INFO).show();
@@ -272,8 +270,6 @@ public class MainActivity
     * Sync the program with a calendar.
     */
    private void syncWithCal() {
-      // start loading: show the indicator and disable the "refresh" menu icon
-      mSwipeLayout.setRefreshing(true);
       final BaseActivity context = this;
 
       final CalendarSyncTask.OnEventRefreshListener listener = new CalendarSyncTask.OnEventRefreshListener() {
@@ -303,11 +299,15 @@ public class MainActivity
          builder.setItems(calNames, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+               // start loading: show the indicator and disable the "refresh" menu icon
+               mSwipeLayout.setRefreshing(true);
                CalendarSyncHelper.syncCalendar(context, calendars.get(which), listener);
             }
          });
          builder.show();
       } else { // only one calendar -> sync with that
+         // start loading: show the indicator and disable the "refresh" menu icon
+         mSwipeLayout.setRefreshing(true);
          CalendarSyncHelper.syncCalendar(context, calendars.get(0), listener);
       }
    }
