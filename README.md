@@ -12,7 +12,7 @@ Dieses GitHub Repository hostet den Code der Android-App _MiWoTreff_. _MiWoTreff
 
 ## Compatibility
 
-This app is compatible from sdk version 14 (Android 4.0) upward and needs the appcompat-v7 library and the library [materialish-progress](https://github.com/pnikosis/materialish-progress) to compile.
+This app is compatible from sdk version 14 (Android 4.0) upward and needs the appcompat-v7 library to compile.
 
 ## License
 
