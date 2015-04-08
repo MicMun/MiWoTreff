@@ -22,7 +22,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ListView;
 
@@ -45,7 +44,6 @@ public class SearchActivity
    private static final int SEARCH_DATE = 0;
    private static final int SEARCH_OTHERS = 1;
    private static final String KEY_SEARCH = "search";
-   private final String TAG = ".SearchActivity";
    private SpecialCursorAdapter mAdapter;
 
    /**
@@ -114,7 +112,6 @@ public class SearchActivity
       title += " '" + search + "'";
       setTitle(title);
 
-      Log.d(TAG, "Search: " + search);
       Bundle b = new Bundle();
       b.putString(KEY_SEARCH, search);
       if (search.matches("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{2,4}")) {
