@@ -53,4 +53,8 @@
     <string name="sync_no_calendars">No calendars found!</string>
     <string name="sync_result">%d events added or updated.</string>
     <string name="error_pl_parse">Error parsing json data!</string>
+    <string name="sync_confim_message">All entries from now into the future will be synced to your calendar. If you don\'t want that, then press cancel.</string>
+    <string name="sync_confim_title">Sync with calendar?</string>
+    <string name="sync_confirm_cancel">Cancel</string>
+    <string name="sync_confirm_yes">Sync now</string>
 </resources>

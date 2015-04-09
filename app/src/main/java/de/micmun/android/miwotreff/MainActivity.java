@@ -299,16 +299,48 @@ public class MainActivity
          builder.setItems(calNames, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-               // start loading: show the indicator and disable the "refresh" menu icon
-               mSwipeLayout.setRefreshing(true);
-               CalendarSyncHelper.syncCalendar(context, calendars.get(which), listener);
+               // start loading: show the indicator
+               final int index = which;
+               AlertDialog.Builder builder = new AlertDialog.Builder(context);
+               builder.setTitle(R.string.sync_confim_title);
+               builder.setMessage(R.string.sync_confim_message);
+               builder.setNegativeButton(R.string.sync_confirm_cancel, new DialogInterface.OnClickListener() {
+                  @Override
+                  public void onClick(DialogInterface dialog, int which) {
+                     //Do nothing
+                  }
+               });
+               builder.setPositiveButton(R.string.sync_confirm_yes, new DialogInterface.OnClickListener() {
+                  @Override
+                  public void onClick(DialogInterface dialog, int which) {
+                     mSwipeLayout.setRefreshing(true);
+                     CalendarSyncHelper.syncCalendar(context, calendars.get(index), listener);
+                  }
+               });
+               dialog.cancel();
+               builder.show();
             }
          });
          builder.show();
       } else { // only one calendar -> sync with that
-         // start loading: show the indicator and disable the "refresh" menu icon
-         mSwipeLayout.setRefreshing(true);
-         CalendarSyncHelper.syncCalendar(context, calendars.get(0), listener);
+         // start loading: show the indicator
+         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+         builder.setTitle(R.string.sync_confim_title);
+         builder.setMessage(R.string.sync_confim_message);
+         builder.setNegativeButton(R.string.sync_confirm_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+               //Do nothing
+            }
+         });
+         builder.setPositiveButton(R.string.sync_confirm_yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+               mSwipeLayout.setRefreshing(true);
+               CalendarSyncHelper.syncCalendar(context, calendars.get(0), listener);
+            }
+         });
+         builder.show();
       }
    }
 
