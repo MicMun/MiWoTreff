@@ -13,6 +13,7 @@
     <string name="edit_title">Bearbeiten</string>
     <string name="error_delete">Fehler beim Löschen alter Backup-Dateien</string>
     <string name="error_mkdir">Kann Verzeichnis \'%s\' nicht erstellen!</string>
+    <string name="error_storage_perm">FEHLER: App hat keine Berechtigung für den Speicherzugriff.</string>
     <string name="error_parse_file">Fehler beim Parsen der JSON-Datei!</string>
     <string name="error_pl_fetch">Fehler beim Laden von der Webseite.</string>
     <string name="error_pl_noconnect">Es besteht keine Internetverbindung zum Laden.</string>
@@ -44,4 +45,5 @@
     <string name="sync_confim_title">Mit Kalender synchronisieren?</string>
     <string name="sync_confirm_cancel">Abbrechen</string>
     <string name="sync_confirm_yes">Jetzt Synchronisieren</string>
+    <string name="sync_perm_error">FEHLER: App hat keine Berechtigung für den Kalender!</string>
 </resources>

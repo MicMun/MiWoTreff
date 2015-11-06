@@ -17,6 +17,7 @@
     <string name="load_success">%d added.</string>
     <string name="restore_success">Restore data (%s entries) successfully.
     </string>
+    <string name="error_storage_perm">ERROR: App has no permission for storage.</string>
     <string name="no_restore">No files to restore.</string>
     <string name="no_file_selected">No file selected to restore.</string>
     <string name="error_delItem">Error: %ld wasn\'t deleted.</string>
@@ -57,4 +58,5 @@
     <string name="sync_confim_title">Sync with calendar?</string>
     <string name="sync_confirm_cancel">Cancel</string>
     <string name="sync_confirm_yes">Sync now</string>
+    <string name="sync_perm_error">ERROR: App has no permission for calendar!</string>
 </resources>

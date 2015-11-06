@@ -14,6 +14,7 @@
  */
 package de.micmun.android.miwotreff;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.app.SearchManager;
@@ -33,6 +34,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.anthonycr.grant.PermissionsManager;
+import com.anthonycr.grant.PermissionsResultAction;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,6 +64,7 @@ public class MainActivity
       implements LoaderManager.LoaderCallbacks<Cursor>,
       AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
    private static final int ACTIVITY_EDIT = 1;
+
    private SpecialCursorAdapter mAdapter;
    private String lastDate;
 
@@ -115,27 +120,60 @@ public class MainActivity
       // Handle action bar item clicks here. The action bar will
       // automatically handle clicks on the Home/Up button, so long
       // as you specify a parent activity in AndroidManifest.xml.
-      int id = item.getItemId();
+      final int id = item.getItemId();
 
       switch (id) {
          case R.id.action_refresh:
             onRefresh();
             return true;
          case R.id.action_sync:
-            syncWithCal();
-            return true;
-         case R.id.action_backup:
-            backupData();
-            return true;
-         case R.id.action_restore:
-            restoreData();
-            return true;
-         case R.id.action_clean:
-            deleteOld();
+            // Check permission for calendar
+            PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(this,
+                  new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR},
+                  new PermissionsResultAction() {
+                     @Override
+                     public void onGranted() {
+                        syncWithCal();
+                     }
+
+                     @Override
+                     public void onDenied(String permission) {
+                        CustomToast.makeText(MainActivity.this, getString(R.string.sync_perm_error),
+                              CustomToast.TYPE_ERROR).show();
+                     }
+                  });
             return true;
       }
 
-      return super.onOptionsItemSelected(item);
+      // Check permission for storage
+      PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(this,
+            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+            new PermissionsResultAction() {
+
+               @Override
+               public void onGranted() {
+                  switch (id) {
+                     case R.id.action_backup:
+                        backupData();
+                        break;
+                     case R.id.action_restore:
+                        restoreData();
+                        break;
+                     case R.id.action_clean:
+                        deleteOld();
+                        break;
+                  }
+               }
+
+               @Override
+               public void onDenied(String permission) {
+                  CustomToast.makeText(MainActivity.this, getString(R.string.error_storage_perm),
+                        CustomToast.TYPE_ERROR).show();
+               }
+            });
+      return id == R.id.action_backup || id == R.id.action_restore || id == R.id.action_clean ||
+            super.onOptionsItemSelected(item);
+
    }
 
    /**
@@ -264,6 +302,13 @@ public class MainActivity
       } else {
          CustomToast.makeText(this, getString(R.string.no_del), CustomToast.TYPE_INFO).show();
       }
+   }
+
+   @Override
+   public void onRequestPermissionsResult(int requestCode,
+                                          @NonNull String[] permissions,
+                                          @NonNull int[] grantResults) {
+      PermissionsManager.getInstance().notifyPermissionsChange(permissions, grantResults);
    }
 
    /**
