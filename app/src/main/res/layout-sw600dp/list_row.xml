@@ -4,7 +4,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minHeight="@dimen/row_height">
+    android:minHeight="@dimen/row_height"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin">
 
     <TextView
         android:id="@+id/text_datum"
@@ -13,9 +15,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:gravity="center_vertical"
-        android:layout_marginRight="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_small"
+        android:layout_marginRight="@dimen/margin_small"
+        android:gravity="center_vertical"
         android:textSize="@dimen/text_size_normal"/>
 
     <TextView
@@ -23,13 +25,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:gravity="center_vertical"
-        android:layout_toLeftOf="@id/text_person"
-        android:layout_toStartOf="@id/text_person"
-        android:layout_toRightOf="@id/text_datum"
-        android:layout_toEndOf="@id/text_datum"
-        android:layout_marginRight="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_small"
+        android:layout_marginRight="@dimen/margin_small"
+        android:layout_toEndOf="@id/text_datum"
+        android:layout_toLeftOf="@id/text_person"
+        android:layout_toRightOf="@id/text_datum"
+        android:layout_toStartOf="@id/text_person"
+        android:gravity="center_vertical"
         android:textSize="@dimen/text_size_normal"
         android:textStyle="bold"/>
 
@@ -37,8 +39,8 @@
         android:id="@+id/text_person"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:gravity="center_vertical"
         android:textSize="@dimen/text_size_small"
