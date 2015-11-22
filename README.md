@@ -12,7 +12,15 @@ Dieses GitHub Repository hostet den Code der Android-App _MiWoTreff_. _MiWoTreff
 
 ## Compatibility
 
-This app is compatible from sdk version 14 (Android 4.0) upward and needs the appcompat-v7 library to compile.
+This app is compatible from sdk version 14 (Android 4.0) upward and needs the following libraries to compile:
+
+  * appcompat-v7 library
+  * [grant by Anthony Restaino](https://github.com/anthonycr/Grant)
+  
+Die App ist kompatibel ab SDK Version 14 (Android 4.0) aufwärts und braucht folgende Libraries zum Kompilieren:
+
+  * appcompat-v7 library
+  * [grant von Anthony Restaino](https://github.com/anthonycr/Grant)
 
 ## License
 
