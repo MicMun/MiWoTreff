@@ -1,11 +1,11 @@
 /**
- * Copyright 2015 MicMun
+ * Copyright 2015-2016 MicMun
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU >General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or >
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; >without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE. >See the GNU General Public License
@@ -50,6 +50,7 @@ public class CalendarSyncHelper {
             + CalendarContract.Calendars.ACCOUNT_NAME + " = "
             + CalendarContract.Calendars.OWNER_ACCOUNT;
       String orderBy = CalendarContract.Calendars._ID;
+      //noinspection ResourceType
       Cursor c = context.getContentResolver().query(CalendarContract.Calendars.CONTENT_URI,
             EVENT_PROJECTION, selection, null, orderBy);
 
