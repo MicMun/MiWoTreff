@@ -66,4 +66,48 @@ public class DBConstants implements BaseColumns {
     * Name for sync query with date.
     */
    public static final String SYNC_QUERY = "syncdate";
+   /**
+    * Name for last date query.
+    */
+   public static final String LAST_DATE_QUERY = "lastdate";
+   /**
+    * Table for settings and last update date.
+    */
+   public static final String SETTING_TABLE_NAME = "settings";
+   /**
+    * Column with the key of the setting.
+    */
+   public static final String KEY_KEY = "key";
+   /**
+    * Column with the value of the setting.
+    */
+   public static final String KEY_VALUE = "value";
+   /**
+    * Key for last update setting.
+    */
+   public static final String SETTING_KEY_LAST_UPDATE = "last_update";
+   /**
+    * Key for boolean automatic setting.
+    */
+   public static final String SETTING_KEY_AUTO_SYNC = "auto_sync";
+   /**
+    * Key for number of old files.
+    */
+   public static final String SETTING_KEY_NUMBER_OLD = "number_old_files";
+   /**
+    * Default value of the number_old_files.
+    */
+   public static final String SETTING_VALUE_NUMBER_OLD = "5";
+   /**
+    * Default value for last update.
+    */
+   public static final String SETTING_VALUE_LAST_UPDATE = "28.10.2015";
+   /**
+    * Name for key query.
+    */
+   public static final String KEY_QUERY = "keyquery";
+   /**
+    * Uri for setting table.
+    */
+   public static final Uri SETTING_CONTENT_URI = Uri.parse(BASE_URI + "/" + SETTING_TABLE_NAME);
 }

@@ -21,6 +21,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 /**
  * Content provider for the miwotreff database.
@@ -31,10 +32,13 @@ import android.net.Uri;
 public class DataProvider extends ContentProvider {
    // IDs for matching content
    private static final int ROOT_ID = 0;
-   private static final int TABLE_PROGRAM_ID = 10;
-   private static final int PROGRAM_POINT_ID = 11;
-   private static final int PROGRAM_DATE_ID = 12;
-   private static final int PROGAM_SYNC_DATE = 13;
+   private static final int TABLE_PROGRAM_ID = 10; // complett entries of program
+   private static final int PROGRAM_POINT_ID = 11; // single entry with id
+   private static final int PROGRAM_DATE_ID = 12; // single entry with date (only id and date)
+   private static final int PROGAM_SYNC_DATE = 13; // all entries with date >= parameter
+   private static final int PROGRAM_LAST_DATE = 14; // last date entry
+   private static final int TABLE_SETTING_ID = 20; // all settings
+   private static final int SETTING_KEY_ID = 21; // setting with given key
    private static final UriMatcher mUriMatcher = new UriMatcher(ROOT_ID);
 
    /**
@@ -49,6 +53,11 @@ public class DataProvider extends ContentProvider {
             + DBConstants.DATE_QUERY, PROGRAM_DATE_ID);
       mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME + "/"
             + DBConstants.SYNC_QUERY, PROGAM_SYNC_DATE);
+      mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME + "/"
+            + DBConstants.LAST_DATE_QUERY, PROGRAM_LAST_DATE);
+      mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.SETTING_TABLE_NAME, TABLE_SETTING_ID);
+      mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.SETTING_TABLE_NAME + "/"
+            + DBConstants.KEY_QUERY, SETTING_KEY_ID);
    }
 
    private SQLiteDatabase mDb;
@@ -68,7 +77,7 @@ public class DataProvider extends ContentProvider {
     * String)
     */
    @Override
-   public Cursor query(Uri uri, String[] projection, String selection,
+   public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                        String[] selectionArgs, String sortOrder) {
       Cursor res = null;
       switch (mUriMatcher.match(uri)) {
@@ -104,6 +113,25 @@ public class DataProvider extends ContentProvider {
             res = mDb.query(DBConstants.TABLE_NAME, projection, selection, selectionArgs,
                   null, null, sortOrder);
             break;
+         case PROGRAM_LAST_DATE:
+            projection = new String[]{DBConstants._ID, DBConstants.KEY_DATUM};
+            selection = DBConstants.KEY_DATUM +
+                  " = (SELECT max(" + DBConstants.KEY_DATUM + ") FROM " + DBConstants.TABLE_NAME +
+                  ")";
+            res = mDb.query(DBConstants.TABLE_NAME, projection, selection, null, null, null,
+                  sortOrder);
+            break;
+         case TABLE_SETTING_ID:
+            projection = new String[]{DBConstants.KEY_KEY, DBConstants.KEY_VALUE};
+            res = mDb.query(DBConstants.SETTING_TABLE_NAME, projection, null, null, null, null,
+                  null);
+            break;
+         case SETTING_KEY_ID:
+            projection = new String[]{DBConstants.KEY_VALUE};
+            selection = DBConstants.KEY_KEY + " = ?";
+            res = mDb.query(DBConstants.SETTING_TABLE_NAME, projection, selection, selectionArgs,
+                  null, null, null);
+            break;
       }
       return res;
    }
@@ -112,7 +140,7 @@ public class DataProvider extends ContentProvider {
     * @see android.content.ContentProvider#getType(android.net.Uri)
     */
    @Override
-   public String getType(Uri uri) {
+   public String getType(@NonNull Uri uri) {
       String type = null;
 
       switch (mUriMatcher.match(uri)) {
@@ -132,6 +160,18 @@ public class DataProvider extends ContentProvider {
             type = "vnd.android.cursor.dir/vnd." + DBConstants.AUTHORITY + "."
                   + DBConstants.TABLE_NAME;
             break;
+         case PROGRAM_LAST_DATE:
+            type = "vnd.android.cursor.item/vnd." + DBConstants.AUTHORITY + "" +
+                  "." + DBConstants.TABLE_NAME + "." + DBConstants.LAST_DATE_QUERY;
+            break;
+         case TABLE_SETTING_ID:
+            type = "vnd.android.cursor.dir/vnd." + DBConstants.AUTHORITY + "."
+                  + DBConstants.SETTING_TABLE_NAME;
+            break;
+         case SETTING_KEY_ID:
+            type = "vnd.android.cursor.item/vnd." + DBConstants.AUTHORITY + "" +
+                  "." + DBConstants.SETTING_TABLE_NAME + "." + DBConstants.KEY_QUERY;
+            break;
       }
 
       return type;
@@ -142,7 +182,7 @@ public class DataProvider extends ContentProvider {
     * android.content.ContentValues)
     */
    @Override
-   public Uri insert(Uri uri, ContentValues values) {
+   public Uri insert(@NonNull Uri uri, ContentValues values) {
       Uri res = null;
 
       switch (mUriMatcher.match(uri)) {
@@ -176,7 +216,7 @@ public class DataProvider extends ContentProvider {
     * android.content.ContentValues, String, String[])
     */
    @Override
-   public int update(Uri uri, ContentValues values, String selection,
+   public int update(@NonNull Uri uri, ContentValues values, String selection,
                      String[] selectionArgs) {
       int count = 0;
 
@@ -184,10 +224,13 @@ public class DataProvider extends ContentProvider {
          case PROGRAM_POINT_ID:
             selection = DBConstants._ID + " = ?";
             selectionArgs = new String[]{uri.getLastPathSegment()};
-            count = mDb.update(DBConstants.TABLE_NAME, values, selection,
-                  selectionArgs);
-            getContext().getContentResolver().notifyChange(DBConstants
-                  .TABLE_CONTENT_URI, null);
+            count = mDb.update(DBConstants.TABLE_NAME, values, selection, selectionArgs);
+            getContext().getContentResolver().notifyChange(DBConstants.TABLE_CONTENT_URI, null);
+            break;
+         case SETTING_KEY_ID:
+            selection = DBConstants.KEY_KEY + " = ?";
+            count = mDb.update(DBConstants.SETTING_TABLE_NAME, values, selection, selectionArgs);
+            getContext().getContentResolver().notifyChange(DBConstants.SETTING_CONTENT_URI, null);
             break;
       }
       return count;
