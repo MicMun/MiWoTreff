@@ -25,4 +25,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.anthonycr.grant:permissions:1.0'
+    compile 'com.koushikdutta.ion:ion:2.+'
 }
