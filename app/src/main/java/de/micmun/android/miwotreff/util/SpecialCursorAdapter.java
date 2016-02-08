@@ -26,7 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
-import java.util.GregorianCalendar;
+import java.util.Calendar;
 
 import de.micmun.android.miwotreff.R;
 import de.micmun.android.miwotreff.db.DBConstants;
@@ -136,7 +136,7 @@ public class SpecialCursorAdapter
        */
       private boolean isNextWednesday(String d) {
          if (nextWednesday == null) {
-            GregorianCalendar today = DBDateUtility.getNextWednesday();
+            Calendar today = DBDateUtility.getNextWednesday();
             nextWednesday = DateFormat.format("dd.MM.yyyy", today).toString();
          }
 
