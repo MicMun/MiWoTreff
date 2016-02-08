@@ -20,6 +20,7 @@ import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -69,10 +70,11 @@ public class DBDateUtility {
    /**
     * Returns the date of next wednesday.
     *
-    * @return date of next wednesday as gregorian calendar.
+    * @return date of next wednesday as calendar.
     */
-   public static GregorianCalendar getNextWednesday() {
-      GregorianCalendar nextWedDay = new GregorianCalendar();
+   public static Calendar getNextWednesday() {
+      Calendar nextWedDay = Calendar.getInstance();
+      nextWedDay.setTimeInMillis(System.currentTimeMillis());
 
       int diff = GregorianCalendar.WEDNESDAY -
             nextWedDay.get(GregorianCalendar.DAY_OF_WEEK);
@@ -81,7 +83,11 @@ public class DBDateUtility {
          diff += 7;
       }
 
-      nextWedDay.add(GregorianCalendar.DAY_OF_MONTH, diff);
+      nextWedDay.add(Calendar.DAY_OF_MONTH, diff);
+      nextWedDay.set(Calendar.HOUR_OF_DAY, 0);
+      nextWedDay.set(Calendar.MINUTE, 0);
+      nextWedDay.set(Calendar.SECOND, 0);
+      nextWedDay.set(Calendar.MILLISECOND, 0);
 
       return nextWedDay;
    }
