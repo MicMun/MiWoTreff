@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 MicMun
+ * Copyright 2015-2016 MicMun
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU >General Public License as published by the Free Software Foundation, either version 3 of the
@@ -44,6 +44,7 @@ import java.util.Calendar;
 
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
+import de.micmun.android.miwotreff.service.AlarmConfiger;
 import de.micmun.android.miwotreff.util.CalendarInfo;
 import de.micmun.android.miwotreff.util.CalendarSyncHelper;
 import de.micmun.android.miwotreff.util.CalendarSyncTask;
@@ -90,7 +91,11 @@ public class MainActivity
             R.color.primary,
             R.color.accent);
 
+      // load data
       getLoaderManager().initLoader(0, null, this);
+
+      // set alarm for update service
+      AlarmConfiger.setAlarmService(this);
    }
 
    /**

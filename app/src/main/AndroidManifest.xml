@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="de.micmun.android.miwotreff"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="de.micmun.android.miwotreff"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <permission
         android:name="de.micmun.android.miwotreff.permission.ACCESS_DB_PROVIDER"
@@ -14,6 +15,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_CALENDAR"/>
     <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -53,6 +55,15 @@
             android:authorities="de.micmun.android.miwotreff.provider"
             android:permission="de.micmun.android.miwotreff.permission.ACCESS_DB_PROVIDER">
         </provider>
+        <service android:name=".service.UpdateIntentService" android:enabled="true"/>
+        <receiver
+            android:name=".service.BootBroadcastReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
