@@ -57,6 +57,7 @@ public class ProgramSaver implements FutureCallback<JsonArray> {
    public void onCompleted(Exception e, JsonArray result) {
       if (e != null) {
          Log.e(TAG, "ERROR: " + e.getLocalizedMessage());
+         mOnProgramRefreshListener.onProgramRefreshed(-1);
          return;
       }
       if (result == null) {

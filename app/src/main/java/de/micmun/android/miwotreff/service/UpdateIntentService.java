@@ -22,8 +22,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -96,9 +97,31 @@ public class UpdateIntentService extends IntentService implements ProgramSaver.O
    }
 
    /**
+    * Returns <code>true</code>, if you are connected to the internet.
+    *
+    * @return <code>true</code>, if connected to the internet.
+    */
+   private boolean isOnline() {
+      boolean ret = false;
+      ConnectivityManager mConManager =
+            (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+      NetworkInfo ni = mConManager.getActiveNetworkInfo();
+
+      if (ni != null && ni.isConnected() && !ni.isRoaming())
+         ret = true;
+
+      return ret;
+   }
+
+   /**
     * Loads program.
     */
    private void syncProgram() {
+      // if no internet connection return
+      if (!isOnline()) {
+         return;
+      }
+
       String mVon;
 
       // Query, if date exists
@@ -107,6 +130,7 @@ public class UpdateIntentService extends IntentService implements ProgramSaver.O
       if (c != null) {
          c.moveToNext();
          mVon = DBDateUtility.getDateString(c.getLong(1));
+         c.close();
          String url = "http://www.mittwochstreff-muenchen.de/program/api/index.php?op=0&von=" +
                mVon;
          ProgramSaver ps = new ProgramSaver(this);

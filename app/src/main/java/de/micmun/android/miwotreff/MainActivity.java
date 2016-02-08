@@ -24,6 +24,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
@@ -37,6 +39,7 @@ import android.widget.ListView;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
+import com.koushikdutta.ion.Ion;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,7 +54,7 @@ import de.micmun.android.miwotreff.util.CalendarSyncTask;
 import de.micmun.android.miwotreff.util.ContextActionMode;
 import de.micmun.android.miwotreff.util.CustomToast;
 import de.micmun.android.miwotreff.util.JSONBackupRestore;
-import de.micmun.android.miwotreff.util.ProgramLoader;
+import de.micmun.android.miwotreff.util.ProgramSaver;
 import de.micmun.android.miwotreff.util.SpecialCursorAdapter;
 
 /**
@@ -447,17 +450,42 @@ public class MainActivity
    /*  Swipe Refresh Layout                                                                       */
    /* =========================================================================================== */
 
+   /**
+    * Returns <code>true</code>, if you are connected to the internet.
+    *
+    * @return <code>true</code>, if connected to the internet.
+    */
+   private boolean isOnline() {
+      boolean ret = false;
+      ConnectivityManager mConManager =
+            (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+      NetworkInfo ni = mConManager.getActiveNetworkInfo();
+
+      if (ni != null && ni.isConnected() && !ni.isRoaming())
+         ret = true;
+
+      return ret;
+   }
+
    @Override
    public void onRefresh() {
+      if (!isOnline()) {
+         CustomToast.makeText(this, getString(R.string.error_pl_noconnect),
+               CustomToast.TYPE_ERROR).show();
+         mSwipeLayout.setRefreshing(false);
+         if (mMenuItemRefresh != null)
+            mMenuItemRefresh.setEnabled(true);
+         return;
+      }
+
       // start loading: show the indicator and disable the "refresh" menu icon
       mSwipeLayout.setRefreshing(true);
       if (mMenuItemRefresh != null)
          mMenuItemRefresh.setEnabled(false);
       // load new data
-      ProgramLoader pl = new ProgramLoader(this, lastDate);
-      pl.execute();
       final BaseActivity context = this;
-      pl.setOnProgramRefreshedListener(new ProgramLoader.OnProgramRefreshListener() {
+      ProgramSaver ps = new ProgramSaver(this);
+      ps.setOnProgramRefreshedListener(new ProgramSaver.OnProgramRefreshListener() {
          @Override
          public void onProgramRefreshed(int count) {
             // finished loading: remove the indicator and enable the menu icon again
@@ -467,9 +495,14 @@ public class MainActivity
             if (count != -1) {
                String msg = String.format(getString(R.string.load_success), count);
                CustomToast.makeText(context, msg, CustomToast.TYPE_INFO).show();
+            } else {
+               String msg = getString(R.string.error_pl_fetch);
+               CustomToast.makeText(context, msg, CustomToast.TYPE_ERROR).show();
             }
          }
       });
-
+      String url = "http://www.mittwochstreff-muenchen.de/program/api/index.php?op=0&von=" +
+            lastDate;
+      Ion.with(this).load(url).asJsonArray().setCallback(ps);
    }
 }
