@@ -136,15 +136,7 @@ public class SpecialCursorAdapter
        */
       private boolean isNextWednesday(String d) {
          if (nextWednesday == null) {
-            GregorianCalendar today = new GregorianCalendar();
-
-            int diff = GregorianCalendar.WEDNESDAY -
-                  today.get(GregorianCalendar.DAY_OF_WEEK);
-
-            if (!(diff >= 0)) {
-               diff += 7;
-            }
-            today.add(GregorianCalendar.DAY_OF_MONTH, diff);
+            GregorianCalendar today = DBDateUtility.getNextWednesday();
             nextWednesday = DateFormat.format("dd.MM.yyyy", today).toString();
          }
 

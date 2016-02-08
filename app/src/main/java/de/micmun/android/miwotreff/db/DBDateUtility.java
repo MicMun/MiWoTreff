@@ -31,38 +31,58 @@ import java.util.Locale;
  * @version 1.0, 12.08.13.
  */
 public class DBDateUtility {
-    private static final String TAG = "DBDateUtility";
-    private static final Locale def = Locale.getDefault();
+   private static final String TAG = "DBDateUtility";
+   private static final Locale def = Locale.getDefault();
 
-    /**
-     * Returns the Date-Object from String.
-     *
-     * @param d Date as String (Format: dd.MM.yyyy)
-     * @return Date-Object.
-     */
-    public static Date getDateFromString(String d) {
-        Date datum;
+   /**
+    * Returns the Date-Object from String.
+    *
+    * @param d Date as String (Format: dd.MM.yyyy)
+    * @return Date-Object.
+    */
+   public static Date getDateFromString(String d) {
+      Date datum;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", def);
-        try {
-            datum = sdf.parse(d);
-        } catch (ParseException e) {
-            Log.e(TAG, e.getLocalizedMessage());
-            datum = null;
-        }
+      SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", def);
+      try {
+         datum = sdf.parse(d);
+      } catch (ParseException e) {
+         Log.e(TAG, e.getLocalizedMessage());
+         datum = null;
+      }
 
-        return datum;
-    }
+      return datum;
+   }
 
-    /**
-     * Returns the Date as a String.
-     *
-     * @param t timestamp in milliseconds (see {@link java.util.Date#getTime()}).
-     * @return String of the date.
-     */
-    public static String getDateString(long t) {
-        GregorianCalendar gc = new GregorianCalendar();
-        gc.setTimeInMillis(t);
-        return DateFormat.format("dd.MM.yyyy", gc).toString();
-    }
+   /**
+    * Returns the Date as a String.
+    *
+    * @param t timestamp in milliseconds (see {@link java.util.Date#getTime()}).
+    * @return String of the date.
+    */
+   public static String getDateString(long t) {
+      GregorianCalendar gc = new GregorianCalendar();
+      gc.setTimeInMillis(t);
+      return DateFormat.format("dd.MM.yyyy", gc).toString();
+   }
+
+   /**
+    * Returns the date of next wednesday.
+    *
+    * @return date of next wednesday as gregorian calendar.
+    */
+   public static GregorianCalendar getNextWednesday() {
+      GregorianCalendar nextWedDay = new GregorianCalendar();
+
+      int diff = GregorianCalendar.WEDNESDAY -
+            nextWedDay.get(GregorianCalendar.DAY_OF_WEEK);
+
+      if (!(diff >= 0)) {
+         diff += 7;
+      }
+
+      nextWedDay.add(GregorianCalendar.DAY_OF_MONTH, diff);
+
+      return nextWedDay;
+   }
 }
