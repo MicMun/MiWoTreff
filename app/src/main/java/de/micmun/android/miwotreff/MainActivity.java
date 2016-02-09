@@ -31,6 +31,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +49,7 @@ import java.util.Calendar;
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
 import de.micmun.android.miwotreff.service.AlarmConfiger;
+import de.micmun.android.miwotreff.util.AppPreferences;
 import de.micmun.android.miwotreff.util.CalendarInfo;
 import de.micmun.android.miwotreff.util.CalendarSyncHelper;
 import de.micmun.android.miwotreff.util.CalendarSyncTask;
@@ -75,6 +77,8 @@ public class MainActivity
    private MenuItem mMenuItemRefresh;
    private SwipeRefreshLayout mSwipeLayout;
 
+   private AppPreferences mAppPreferences;
+
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -93,6 +97,9 @@ public class MainActivity
       mSwipeLayout.setColorSchemeResources(
             R.color.primary,
             R.color.accent);
+
+      // app preferences
+      mAppPreferences = new AppPreferences(getApplicationContext());
 
       // load data
       getLoaderManager().initLoader(0, null, this);
@@ -150,6 +157,10 @@ public class MainActivity
                               CustomToast.TYPE_ERROR).show();
                      }
                   });
+            return true;
+         case R.id.action_setting:
+            Intent settingIntent = new Intent(this, SettingActivity.class);
+            startActivity(settingIntent);
             return true;
       }
 
@@ -301,9 +312,12 @@ public class MainActivity
       });
 
       final File[] files = jbr.getBackupFiles();
-      if (files.length > 5) {
-         File[] delFiles = new File[files.length - 5];
-         System.arraycopy(files, 5, delFiles, 0, files.length - 5);
+      // user preference how much files to keep from deleting
+      int numberToKeep = mAppPreferences.getNumberOfFilesToKeep();
+
+      if (files != null && files.length > numberToKeep) {
+         File[] delFiles = new File[files.length - numberToKeep];
+         System.arraycopy(files, numberToKeep, delFiles, 0, files.length - numberToKeep);
          // start loading: show the indicator and disable the "refresh" menu icon
          mSwipeLayout.setRefreshing(true);
          jbr.execute(delFiles);

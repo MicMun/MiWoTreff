@@ -97,7 +97,7 @@ public class DBConstants implements BaseColumns {
    /**
     * Default value of the number_old_files.
     */
-   public static final String SETTING_VALUE_NUMBER_OLD = "5";
+   public static final int SETTING_VALUE_NUMBER_OLD = 5;
    /**
     * Default value for last update.
     */

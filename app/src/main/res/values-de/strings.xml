@@ -7,6 +7,7 @@
     <string name="action_search">Suche Eintrag</string>
     <string name="action_refresh">Lade Daten</string>
     <string name="action_done">Speichern</string>
+    <string name="action_setting">Einstellungen</string>
     <string name="addToCall">Zum Kalender hinzufügen</string>
     <string name="cal_loc">Möhlstraße 20, 80935 München</string>
     <string name="count_del">%s Dateien gelöscht</string>
@@ -46,4 +47,13 @@
     <string name="sync_confirm_cancel">Abbrechen</string>
     <string name="sync_confirm_yes">Jetzt Synchronisieren</string>
     <string name="sync_perm_error">FEHLER: App hat keine Berechtigung für den Kalender!</string>
+    <!-- settings -->
+    <string name="setting_cat_set">Optionen für Auto Sync und Löschen alter Backup-Dateien</string>
+    <string name="setting_cat_about">Über</string>
+    <string name="setting_auto_sync">Aktiviere Auto-Sync</string>
+    <string name="setting_files_keep">Anzahl Dateien</string>
+    <string name="setting_about">&#169; 2015–2016 by Michael Munzert, E-Mail: MicMunze@gmail.com</string>
+    <string name="auto_sync_summary_off">Automatische Synchronisation ist deaktiviert, die App lädt deshalb nicht automatisch das neue Programm.</string>
+    <string name="auto_sync_summary_on">Automatische Synchronisation ist aktiviert, die App lädt deshalb automatisch das neue Programm.</string>
+    <string name="files_keep_summary">Behalte die neuesten %s Backup-Dateien beim Löschen</string>
 </resources>

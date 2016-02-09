@@ -59,15 +59,8 @@ public class DbHelper extends SQLiteOpenHelper {
       ContentValues lastUpdate = new ContentValues(2);
       lastUpdate.put(DBConstants.KEY_KEY, DBConstants.SETTING_KEY_LAST_UPDATE);
       lastUpdate.put(DBConstants.KEY_VALUE, DBConstants.SETTING_VALUE_LAST_UPDATE);
-      ContentValues autoSync = new ContentValues(2);
-      autoSync.put(DBConstants.KEY_KEY, DBConstants.SETTING_KEY_AUTO_SYNC);
-      autoSync.put(DBConstants.KEY_VALUE, String.valueOf(true));
-      ContentValues numberOldFiles = new ContentValues(2);
-      numberOldFiles.put(DBConstants.KEY_KEY, DBConstants.SETTING_KEY_NUMBER_OLD);
-      numberOldFiles.put(DBConstants.KEY_VALUE, DBConstants.SETTING_VALUE_NUMBER_OLD);
+      // insert last update
       db.insert(DBConstants.SETTING_TABLE_NAME, null, lastUpdate);
-      db.insert(DBConstants.SETTING_TABLE_NAME, null, autoSync);
-      db.insert(DBConstants.SETTING_TABLE_NAME, null, numberOldFiles);
    }
 
    @Override
@@ -78,15 +71,8 @@ public class DbHelper extends SQLiteOpenHelper {
          ContentValues lastUpdate = new ContentValues(2);
          lastUpdate.put(DBConstants.KEY_KEY, DBConstants.SETTING_KEY_LAST_UPDATE);
          lastUpdate.put(DBConstants.KEY_VALUE, DBConstants.SETTING_VALUE_LAST_UPDATE);
-         ContentValues autoSync = new ContentValues(2);
-         autoSync.put(DBConstants.KEY_KEY, DBConstants.SETTING_KEY_AUTO_SYNC);
-         autoSync.put(DBConstants.KEY_VALUE, String.valueOf(true));
-         ContentValues numberOldFiles = new ContentValues(2);
-         numberOldFiles.put(DBConstants.KEY_KEY, DBConstants.SETTING_KEY_NUMBER_OLD);
-         numberOldFiles.put(DBConstants.KEY_VALUE, DBConstants.SETTING_VALUE_NUMBER_OLD);
+         // insert lastUpdate
          db.insert(DBConstants.SETTING_TABLE_NAME, null, lastUpdate);
-         db.insert(DBConstants.SETTING_TABLE_NAME, null, autoSync);
-         db.insert(DBConstants.SETTING_TABLE_NAME, null, numberOldFiles);
       }
    }
 }

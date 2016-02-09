@@ -15,7 +15,7 @@
 package de.micmun.android.miwotreff;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 /**
@@ -24,10 +24,10 @@ import android.support.v7.widget.Toolbar;
  * @author MicMun
  * @version 1.0, 14.01.2015
  */
-public abstract class BaseActivity extends ActionBarActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
    /**
-    * @see android.support.v7.app.ActionBarActivity#onCreate(android.os.Bundle)
+    * @see AppCompatActivity#onCreate(Bundle)
     */
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,8 @@ public abstract class BaseActivity extends ActionBarActivity {
 
       if (toolbar != null) {
          setSupportActionBar(toolbar);
-         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+         if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
          toolbar.setTitle(getResources().getString(R.string.app_name));
       }
    }
@@ -56,6 +57,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     * @param e <code>true</code>, if back arrow should be enabled.
     */
    protected void setBackArrowEnabled(boolean e) {
-      getSupportActionBar().setDisplayHomeAsUpEnabled(e);
+      if (getSupportActionBar() != null)
+         getSupportActionBar().setDisplayHomeAsUpEnabled(e);
    }
 }

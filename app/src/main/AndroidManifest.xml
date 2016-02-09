@@ -48,14 +48,21 @@
                 android:resource="@xml/searchable"/>
         </activity>
 
-        <activity android:name="de.micmun.android.miwotreff.EditActivity"/>
+        <activity
+            android:name="de.micmun.android.miwotreff.EditActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".SettingActivity"
+            android:exported="false"/>
 
         <provider
             android:name="de.micmun.android.miwotreff.db.DataProvider"
             android:authorities="de.micmun.android.miwotreff.provider"
             android:permission="de.micmun.android.miwotreff.permission.ACCESS_DB_PROVIDER">
         </provider>
-        <service android:name=".service.UpdateIntentService" android:enabled="true"/>
+        <service
+            android:name=".service.UpdateIntentService"
+            android:enabled="true"/>
         <receiver
             android:name=".service.BootBroadcastReceiver"
             android:enabled="true">

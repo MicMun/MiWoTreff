@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="pref_setting_app"
+        android:title="@string/setting_cat_set">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="auto_sync"
+            android:summaryOff="@string/auto_sync_summary_off"
+            android:summaryOn="@string/auto_sync_summary_on"
+            android:title="@string/setting_auto_sync"/>
+        <ListPreference
+            android:defaultValue="5"
+            android:entries="@array/setting_number_entries"
+            android:entryValues="@array/setting_number_entry_values"
+            android:key="number_old_files"
+            android:title="@string/setting_files_keep"/>
+    </PreferenceCategory>
+    <EditTextPreference
+        android:enabled="false"
+        android:maxLines="10"
+        android:summary="@string/setting_about"
+        android:title="@string/setting_cat_about"/>
+</PreferenceScreen>

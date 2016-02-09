@@ -43,6 +43,7 @@ import de.micmun.android.miwotreff.MainActivity;
 import de.micmun.android.miwotreff.R;
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
+import de.micmun.android.miwotreff.util.AppPreferences;
 import de.micmun.android.miwotreff.util.ProgramSaver;
 
 /**
@@ -54,11 +55,16 @@ import de.micmun.android.miwotreff.util.ProgramSaver;
 public class UpdateIntentService extends IntentService implements ProgramSaver.OnProgramRefreshListener {
    public final String TAG = "UpdateIntentService";
    private final DateFormat myDateFormat = new SimpleDateFormat("dd.MM.y", Locale.GERMANY);
-   Date dateLastUpdate;
-   Date dateLastServerUpdate;
+   private Date dateLastUpdate;
+   private Date dateLastServerUpdate;
+   private AppPreferences mAppPreferences;
 
+   /**
+    * Creates a new UpdateIntentService.
+    */
    public UpdateIntentService() {
       this("UpdateIntentService");
+      mAppPreferences = new AppPreferences(getApplicationContext());
    }
 
    /**
@@ -68,6 +74,7 @@ public class UpdateIntentService extends IntentService implements ProgramSaver.O
     */
    public UpdateIntentService(String name) {
       super(name);
+      mAppPreferences = new AppPreferences(getApplicationContext());
    }
 
    @Override
@@ -181,24 +188,12 @@ public class UpdateIntentService extends IntentService implements ProgramSaver.O
    }
 
    /**
-    * Read setting, if auto sync is on and sets flag.
+    * Returns the auto sync flag.
+    *
+    * @return auto sync flag.
     */
    private boolean isAutoSyncOn() {
-      boolean isAutoSync = true;
-      Uri autoSyncUri = Uri.withAppendedPath(DBConstants.SETTING_CONTENT_URI, DBConstants.KEY_QUERY);
-      Cursor c = getContentResolver().query(autoSyncUri, null, null,
-            new String[]{DBConstants.SETTING_KEY_AUTO_SYNC}, null);
-      if (c != null) {
-         c.moveToNext();
-         isAutoSync = Boolean.parseBoolean(c.getString(0));
-         c.close();
-      } else {
-         ContentValues cv = new ContentValues();
-         cv.put(DBConstants.KEY_KEY, DBConstants.SETTING_KEY_AUTO_SYNC);
-         cv.put(DBConstants.KEY_VALUE, String.valueOf(true));
-         getContentResolver().insert(autoSyncUri, cv);
-      }
-      return isAutoSync;
+      return mAppPreferences.isAutoSync();
    }
 
    @Override

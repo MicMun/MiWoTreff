@@ -12,6 +12,7 @@
     <string name="action_search">Search entry</string>
     <string name="action_refresh">Load new data</string>
     <string name="action_done">Save changes</string>
+    <string name="action_setting">Settings</string>
     <!-- backup and restore -->
     <string name="error_delete">Error deleting old backup files</string>
     <string name="load_success">%d added.</string>
@@ -59,4 +60,13 @@
     <string name="sync_confirm_cancel">Cancel</string>
     <string name="sync_confirm_yes">Sync now</string>
     <string name="sync_perm_error">ERROR: App has no permission for calendar!</string>
+    <!-- settings -->
+    <string name="setting_cat_set">Set options to handle sync and deleting old files</string>
+    <string name="setting_cat_about">About</string>
+    <string name="setting_auto_sync">Enable auto sync</string>
+    <string name="setting_files_keep">Number of files</string>
+    <string name="setting_about">&#169; 2015–2016 by Michael Munzert, E-Mail: MicMunze@gmail.com</string>
+    <string name="auto_sync_summary_off">Auto synchronization is disabled, so the app does not load automatically new program data.</string>
+    <string name="auto_sync_summary_on">Auto synchronization is enabled, so the app loads automatically new program data.</string>
+    <string name="files_keep_summary">Keep the newest %s backup files while deleting</string>
 </resources>
