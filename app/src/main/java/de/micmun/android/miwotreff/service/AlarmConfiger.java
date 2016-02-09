@@ -43,7 +43,7 @@ public class AlarmConfiger {
       PendingIntent pendingIntent = PendingIntent.getService(context, 0, serviceIntent, 0);
       // date of first execution = next wednesday 13 o'clock
       Calendar cal = DBDateUtility.getNextWednesday();
-      cal.set(GregorianCalendar.HOUR_OF_DAY, 13);
+      cal.set(GregorianCalendar.HOUR_OF_DAY, 17);
       cal.set(GregorianCalendar.MINUTE, 0);
       cal.set(GregorianCalendar.SECOND, 0);
       // interval = every week
