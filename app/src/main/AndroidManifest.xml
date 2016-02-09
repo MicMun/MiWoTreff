@@ -5,7 +5,6 @@
 
     <permission
         android:name="de.micmun.android.miwotreff.permission.ACCESS_DB_PROVIDER"
-        android:description="@string/perm_desc"
         android:protectionLevel="normal">
     </permission>
 

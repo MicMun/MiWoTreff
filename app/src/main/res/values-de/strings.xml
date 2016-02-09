@@ -28,7 +28,6 @@
     <string name="no_del">Keine Dateien zum Löschen</string>
     <string name="no_file_selected">Keine Datei zum Wiederherstellen ausgewählt.</string>
     <string name="no_restore">Keine Dateien zum Wiederherstellen vorhanden.</string>
-    <string name="perm_desc">Zugriff auf den Datenbank-Provider von MiWoTreff</string>
     <string name="restore_success">Wiederherstellen der Daten (%s Einträge) erfolgreich.</string>
     <string name="search_hint">Suche Datum, Thema, Person</string>
     <string name="search_title">Suche</string>

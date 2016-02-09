@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Permission -->
-    <string name="perm_desc">Access to the db provider of MiWoTreff</string>
-
     <string name="app_name" translatable="false">MiWoTreff</string>
     <!-- Menu items -->
     <string name="action_sync">Sync with calendar</string>
