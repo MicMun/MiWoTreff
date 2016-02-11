@@ -25,10 +25,12 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.koushikdutta.ion.Ion;
 
@@ -43,7 +45,6 @@ import de.micmun.android.miwotreff.MainActivity;
 import de.micmun.android.miwotreff.R;
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
-import de.micmun.android.miwotreff.util.AppPreferences;
 import de.micmun.android.miwotreff.util.ProgramSaver;
 
 /**
@@ -52,19 +53,17 @@ import de.micmun.android.miwotreff.util.ProgramSaver;
  * @author MicMun
  * @version 1.0, 03.02.16
  */
-public class UpdateIntentService extends IntentService implements ProgramSaver.OnProgramRefreshListener {
+public class UpdateIntentService extends IntentService
+      implements ProgramSaver.OnProgramRefreshListener {
    public final String TAG = "UpdateIntentService";
    private final DateFormat myDateFormat = new SimpleDateFormat("dd.MM.y", Locale.GERMANY);
-   private Date dateLastUpdate;
    private Date dateLastServerUpdate;
-   private AppPreferences mAppPreferences;
 
    /**
     * Creates a new UpdateIntentService.
     */
    public UpdateIntentService() {
       this("UpdateIntentService");
-      mAppPreferences = new AppPreferences(getApplicationContext());
    }
 
    /**
@@ -74,7 +73,6 @@ public class UpdateIntentService extends IntentService implements ProgramSaver.O
     */
    public UpdateIntentService(String name) {
       super(name);
-      mAppPreferences = new AppPreferences(getApplicationContext());
    }
 
    @Override
@@ -82,23 +80,17 @@ public class UpdateIntentService extends IntentService implements ProgramSaver.O
       // Check intent action
       if (Intent.ACTION_GET_CONTENT.equals(intent.getAction())) {
          // check if auto sync is on
-         if (isAutoSyncOn()) {
-            Log.d(TAG, "Service startet...");
-            try {
-               dateLastUpdate = getLastLocalUpdate();
-               dateLastServerUpdate = getLastServerUpdate();
+         try {
+            Date dateLastUpdate = getLastLocalUpdate();
+            dateLastServerUpdate = getLastServerUpdate();
 
-               Log.d(TAG, "Last date (DB): " + dateLastUpdate);
-               Log.d(TAG, "Last date (Server): " + dateLastServerUpdate);
-
-               // if update is available (server time is newer or equal last update)
-               if (dateLastServerUpdate.getTime() >= dateLastUpdate.getTime()) {
-                  // syncProgram loads the program from server to database
-                  syncProgram();
-               }
-            } catch (InterruptedException | ExecutionException | ParseException e) {
-               Log.e(TAG, "ERROR: " + e.getLocalizedMessage());
+            // if update is available (server time is newer or equal last update)
+            if (dateLastServerUpdate.getTime() > dateLastUpdate.getTime()) {
+               // syncProgram loads the program from server to database
+               syncProgram();
             }
+         } catch (InterruptedException | ExecutionException | ParseException e) {
+            Log.e(TAG, "ERROR: " + e.getLocalizedMessage());
          }
       }
    }
@@ -129,20 +121,29 @@ public class UpdateIntentService extends IntentService implements ProgramSaver.O
          return;
       }
 
-      String mVon;
-
       // Query, if date exists
       Uri uri = Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI, DBConstants.LAST_DATE_QUERY);
       Cursor c = getContentResolver().query(uri, null, null, null, null);
       if (c != null) {
+         // get last program entry
          c.moveToNext();
-         mVon = DBDateUtility.getDateString(c.getLong(1));
+         String mVon = DBDateUtility.getDateString(c.getLong(1));
          c.close();
+
          String url = "http://www.mittwochstreff-muenchen.de/program/api/index.php?op=0&von=" +
                mVon;
          ProgramSaver ps = new ProgramSaver(this);
          ps.setOnProgramRefreshedListener(this);
-         Ion.with(this).load(url).asJsonArray().setCallback(ps);
+
+         // load program from url
+         try {
+            JsonArray program = Ion.with(this).load(url).asJsonArray().get();
+            ps.onCompleted(null, program);
+         } catch (InterruptedException | ExecutionException e) {
+            Log.e(TAG, "ERROR: " + e.getLocalizedMessage());
+            ps.onCompleted(e, null);
+         }
+
       }
    }
 
@@ -187,54 +188,49 @@ public class UpdateIntentService extends IntentService implements ProgramSaver.O
       return myDateFormat.parse(lastUpdate);
    }
 
-   /**
-    * Returns the auto sync flag.
-    *
-    * @return auto sync flag.
-    */
-   private boolean isAutoSyncOn() {
-      return mAppPreferences.isAutoSync();
-   }
-
    @Override
    public void onProgramRefreshed(int count) {
-      if (count > 0) { // at least one new entry -> last date to settings
-         ContentValues cv = new ContentValues();
-         cv.put(DBConstants.KEY_VALUE,
-               DBDateUtility.getDateString(dateLastServerUpdate.getTime()));
-         getContentResolver().update(
-               Uri.withAppendedPath(DBConstants.SETTING_CONTENT_URI,
-                     DBConstants.KEY_QUERY), cv, null,
-               new String[]{DBConstants.SETTING_KEY_LAST_UPDATE});
+      // last date to settings
+      ContentValues cv = new ContentValues();
+      cv.put(DBConstants.KEY_VALUE,
+            DBDateUtility.getDateString(dateLastServerUpdate.getTime()));
+      getContentResolver().update(
+            Uri.withAppendedPath(DBConstants.SETTING_CONTENT_URI, DBConstants.KEY_QUERY), cv, null,
+            new String[]{DBConstants.SETTING_KEY_LAST_UPDATE});
+
+      // notification for user to start the app, only when count > 0
+      if (count > 0) {
+         String title = getString(R.string.app_name);
+         String text = String.format(getString(R.string.load_success), count);
+         NotificationCompat.Builder notifyBuilder =
+               new NotificationCompat.Builder(this);
+         notifyBuilder.setSmallIcon(R.drawable.ic_notify);
+         notifyBuilder.setContentTitle(title);
+         notifyBuilder.setContentText(text);
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            notifyBuilder.setCategory(Notification.CATEGORY_SOCIAL);
+         }
+         notifyBuilder.setDefaults(Notification.DEFAULT_ALL);
+         // result intent with date of last server update
+         Intent resultIntent = new Intent(this, MainActivity.class);
+
+         // stack for navigation
+         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+         stackBuilder.addParentStack(MainActivity.class);
+         stackBuilder.addNextIntent(resultIntent);
+         PendingIntent resultPendingIntent =
+               stackBuilder.getPendingIntent(
+                     0,
+                     PendingIntent.FLAG_UPDATE_CURRENT
+               );
+         notifyBuilder.setContentIntent(resultPendingIntent);
+         NotificationManager mNotificationManager =
+               (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+         // mId allows you to update the notification later on.
+         int mId = 1;
+         Notification notification = notifyBuilder.build();
+         notification.flags |= Notification.FLAG_AUTO_CANCEL;
+         mNotificationManager.notify(mId, notification);
       }
-
-      // notification for user to start the app
-      String title = getString(R.string.app_name);
-      String text = String.format(getString(R.string.load_success), count);
-      NotificationCompat.Builder notifyBuilder =
-            new NotificationCompat.Builder(getApplicationContext());
-      notifyBuilder.setSmallIcon(R.drawable.ic_notify);
-      notifyBuilder.setContentTitle(title);
-      notifyBuilder.setContentText(text);
-      // result intent with date of last server update
-      Intent resultIntent = new Intent(this, MainActivity.class);
-
-      // stack for navigation
-      TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-      stackBuilder.addParentStack(MainActivity.class);
-      stackBuilder.addNextIntent(resultIntent);
-      PendingIntent resultPendingIntent =
-            stackBuilder.getPendingIntent(
-                  0,
-                  PendingIntent.FLAG_UPDATE_CURRENT
-            );
-      notifyBuilder.setContentIntent(resultPendingIntent);
-      NotificationManager mNotificationManager =
-            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-      // mId allows you to update the notification later on.
-      int mId = 1;
-      Notification notification = notifyBuilder.build();
-      notification.flags |= Notification.FLAG_AUTO_CANCEL;
-      mNotificationManager.notify(mId, notification);
    }
 }

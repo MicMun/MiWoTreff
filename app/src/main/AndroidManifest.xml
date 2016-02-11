@@ -61,7 +61,12 @@
         </provider>
         <service
             android:name=".service.UpdateIntentService"
-            android:enabled="true"/>
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.GET_CONTENT"/>
+            </intent-filter>
+        </service>
         <receiver
             android:name=".service.BootBroadcastReceiver"
             android:enabled="true">

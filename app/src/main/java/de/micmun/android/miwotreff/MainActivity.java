@@ -31,7 +31,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -104,8 +103,10 @@ public class MainActivity
       // load data
       getLoaderManager().initLoader(0, null, this);
 
-      // set alarm for update service
-      AlarmConfiger.setAlarmService(this);
+      // set alarm for update service, if auto sync is on
+      if (mAppPreferences.isAutoSync()) {
+         AlarmConfiger.setAlarmService(getApplicationContext());
+      }
    }
 
    /**

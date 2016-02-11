@@ -18,6 +18,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import de.micmun.android.miwotreff.util.AppPreferences;
+
 /**
  * Brodcast receiver for boot complete event.
  *
@@ -31,8 +33,10 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
 
       if (action.equals("android.intent.action.BOOT_COMPLETED") ||
             action.equals("android.intent.action.QUICKBOOT_POWERON")) {
-         // set alarm for update service
-         AlarmConfiger.setAlarmService(context);
+         // set alarm for update service, if auto sync is on
+         if (new AppPreferences(context).isAutoSync()) {
+            AlarmConfiger.setAlarmService(context);
+         }
       }
    }
 }

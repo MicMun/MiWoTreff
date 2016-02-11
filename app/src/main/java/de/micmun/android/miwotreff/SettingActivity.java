@@ -21,10 +21,13 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceGroup;
+import android.preference.SwitchPreference;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import de.micmun.android.miwotreff.service.AlarmConfiger;
 
 /**
  * Activity for app settings.
@@ -79,6 +82,15 @@ public class SettingActivity extends PreferenceActivity
    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
       Preference pref = findPreference(key);
       updatePrefSummary(pref);
+
+      if (pref instanceof SwitchPreference) {
+         SwitchPreference switchPreference = (SwitchPreference) pref;
+         if (!switchPreference.isChecked()) {
+            AlarmConfiger.cancel(getApplicationContext());
+         } else {
+            AlarmConfiger.setAlarmService(getApplicationContext());
+         }
+      }
    }
 
    /**

@@ -20,9 +20,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
-
-import de.micmun.android.miwotreff.db.DBDateUtility;
 
 /**
  * Helper class to set alarm for update service.
@@ -37,21 +34,43 @@ public class AlarmConfiger {
     * @param context context of application or service.
     */
    public static void setAlarmService(Context context) {
+      // cancel before adding new alarm
+      cancel(context);
+
       // intent for update service
       Intent serviceIntent = new Intent(context, UpdateIntentService.class);
       serviceIntent.setAction(Intent.ACTION_GET_CONTENT);
-      PendingIntent pendingIntent = PendingIntent.getService(context, 0, serviceIntent, 0);
-      // date of first execution = next wednesday 13 o'clock
-      Calendar cal = DBDateUtility.getNextWednesday();
-      cal.set(GregorianCalendar.HOUR_OF_DAY, 17);
-      cal.set(GregorianCalendar.MINUTE, 0);
-      cal.set(GregorianCalendar.SECOND, 0);
-      // interval = every week
-      long interval = AlarmManager.INTERVAL_DAY * 7;
+      PendingIntent pendingIntent = PendingIntent.getService(context, 0, serviceIntent,
+            PendingIntent.FLAG_CANCEL_CURRENT);
+      // date of first execution = next wednesday 16 o'clock
+      Calendar cal = Calendar.getInstance();
+      cal.setTimeInMillis(System.currentTimeMillis());
+      cal.add(Calendar.DAY_OF_MONTH, 1);
+      cal.set(Calendar.HOUR_OF_DAY, 16);
+      cal.set(Calendar.MINUTE, 0);
+      cal.set(Calendar.SECOND, 0);
+      // interval = every day
+      long interval = AlarmManager.INTERVAL_DAY;
 
       // alarm manager, sets alarm
       AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
       alarmManager.setInexactRepeating(AlarmManager.RTC, cal.getTimeInMillis(), interval,
             pendingIntent);
+   }
+
+   /**
+    * Cancel the alarm for updating service.
+    *
+    * @param context context of application.
+    */
+   public static void cancel(Context context) {
+      // intent for update service
+      Intent serviceIntent = new Intent(context, UpdateIntentService.class);
+      serviceIntent.setAction(Intent.ACTION_GET_CONTENT);
+      PendingIntent pendingIntent = PendingIntent.getService(context, 0, serviceIntent,
+            PendingIntent.FLAG_CANCEL_CURRENT);
+      // alarm manager, cancel alarm
+      AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+      alarmManager.cancel(pendingIntent);
    }
 }
