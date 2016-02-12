@@ -62,7 +62,9 @@
     <string name="setting_cat_about">About</string>
     <string name="setting_auto_sync">Enable auto sync</string>
     <string name="setting_files_keep">Number of files</string>
-    <string name="setting_about">&#169; 2015–2016 by Michael Munzert, E-Mail: MicMunze@gmail.com</string>
+    <string name="setting_about">
+        Version %1$s
+        \n&#169; %2$d by Michael Munzert, Email: MicMunze@gmail.com</string>
     <string name="auto_sync_summary_off">Auto synchronization is disabled, so the app does not load automatically new program data.</string>
     <string name="auto_sync_summary_on">Auto synchronization is enabled, so the app loads automatically new program data.</string>
     <string name="files_keep_summary">Keep the newest %s backup files while deleting</string>

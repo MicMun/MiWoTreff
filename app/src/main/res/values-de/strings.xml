@@ -51,7 +51,9 @@
     <string name="setting_cat_about">Über</string>
     <string name="setting_auto_sync">Aktiviere Auto-Sync</string>
     <string name="setting_files_keep">Anzahl Dateien</string>
-    <string name="setting_about">&#169; 2015–2016 by Michael Munzert, E-Mail: MicMunze@gmail.com</string>
+    <string name="setting_about">
+        Version %1$s
+        \n&#169; %2$d by Michael Munzert, E-Mail: MicMunze@gmail.com</string>
     <string name="auto_sync_summary_off">Automatische Synchronisation ist deaktiviert, die App lädt deshalb nicht automatisch das neue Programm.</string>
     <string name="auto_sync_summary_on">Automatische Synchronisation ist aktiviert, die App lädt deshalb automatisch das neue Programm.</string>
     <string name="files_keep_summary">Behalte die neuesten %s Backup-Dateien beim Löschen</string>

@@ -19,6 +19,5 @@
     <EditTextPreference
         android:enabled="false"
         android:maxLines="10"
-        android:summary="@string/setting_about"
         android:title="@string/setting_cat_about"/>
 </PreferenceScreen>

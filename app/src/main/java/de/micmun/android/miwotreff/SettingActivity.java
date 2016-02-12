@@ -15,7 +15,9 @@
 package de.micmun.android.miwotreff;
 
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -23,9 +25,12 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceGroup;
 import android.preference.SwitchPreference;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import java.util.Calendar;
 
 import de.micmun.android.miwotreff.service.AlarmConfiger;
 
@@ -124,6 +129,14 @@ public class SettingActivity extends PreferenceActivity
          ListPreference listPref = (ListPreference) p;
          String summary = getString(R.string.files_keep_summary, listPref.getEntry());
          p.setSummary(summary);
+      } else if (p instanceof EditTextPreference) {
+         try {
+            String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            int year = Calendar.getInstance().get(Calendar.YEAR);
+            p.setSummary(getString(R.string.setting_about, version, year));
+         } catch (PackageManager.NameNotFoundException e) {
+            Log.d("SettingActivity", "ERROR: " + e.getLocalizedMessage());
+         }
       }
    }
 }
