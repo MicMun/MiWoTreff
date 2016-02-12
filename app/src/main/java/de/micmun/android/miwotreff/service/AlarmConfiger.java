@@ -45,7 +45,6 @@ public class AlarmConfiger {
       // date of first execution = next wednesday 16 o'clock
       Calendar cal = Calendar.getInstance();
       cal.setTimeInMillis(System.currentTimeMillis());
-      cal.add(Calendar.DAY_OF_MONTH, 1);
       cal.set(Calendar.HOUR_OF_DAY, 16);
       cal.set(Calendar.MINUTE, 0);
       cal.set(Calendar.SECOND, 0);
