@@ -79,7 +79,12 @@ public class UpdateIntentService extends IntentService
    protected void onHandleIntent(Intent intent) {
       // Check intent action
       if (Intent.ACTION_GET_CONTENT.equals(intent.getAction())) {
-         // check if auto sync is on
+         // check if internet connection is avalaible
+         if (!isOnline()) {
+            Log.e(TAG, "No internet connection!");
+            return;
+         }
+
          try {
             Date dateLastUpdate = getLastLocalUpdate();
             dateLastServerUpdate = getLastServerUpdate();
@@ -116,11 +121,6 @@ public class UpdateIntentService extends IntentService
     * Loads program.
     */
    private void syncProgram() {
-      // if no internet connection return
-      if (!isOnline()) {
-         return;
-      }
-
       // Query, if date exists
       Uri uri = Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI, DBConstants.LAST_DATE_QUERY);
       Cursor c = getContentResolver().query(uri, null, null, null, null);

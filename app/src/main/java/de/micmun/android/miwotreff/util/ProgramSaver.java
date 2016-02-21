@@ -69,13 +69,13 @@ public class ProgramSaver implements FutureCallback<JsonArray> {
          for (JsonElement element : result) {
             JsonObject o = element.getAsJsonObject();
             // take the values of an entry
-            long date = DBDateUtility.getDateFromString(
-                  o.get(DBConstants.KEY_DATUM).getAsString().trim()).getTime();
+            String dateString = o.get(DBConstants.KEY_DATUM).getAsString().trim();
+            long date = DBDateUtility.getDateFromString(dateString).getTime();
             String topic = o.get(DBConstants.KEY_THEMA).getAsString().trim();
             String person = o.get(DBConstants.KEY_PERSON).getAsString().trim();
 
             // selection argument for checking, if entry exists already
-            String[] selArgs = {String.valueOf(date)};
+            String[] selArgs = {dateString};
 
             // Prepare values for insert or update
             ContentValues values = new ContentValues();

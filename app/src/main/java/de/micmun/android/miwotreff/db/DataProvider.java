@@ -101,7 +101,8 @@ public class DataProvider extends ContentProvider {
             break;
          case PROGRAM_DATE_ID:
             projection = new String[]{DBConstants._ID, DBConstants.KEY_EDIT};
-            selection = DBConstants.KEY_DATUM + " = ?";
+            selection = "strftime('%d.%m.%Y', (" + DBConstants.KEY_DATUM +
+                  "/1000), 'unixepoch', 'localtime') = ?";
             res = mDb.query(DBConstants.TABLE_NAME, projection, selection, selectionArgs,
                   null, null, null);
             break;
