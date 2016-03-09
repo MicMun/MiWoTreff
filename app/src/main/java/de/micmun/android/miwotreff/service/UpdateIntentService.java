@@ -189,7 +189,7 @@ public class UpdateIntentService extends IntentService
    }
 
    @Override
-   public void onProgramRefreshed(int count) {
+   public void onProgramRefreshed(int countInsert, int countUpdate) {
       // last date to settings
       ContentValues cv = new ContentValues();
       cv.put(DBConstants.KEY_VALUE,
@@ -198,10 +198,10 @@ public class UpdateIntentService extends IntentService
             Uri.withAppendedPath(DBConstants.SETTING_CONTENT_URI, DBConstants.KEY_QUERY), cv, null,
             new String[]{DBConstants.SETTING_KEY_LAST_UPDATE});
 
-      // notification for user to start the app, only when count > 0
-      if (count > 0) {
+      // notification for user to start the app, only when countInsert > 0 or countUpdate > 0
+      if (countInsert > 0 || countUpdate > 0) {
          String title = getString(R.string.app_name);
-         String text = String.format(getString(R.string.load_success), count);
+         String text = String.format(getString(R.string.load_success), countInsert, countUpdate);
          NotificationCompat.Builder notifyBuilder =
                new NotificationCompat.Builder(this);
          notifyBuilder.setSmallIcon(R.drawable.ic_notify);

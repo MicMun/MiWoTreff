@@ -57,13 +57,14 @@ public class ProgramSaver implements FutureCallback<JsonArray> {
    public void onCompleted(Exception e, JsonArray result) {
       if (e != null) {
          Log.e(TAG, "ERROR: " + e.getLocalizedMessage());
-         mOnProgramRefreshListener.onProgramRefreshed(-1);
+         mOnProgramRefreshListener.onProgramRefreshed(-1, -1);
          return;
       }
       if (result == null) {
          Log.e(TAG, mCtx.getString(R.string.error_pl_fetch));
       } else {
-         int counter = 0;
+         int countIns = 0;
+         int countUpd = 0;
 
          // for all entries
          for (JsonElement element : result) {
@@ -92,24 +93,29 @@ public class ProgramSaver implements FutureCallback<JsonArray> {
                // Insert
                mCtx.getContentResolver()
                      .insert(DBConstants.TABLE_CONTENT_URI, values);
-               counter++;
+               countIns++;
                if (c != null)
                   c.close();
             } else { // exists
                c.moveToFirst();
                int edit = c.getInt(c.getColumnIndex(DBConstants.KEY_EDIT));
                int id = c.getInt(c.getColumnIndex(DBConstants._ID));
+               String oldTopic = c.getString(c.getColumnIndex(DBConstants.KEY_THEMA));
+               String oldPerson = c.getString(c.getColumnIndex(DBConstants.KEY_PERSON));
 
                if (edit == 0) { // if not edited yet
-                  // Update
-                  uri = Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI, String.valueOf(id));
-                  mCtx.getContentResolver().update(uri, values, null, null);
+                  // Update, if something has changed
+                  if (!topic.equals(oldTopic) || !person.equals(oldPerson)) {
+                     uri = Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI, String.valueOf(id));
+                     mCtx.getContentResolver().update(uri, values, null, null);
+                     countUpd++;
+                  }
                }
                c.close();
             }
          }
          // notify listener of inserted count
-         mOnProgramRefreshListener.onProgramRefreshed(counter);
+         mOnProgramRefreshListener.onProgramRefreshed(countIns, countUpd);
       }
    }
 
@@ -129,7 +135,7 @@ public class ProgramSaver implements FutureCallback<JsonArray> {
     */
    private static OnProgramRefreshListener sDummyListener = new OnProgramRefreshListener() {
       @Override
-      public void onProgramRefreshed(int count) {
+      public void onProgramRefreshed(int countInsert, int countUpdate) {
       }
    };
 
@@ -140,9 +146,10 @@ public class ProgramSaver implements FutureCallback<JsonArray> {
       /**
        * Called when the program was refreshed.
        *
-       * @param count number of inserted entries.
+       * @param countInsert number of inserted entries.
+       * @param countUpdate number of updated entries.
        */
-      void onProgramRefreshed(int count);
+      void onProgramRefreshed(int countInsert, int countUpdate);
    }
 }
 

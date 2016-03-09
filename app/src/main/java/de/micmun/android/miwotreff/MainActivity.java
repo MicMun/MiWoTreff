@@ -502,13 +502,13 @@ public class MainActivity
       ProgramSaver ps = new ProgramSaver(this);
       ps.setOnProgramRefreshedListener(new ProgramSaver.OnProgramRefreshListener() {
          @Override
-         public void onProgramRefreshed(int count) {
+         public void onProgramRefreshed(int countInsert, int countUpdate) {
             // finished loading: remove the indicator and enable the menu icon again
             mSwipeLayout.setRefreshing(false);
             if (mMenuItemRefresh != null)
                mMenuItemRefresh.setEnabled(true);
-            if (count != -1) {
-               String msg = String.format(getString(R.string.load_success), count);
+            if (countInsert != -1) {
+               String msg = String.format(getString(R.string.load_success), countInsert, countUpdate);
                CustomToast.makeText(context, msg, CustomToast.TYPE_INFO).show();
             } else {
                String msg = getString(R.string.error_pl_fetch);

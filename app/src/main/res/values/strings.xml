@@ -12,7 +12,7 @@
     <string name="action_setting">Settings</string>
     <!-- backup and restore -->
     <string name="error_delete">Error deleting old backup files</string>
-    <string name="load_success">%d added.</string>
+    <string name="load_success">%1$d added, %2$d updated.</string>
     <string name="restore_success">Restore data (%s entries) successfully.
     </string>
     <string name="error_storage_perm">ERROR: App has no permission for storage.</string>

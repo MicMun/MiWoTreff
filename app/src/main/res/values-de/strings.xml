@@ -24,7 +24,7 @@
     <string name="error_write_file">Fehler beim Schreiben der Backup-Datei!</string>
     <string name="info_backup">Backup in Datei %s</string>
     <string name="load_msg">Lade Programm…</string>
-    <string name="load_success">%d hinzugefügt.</string>
+    <string name="load_success">%1$d hinzugefügt, %2$d aktualisiert.</string>
     <string name="no_del">Keine Dateien zum Löschen</string>
     <string name="no_file_selected">Keine Datei zum Wiederherstellen ausgewählt.</string>
     <string name="no_restore">Keine Dateien zum Wiederherstellen vorhanden.</string>
