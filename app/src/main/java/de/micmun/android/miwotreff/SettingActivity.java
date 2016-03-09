@@ -57,7 +57,7 @@ public class SettingActivity extends PreferenceActivity
       LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
       Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
       bar.setTitle(R.string.action_setting);
-      bar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+      bar.setNavigationIcon(R.drawable.abc_ic_ab_back_material);
       root.addView(bar, 0); // insert at top
       bar.setNavigationOnClickListener(new View.OnClickListener() {
          @Override
