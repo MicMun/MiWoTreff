@@ -1,29 +1,37 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
-
+    compileSdkVersion 24
+    buildToolsVersion '24.0.1'
     defaultConfig {
         applicationId "de.micmun.android.miwotreff"
         minSdkVersion 14
-        targetSdkVersion 23
-        versionCode 4
-        versionName "3.1"
+        targetSdkVersion 24
+        versionCode 5
+        versionName "4.0"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable false
+            jniDebuggable false
         }
     }
     compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+    dexOptions {
+        incremental false
+    }
+    productFlavors {
     }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:23.2.0'
+    compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'com.anthonycr.grant:permissions:1.0'
     compile 'com.koushikdutta.ion:ion:2.1.7'
 }
