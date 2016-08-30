@@ -56,6 +56,7 @@ import de.micmun.android.miwotreff.util.ContextActionMode;
 import de.micmun.android.miwotreff.util.CustomToast;
 import de.micmun.android.miwotreff.util.JSONBackupRestore;
 import de.micmun.android.miwotreff.util.ProgramSaver;
+import de.micmun.android.miwotreff.util.ScrollToNextWednesdayPos;
 import de.micmun.android.miwotreff.util.SpecialCursorAdapter;
 
 /**
@@ -71,6 +72,7 @@ public class MainActivity
    private static final int ACTIVITY_EDIT = 1;
 
    private SpecialCursorAdapter mAdapter;
+   private ListView mProgListView;
    private String lastDate;
 
    private MenuItem mMenuItemRefresh;
@@ -81,14 +83,15 @@ public class MainActivity
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      mAdapter = new SpecialCursorAdapter(this, null);
 
-      ListView lv = (ListView) findViewById(R.id.progListView);
-      lv.setAdapter(mAdapter);
-      lv.setOnItemClickListener(this);
-      lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-      ContextActionMode cma = new ContextActionMode(this, lv);
-      lv.setMultiChoiceModeListener(cma);
+      // Adapter and list view
+      mAdapter = new SpecialCursorAdapter(this, null);
+      mProgListView = (ListView) findViewById(R.id.progListView);
+      mProgListView.setAdapter(mAdapter);
+      mProgListView.setOnItemClickListener(this);
+      mProgListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+      ContextActionMode cma = new ContextActionMode(this, mProgListView);
+      mProgListView.setMultiChoiceModeListener(cma);
 
       // Swipe Layout
       mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
@@ -450,6 +453,15 @@ public class MainActivity
          onRefresh();
       } else {
          lastDate = DBDateUtility.getDateString(((Cursor) mAdapter.getItem(0)).getLong(1));
+
+         mProgListView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+               ScrollToNextWednesdayPos scrollToNextWednesdayPos =
+                     new ScrollToNextWednesdayPos(mProgListView);
+               scrollToNextWednesdayPos.execute();
+            }
+         }, 100);
       }
    }
 

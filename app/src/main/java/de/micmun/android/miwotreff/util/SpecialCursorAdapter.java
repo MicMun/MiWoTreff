@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Filterable;
 import android.widget.ListView;
@@ -36,11 +37,13 @@ import de.micmun.android.miwotreff.db.DBDateUtility;
  * Handles the view of the data for the {@link ListView}.
  *
  * @author Michael Munzert
- * @version 1.0, 17.01.2015
+ * @version 1.1, 25.08.2016
  */
 public class SpecialCursorAdapter
       extends ResourceCursorAdapter
       implements Filterable {
+   private int mNextWdPos = -1;
+   private String mNextWednesday;
 
    /**
     * Creates a new SpecialCursorAdapter with context and cursor.
@@ -50,6 +53,9 @@ public class SpecialCursorAdapter
     */
    public SpecialCursorAdapter(Context ctx, Cursor c) {
       super(ctx, R.layout.list_row, c, false);
+
+      Calendar today = DBDateUtility.getNextWednesday();
+      mNextWednesday = DateFormat.format("dd.MM.yyyy", today).toString();
    }
 
    /**
@@ -60,10 +66,29 @@ public class SpecialCursorAdapter
    public void bindView(View view, Context context, Cursor cursor) {
       ViewHolder viewHolder = (ViewHolder) view.getTag();
       if (viewHolder == null) {
-         viewHolder = new ViewHolder(view, context);
+         viewHolder = new ViewHolder(view, context, mNextWednesday);
          view.setTag(viewHolder);
       }
       viewHolder.bind(cursor);
+
+      if (mNextWdPos == -1 && viewHolder.isNextWednesday()) {
+         mNextWdPos = cursor.getPosition();
+         if (mNextWdPos + 2 < cursor.getCount()) {
+            mNextWdPos += 2;
+         } else if (mNextWdPos + 1 < cursor.getCount()) {
+            mNextWdPos++;
+         }
+         Log.d(getClass().getSimpleName(), "Position = " + mNextWdPos);
+      }
+   }
+
+   /**
+    * Returns the position of the entry below the next wednesday.
+    *
+    * @return the position of the entry below the next wednesday.
+    */
+   public int getmNextWdPos() {
+      return mNextWdPos;
    }
 
    /**
@@ -82,12 +107,14 @@ public class SpecialCursorAdapter
       private RelativeLayout background;
       private String nextWednesday = null;
 
+      private boolean isNextWednesday = false;
+
       /**
        * Creates a new ViewHolder with a view.
        *
        * @param view View.
        */
-      public ViewHolder(View view, Context context) {
+      public ViewHolder(View view, Context context, String nextWednesday) {
          ctx = context;
          datum = (TextView) view.findViewById(R.id.text_datum);
          thema = (TextView) view.findViewById(R.id.text_thema);
@@ -95,6 +122,8 @@ public class SpecialCursorAdapter
          background = (RelativeLayout) view.findViewById(R.id.row_background);
 
          normalTextColor = datum.getTextColors();
+
+         this.nextWednesday = nextWednesday;
       }
 
       /**
@@ -110,12 +139,16 @@ public class SpecialCursorAdapter
             String sd = DBDateUtility.getDateString(d);
             datum.setText(sd);
 
-            if (isNextWednesday(sd)) {
+            if (nextWednesday != null && nextWednesday.equals(sd)) {
                background.setBackgroundDrawable(
                      ctx.getResources().getDrawable(R.drawable.background_indicator_green));
+               isNextWednesday = true;
             } else if (normalTextColor != null) {
                background.setBackgroundDrawable(ctx.getResources()
                      .getDrawable(R.drawable.background_indicator_transparent));
+               isNextWednesday = false;
+            } else {
+               isNextWednesday = false;
             }
 
             // topic
@@ -129,20 +162,13 @@ public class SpecialCursorAdapter
       }
 
       /**
-       * Returns <code>true</code>, if the date is the next wednesday.
+       * Returns <code>true</code>, if the view contains the next wednesday.
        *
-       * @param d Date in format dd.MM.yyyy.
-       * @return <code>true</code>, if the date is the next wednesday.
+       * @return <code>true</code>, if the view contains the next wednesday.
        */
-      private boolean isNextWednesday(String d) {
-         if (nextWednesday == null) {
-            Calendar today = DBDateUtility.getNextWednesday();
-            nextWednesday = DateFormat.format("dd.MM.yyyy", today).toString();
-         }
-
-         return nextWednesday.equals(d);
+      public boolean isNextWednesday() {
+         return isNextWednesday;
       }
-
    }
 
 }

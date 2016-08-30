@@ -22,9 +22,11 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.MenuItem;
 import android.widget.ListView;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import de.micmun.android.miwotreff.db.DBConstants;
@@ -57,6 +59,11 @@ public class SearchActivity
 //      new UndoBarController(findViewById(R.id.undobar),
 //            this);
 
+      // calculate next wednesday
+      Calendar today = DBDateUtility.getNextWednesday();
+      String nextWednesday = DateFormat.format("dd.MM.yyyy", today).toString();
+
+      // initialize list view
       ListView lv = (ListView) findViewById(R.id.progListView);
       mAdapter = new SpecialCursorAdapter(this, null);
       lv.setAdapter(mAdapter);
