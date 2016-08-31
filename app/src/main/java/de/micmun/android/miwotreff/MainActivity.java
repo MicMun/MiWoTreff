@@ -63,7 +63,7 @@ import de.micmun.android.miwotreff.util.SpecialCursorAdapter;
  * Main activity for miwotreff.
  *
  * @author MicMun
- * @version 1.0, 14.01.2015
+ * @version 1.1, 31.08.2016
  */
 public class MainActivity
       extends BaseActivity
@@ -454,14 +454,14 @@ public class MainActivity
       } else {
          lastDate = DBDateUtility.getDateString(((Cursor) mAdapter.getItem(0)).getLong(1));
 
-         mProgListView.postDelayed(new Runnable() {
+         mProgListView.post(new Runnable() {
             @Override
             public void run() {
                ScrollToNextWednesdayPos scrollToNextWednesdayPos =
                      new ScrollToNextWednesdayPos(mProgListView);
                scrollToNextWednesdayPos.execute();
             }
-         }, 100);
+         });
       }
    }
 

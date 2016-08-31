@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.widget.Filterable;
 import android.widget.ListView;
@@ -37,7 +36,7 @@ import de.micmun.android.miwotreff.db.DBDateUtility;
  * Handles the view of the data for the {@link ListView}.
  *
  * @author Michael Munzert
- * @version 1.1, 25.08.2016
+ * @version 1.1, 31.08.2016
  */
 public class SpecialCursorAdapter
       extends ResourceCursorAdapter
@@ -78,7 +77,6 @@ public class SpecialCursorAdapter
          } else if (mNextWdPos + 1 < cursor.getCount()) {
             mNextWdPos++;
          }
-         Log.d(getClass().getSimpleName(), "Position = " + mNextWdPos);
       }
    }
 

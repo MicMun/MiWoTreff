@@ -1,17 +1,15 @@
 package de.micmun.android.miwotreff.util;
 
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.ListView;
 
 /**
  * AsyncTask to calculate position of next wednesday and scroll the list view to this position.
  *
  * @author MicMun
- * @version 1.0, 25.08.2016
+ * @version 1.0, 31.08.2016
  */
 public class ScrollToNextWednesdayPos extends AsyncTask<Void, Void, Integer> {
-
    private ListView mListView;
    private SpecialCursorAdapter mAdapter;
 
@@ -46,13 +44,11 @@ public class ScrollToNextWednesdayPos extends AsyncTask<Void, Void, Integer> {
       super.onProgressUpdate(values);
 
       mListView.smoothScrollByOffset(mOffset);
-      Log.d(getClass().getSimpleName(), "Scroll um Offset = " + mOffset);
    }
 
    @Override
    protected void onPostExecute(Integer result) {
       super.onPostExecute(result);
       mListView.smoothScrollToPosition(result);
-      Log.d(getClass().getSimpleName(), "Scroll to  = " + result);
    }
 }
