@@ -37,6 +37,7 @@ public class DataProvider extends ContentProvider {
    private static final int PROGRAM_DATE_ID = 12; // single entry with date (only id and date)
    private static final int PROGAM_SYNC_DATE = 13; // all entries with date >= parameter
    private static final int PROGRAM_LAST_DATE = 14; // last date entry
+   private static final int PROGRAM_COUNT_AFTER_DATE = 15; // number of entries after selected date
    private static final int TABLE_SETTING_ID = 20; // all settings
    private static final int SETTING_KEY_ID = 21; // setting with given key
    private static final UriMatcher mUriMatcher = new UriMatcher(ROOT_ID);
@@ -55,6 +56,8 @@ public class DataProvider extends ContentProvider {
             + DBConstants.SYNC_QUERY, PROGAM_SYNC_DATE);
       mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME + "/"
             + DBConstants.LAST_DATE_QUERY, PROGRAM_LAST_DATE);
+      mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.TABLE_NAME + "/"
+            + DBConstants.NUMBER_AFTER_DATE_QUERY, PROGRAM_COUNT_AFTER_DATE);
       mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.SETTING_TABLE_NAME, TABLE_SETTING_ID);
       mUriMatcher.addURI(DBConstants.AUTHORITY, DBConstants.SETTING_TABLE_NAME + "/"
             + DBConstants.KEY_QUERY, SETTING_KEY_ID);
@@ -123,6 +126,14 @@ public class DataProvider extends ContentProvider {
             res = mDb.query(DBConstants.TABLE_NAME, projection, selection, null, null, null,
                   sortOrder);
             break;
+         case PROGRAM_COUNT_AFTER_DATE:
+            projection = new String[]{"COUNT(" + DBConstants._ID + ")"};
+            selection = DBConstants.KEY_DATUM + " > ?";
+            long date = DBDateUtility.getDateFromString(selectionArgs[0]).getTime();
+            selectionArgs = new String[]{String.valueOf(date)};
+            res = mDb.query(DBConstants.TABLE_NAME, projection, selection, selectionArgs, null,
+                  null, null);
+            break;
          case TABLE_SETTING_ID:
             projection = new String[]{DBConstants.KEY_KEY, DBConstants.KEY_VALUE};
             res = mDb.query(DBConstants.SETTING_TABLE_NAME, projection, null, null, null, null,
@@ -163,6 +174,10 @@ public class DataProvider extends ContentProvider {
                   + DBConstants.TABLE_NAME;
             break;
          case PROGRAM_LAST_DATE:
+            type = "vnd.android.cursor.item/vnd." + DBConstants.AUTHORITY + "" +
+                  "." + DBConstants.TABLE_NAME + "." + DBConstants.LAST_DATE_QUERY;
+            break;
+         case PROGRAM_COUNT_AFTER_DATE:
             type = "vnd.android.cursor.item/vnd." + DBConstants.AUTHORITY + "" +
                   "." + DBConstants.TABLE_NAME + "." + DBConstants.LAST_DATE_QUERY;
             break;

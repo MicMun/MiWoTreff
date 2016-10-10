@@ -71,6 +71,10 @@ public class DBConstants implements BaseColumns {
     */
    public static final String LAST_DATE_QUERY = "lastdate";
    /**
+    * Name for count number after date query.
+    */
+   public static final String NUMBER_AFTER_DATE_QUERY = "afterdate";
+   /**
     * Table for settings and last update date.
     */
    public static final String SETTING_TABLE_NAME = "settings";

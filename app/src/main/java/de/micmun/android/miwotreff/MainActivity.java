@@ -31,6 +31,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +45,7 @@ import com.koushikdutta.ion.Ion;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
@@ -56,7 +58,6 @@ import de.micmun.android.miwotreff.util.ContextActionMode;
 import de.micmun.android.miwotreff.util.CustomToast;
 import de.micmun.android.miwotreff.util.JSONBackupRestore;
 import de.micmun.android.miwotreff.util.ProgramSaver;
-import de.micmun.android.miwotreff.util.ScrollToNextWednesdayPos;
 import de.micmun.android.miwotreff.util.SpecialCursorAdapter;
 
 /**
@@ -453,15 +454,11 @@ public class MainActivity
          onRefresh();
       } else {
          lastDate = DBDateUtility.getDateString(((Cursor) mAdapter.getItem(0)).getLong(1));
-
-         mProgListView.post(new Runnable() {
-            @Override
-            public void run() {
-               ScrollToNextWednesdayPos scrollToNextWednesdayPos =
-                     new ScrollToNextWednesdayPos(mProgListView);
-               scrollToNextWednesdayPos.execute();
-            }
-         });
+         Date start = Calendar.getInstance().getTime();
+         mProgListView.smoothScrollToPosition(mAdapter.getmNextWdPos() + 1);
+         Date end = Calendar.getInstance().getTime();
+         Log.d(getClass().getSimpleName(), "smoothScroll Time = " +
+               (end.getTime() - start.getTime()) + " ms");
       }
    }
 

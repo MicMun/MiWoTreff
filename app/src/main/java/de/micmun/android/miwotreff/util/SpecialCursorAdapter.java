@@ -18,7 +18,9 @@ package de.micmun.android.miwotreff.util;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.net.Uri;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Filterable;
 import android.widget.ListView;
@@ -41,6 +43,7 @@ import de.micmun.android.miwotreff.db.DBDateUtility;
 public class SpecialCursorAdapter
       extends ResourceCursorAdapter
       implements Filterable {
+   private Context mCtx;
    private int mNextWdPos = -1;
    private String mNextWednesday;
 
@@ -52,6 +55,8 @@ public class SpecialCursorAdapter
     */
    public SpecialCursorAdapter(Context ctx, Cursor c) {
       super(ctx, R.layout.list_row, c, false);
+
+      mCtx = ctx;
 
       Calendar today = DBDateUtility.getNextWednesday();
       mNextWednesday = DateFormat.format("dd.MM.yyyy", today).toString();
@@ -86,6 +91,14 @@ public class SpecialCursorAdapter
     * @return the position of the entry below the next wednesday.
     */
    public int getmNextWdPos() {
+      Cursor c = mCtx.getContentResolver().query(Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI,
+            DBConstants.NUMBER_AFTER_DATE_QUERY), null, null, new String[]{mNextWednesday}, null);
+      if (c != null) {
+         c.moveToNext();
+         mNextWdPos = c.getInt(0) + 1;
+         Log.d(getClass().getSimpleName(), "mNextWdPos = " + mNextWdPos);
+         c.close();
+      }
       return mNextWdPos;
    }
 
