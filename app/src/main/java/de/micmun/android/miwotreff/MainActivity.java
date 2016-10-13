@@ -31,7 +31,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,7 +44,6 @@ import com.koushikdutta.ion.Ion;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
@@ -64,7 +62,7 @@ import de.micmun.android.miwotreff.util.SpecialCursorAdapter;
  * Main activity for miwotreff.
  *
  * @author MicMun
- * @version 1.1, 31.08.2016
+ * @version 1.2, 13.10.2016
  */
 public class MainActivity
       extends BaseActivity
@@ -454,11 +452,13 @@ public class MainActivity
          onRefresh();
       } else {
          lastDate = DBDateUtility.getDateString(((Cursor) mAdapter.getItem(0)).getLong(1));
-         Date start = Calendar.getInstance().getTime();
-         mProgListView.smoothScrollToPosition(mAdapter.getmNextWdPos() + 1);
-         Date end = Calendar.getInstance().getTime();
-         Log.d(getClass().getSimpleName(), "smoothScroll Time = " +
-               (end.getTime() - start.getTime()) + " ms");
+         mProgListView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+               mProgListView.smoothScrollToPosition(mAdapter.getmNextWdPos() + 1);
+            }
+         }, 300);
+
       }
    }
 

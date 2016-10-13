@@ -27,7 +27,7 @@ import android.support.annotation.NonNull;
  * Content provider for the miwotreff database.
  *
  * @author Michael Munzert
- * @version 1.0, 12.08.2013
+ * @version 1.1, 11.10.2016
  */
 public class DataProvider extends ContentProvider {
    // IDs for matching content

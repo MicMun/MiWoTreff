@@ -23,7 +23,7 @@ import android.provider.BaseColumns;
  * Provides Keys for columns, content uris, etc.
  *
  * @author Michael Munzert
- * @version 1.0, 12.08.13.
+ * @version 1.1, 11.10.2016.
  */
 public class DBConstants implements BaseColumns {
    /**
