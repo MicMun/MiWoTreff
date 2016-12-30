@@ -14,24 +14,23 @@
  */
 package de.micmun.android.miwotreff;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+import java.util.List;
+
 import de.micmun.android.miwotreff.db.DBConstants;
-import de.micmun.android.miwotreff.db.DBDateUtility;
+import de.micmun.android.miwotreff.db.DBProvider;
+import de.micmun.android.miwotreff.recyclerview.Program;
 
 /**
  * Activity for editing one program entry.
  *
  * @author MicMun
- * @version 1.0, 19.02.2015
+ * @version 1.1, 29.12.2016
  */
 public class EditActivity extends BaseActivity {
    private static final String TAG = "EditActivity";
@@ -39,6 +38,9 @@ public class EditActivity extends BaseActivity {
    private EditText mPersonEdit; // person input
    private EditText mDatumView; // Date
    private Long mRowId; // _id
+
+   private Program mProgram;
+   private DBProvider mDbProvider;
 
    /**
     * @see de.micmun.android.miwotreff.BaseActivity#onCreate(android.os.Bundle)
@@ -65,6 +67,7 @@ public class EditActivity extends BaseActivity {
             mRowId = extras.getLong(DBConstants._ID);
          }
       }
+      mDbProvider = DBProvider.getInstance(this);
       populateFields();
    }
 
@@ -108,25 +111,16 @@ public class EditActivity extends BaseActivity {
     */
    private void populateFields() {
       // actual values
-      Cursor c = getContentResolver().query(Uri.withAppendedPath(DBConstants
-                  .TABLE_CONTENT_URI, String.valueOf(mRowId)), null, null, null,
-            null);
+      String selection = DBConstants._ID + " = ?";
+      String[] selectionArgs = {String.valueOf(mRowId)};
 
-      try {
-         if (c != null && c.moveToFirst()) {
-            mThemaEdit.setText(c.getString(c.getColumnIndex
-                  (DBConstants.KEY_THEMA)));
-            mPersonEdit.setText(c.getString(c.getColumnIndex
-                  (DBConstants.KEY_PERSON)));
-            Long d = c.getLong(c.getColumnIndex
-                  (DBConstants.KEY_DATUM));
-            mDatumView.setText(DBDateUtility.getDateString(d));
-            mDatumView.setEnabled(false);
-
-            c.close();
-         }
-      } catch (IllegalArgumentException e) {
-         Log.e(TAG, e.getLocalizedMessage());
+      List<Program> programs = mDbProvider.queryProgram(selection, selectionArgs, null);
+      if (programs.size() == 1) {
+         mProgram = programs.get(0);
+         mDatumView.setText(mProgram.getDateString());
+         mDatumView.setEnabled(false);
+         mThemaEdit.setText(mProgram.getTopic());
+         mPersonEdit.setText(mProgram.getPerson());
       }
    }
 
@@ -137,13 +131,11 @@ public class EditActivity extends BaseActivity {
       String thema = mThemaEdit.getText().toString();
       String person = mPersonEdit.getText().toString();
 
-      Uri uri = Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI,
-            String.valueOf(mRowId));
-      ContentValues values = new ContentValues();
-      values.put(DBConstants.KEY_THEMA, thema);
-      values.put(DBConstants.KEY_PERSON, person);
-      values.put(DBConstants.KEY_EDIT, 1);
-      getContentResolver().update(uri, values, null, null);
+      mProgram.setTopic(thema);
+      mProgram.setPerson(person);
+      mProgram.setEdited(true);
+
+      mDbProvider.updateProgram(mProgram);
    }
 
    /**
@@ -156,7 +148,7 @@ public class EditActivity extends BaseActivity {
    }
 
    /**
-    * @see android.support.v7.app.ActionBarActivity#onPause()
+    * @see android.support.v7.app.AppCompatActivity#onPause()
     */
    @Override
    protected void onPause() {
@@ -164,7 +156,7 @@ public class EditActivity extends BaseActivity {
    }
 
    /**
-    * @see android.support.v7.app.ActionBarActivity#onResume()
+    * @see android.support.v7.app.AppCompatActivity#onResume()
     */
    @Override
    protected void onResume() {
@@ -173,10 +165,11 @@ public class EditActivity extends BaseActivity {
    }
 
    /**
-    * @see android.support.v7.app.ActionBarActivity#onDestroy()
+    * @see android.support.v7.app.AppCompatActivity#onDestroy()
     */
    @Override
    protected void onDestroy() {
+      mDbProvider.close();
       super.onDestroy();
    }
 }

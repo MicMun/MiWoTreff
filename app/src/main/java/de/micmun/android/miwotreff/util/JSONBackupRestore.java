@@ -16,8 +16,6 @@
 package de.micmun.android.miwotreff.util;
 
 import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -36,17 +34,20 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 import de.micmun.android.miwotreff.MainActivity;
 import de.micmun.android.miwotreff.R;
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
+import de.micmun.android.miwotreff.db.DBProvider;
+import de.micmun.android.miwotreff.recyclerview.Program;
 
 /**
  * Backup and restore data in json.
  *
  * @author Michael Munzert
- * @version 1.0, 31.01.2015
+ * @version 1.1, 29.12.16
  */
 public class JSONBackupRestore extends AsyncTask<File, Void, Integer> {
    // Types to execute
@@ -105,17 +106,15 @@ public class JSONBackupRestore extends AsyncTask<File, Void, Integer> {
    }
 
    /**
-    * Backup the data from cursor in a json file.
+    * Backup the data from list to json file.
     */
    private int backup() {
       int rc = 0;
       // Loading data and backup
-      Cursor c = mContext.getContentResolver().query(DBConstants
-            .TABLE_CONTENT_URI, null, null, null, null);
-      if (c != null) {
-         rc = writeCursorToFile(c);
-      }
-      return rc;
+      String sortOrder = DBConstants.KEY_DATUM + " desc";
+      List<Program> programs = DBProvider.getInstance(mContext).queryProgram(null, null, sortOrder);
+
+      return writeCursorToFile(programs);
    }
 
    /**
@@ -142,15 +141,12 @@ public class JSONBackupRestore extends AsyncTask<File, Void, Integer> {
          // insert data into database
          for (int i = 0; i < count; ++i) {
             JSONObject o = array.getJSONObject(i);
-            ContentValues v = new ContentValues();
 
             Date d = DBDateUtility.getDateFromString(o.getString
                   (DBConstants.KEY_DATUM));
-            v.put(DBConstants.KEY_DATUM, d.getTime());
-            v.put(DBConstants.KEY_THEMA, o.getString(DBConstants.KEY_THEMA));
-            v.put(DBConstants.KEY_PERSON, o.getString(DBConstants.KEY_PERSON));
-            v.put(DBConstants.KEY_EDIT, o.getInt(DBConstants.KEY_EDIT));
-            cr.insert(DBConstants.TABLE_CONTENT_URI, v);
+            Program p = new Program(-1, d.getTime(), o.getString(DBConstants.KEY_THEMA),
+                  o.getString(DBConstants.KEY_PERSON), o.getInt(DBConstants.KEY_EDIT) == 1);
+            DBProvider.getInstance(mContext).insertProgram(p);
          }
          mMessage = getMessage(R.string.restore_success, String.valueOf(count));
       } catch (FileNotFoundException e) {
@@ -176,30 +172,25 @@ public class JSONBackupRestore extends AsyncTask<File, Void, Integer> {
 
 
    /**
-    * Writes the data from cursor to json file.
+    * Writes the data from list to json file.
     *
-    * @param cursor cursor with data.
+    * @param programList list with program data.
     */
-   private int writeCursorToFile(Cursor cursor) {
+   private int writeCursorToFile(List<Program> programList) {
       int rc = 0;
       JSONArray dataList = new JSONArray();
       JSONObject data;
 
-      if (cursor.getCount() <= 0) {
+      if (programList.size() <= 0) {
          Log.d(TAG, "No DATA!");
          rc = 1;
       } else {
          // creates the json array for backup to file
-         cursor.moveToFirst();
-         do {
-            String d = DBDateUtility.getDateString(cursor.getLong(cursor
-                  .getColumnIndex(DBConstants.KEY_DATUM)));
-            String t = cursor.getString(cursor.getColumnIndex(DBConstants
-                  .KEY_THEMA));
-            String p = cursor.getString(cursor.getColumnIndex(DBConstants
-                  .KEY_PERSON));
-            int ed = cursor.getInt(cursor.getColumnIndex(DBConstants
-                  .KEY_EDIT));
+         for (Program pr : programList) {
+            String d = pr.getDateString();
+            String t = pr.getTopic();
+            String p = pr.getPerson();
+            int ed = pr.isEdited() ? 1 : 0;
             data = new JSONObject();
 
             try {
@@ -213,8 +204,7 @@ public class JSONBackupRestore extends AsyncTask<File, Void, Integer> {
                rc = 1;
                break;
             }
-         } while (cursor.moveToNext());
-         cursor.close();
+         }
 
          if (rc == 0) {
             // check if directory exists and create if not
@@ -232,8 +222,7 @@ public class JSONBackupRestore extends AsyncTask<File, Void, Integer> {
 
          if (rc == 0) {
             // write the file miwotreff_<time in milliseconds>
-            String time = "" + new Date().getTime();
-            File file = new File(DIR, "miwotreff_" + time);
+            File file = new File(DIR, "miwotreff_" + String.valueOf(new Date().getTime()));
 
             try {
                FileOutputStream fos = new FileOutputStream(file);

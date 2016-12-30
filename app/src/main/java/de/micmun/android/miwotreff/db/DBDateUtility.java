@@ -29,7 +29,7 @@ import java.util.Locale;
  * Beschreibung.
  *
  * @author Michael Munzert
- * @version 1.0, 12.08.13.
+ * @version 1.1, 29.12.16
  */
 public class DBDateUtility {
    private static final String TAG = "DBDateUtility";
@@ -72,7 +72,7 @@ public class DBDateUtility {
     *
     * @return date of next wednesday as calendar.
     */
-   public static Calendar getNextWednesday() {
+   public static String getNextWednesday() {
       Calendar nextWedDay = Calendar.getInstance();
       nextWedDay.setTimeInMillis(System.currentTimeMillis());
 
@@ -89,6 +89,6 @@ public class DBDateUtility {
       nextWedDay.set(Calendar.SECOND, 0);
       nextWedDay.set(Calendar.MILLISECOND, 0);
 
-      return nextWedDay;
+      return getDateString(nextWedDay.getTimeInMillis());
    }
 }

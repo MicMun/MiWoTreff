@@ -18,90 +18,91 @@ package de.micmun.android.miwotreff.util;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.provider.CalendarContract;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ListView;
+import android.view.View;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 import de.micmun.android.miwotreff.R;
 import de.micmun.android.miwotreff.db.DBConstants;
+import de.micmun.android.miwotreff.db.DBProvider;
+import de.micmun.android.miwotreff.recyclerview.Program;
 
 /**
  * Class for handling the contextual action bar.
  *
  * @author Michael Munzert
- * @version 1.0, 19.02.2015
+ * @version 1.1, 30.12.16
  */
-public class ContextActionMode implements ListView.MultiChoiceModeListener {
+public class ContextActionMode implements ActionMode.Callback {
    private final Activity mActivity;
-   private ListView lv;
+   private long mId;
    private String selMsgFormat;
-   private Menu menu;
+   private ActionMode mode;
+   private View view;
+
+   private DBProvider mDbProvider;
 
    /**
     * Creates a new ContextActionMode.
     *
     * @param context MainActivity.
-    * @param lv      ListView.
+    * @param view    selected view.
+    * @param id      ID of the selected program.
     */
-   public ContextActionMode(Activity context, ListView lv) {
-      this.lv = lv;
+   public ContextActionMode(Activity context, View view, long id) {
+      mId = id;
       mActivity = context;
+      this.view = view;
       selMsgFormat = mActivity.getResources().getString(R.string.title_count_selected);
    }
 
    @Override
    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-      this.menu = menu;
+      this.mode = mode;
+      mDbProvider = DBProvider.getInstance(mActivity);
       // Inflate a menu resource providing context menu items
       MenuInflater inflater = mode.getMenuInflater();
       inflater.inflate(R.menu.context_menu, menu);
+
+      String selMsg = String.format(selMsgFormat, String.valueOf(mId));
+      mode.setTitle(selMsg);
+
+      view.setSelected(true);
+
       return true;
+   }
+
+   /**
+    * Closes the action mode.
+    */
+   public void closeMode() {
+      view.setSelected(false);
+      mode.finish();
    }
 
    @Override
    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-      int count = lv.getCheckedItemCount();
-      String selMsg = String.format(selMsgFormat, String.valueOf(count));
-
-      if (count == 0) {
-         // nothing selected -> hide action mode
-         return true;
-      } else if (count == 1) { // show delete and add2Cal
-         menu.findItem(R.id.addToCal).setVisible(true);
-         menu.findItem(R.id.share).setVisible(true);
-         mode.setTitle(selMsg);
-         return true;
-      } else if (count > 1) { // show nothing
-         menu.findItem(R.id.addToCal).setVisible(false);
-         menu.findItem(R.id.share).setVisible(false);
-         mode.setTitle(selMsg);
-         return true;
-      }
-
       return false;
    }
 
    @Override
    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-      long[] itemIds = lv.getCheckedItemIds();
-
       switch (item.getItemId()) {
          case R.id.addToCal:
-            add2Cal(itemIds[0]);
+            add2Cal(mId);
             mode.finish();
             return true;
          case R.id.share:
-            showShareIntent(itemIds[0]);
+            showShareIntent(mId);
             mode.finish();
             return true;
          case R.id.home:
@@ -113,11 +114,9 @@ public class ContextActionMode implements ListView.MultiChoiceModeListener {
 
    @Override
    public void onDestroyActionMode(ActionMode mode) {
-   }
-
-   @Override
-   public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-      onPrepareActionMode(mode, menu);
+      mDbProvider.close();
+      mDbProvider = null;
+      view.setSelected(false);
    }
 
    /**
@@ -127,23 +126,24 @@ public class ContextActionMode implements ListView.MultiChoiceModeListener {
     */
    private void showShareIntent(long id) {
       /* get data */
-      Cursor c = mActivity.getContentResolver().query(
-            Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI,
-                  String.valueOf(id)), null, null, null, null
-      );
-      if (c == null || c.getCount() <= 0) {
+      String selection = DBConstants._ID + " = ?";
+      String[] selectionArgs = {String.valueOf(id)};
+
+      List<Program> plist = mDbProvider.queryProgram(selection, selectionArgs, null);
+
+      if (plist.size() == 0) {
          return;
       }
-      c.moveToFirst();
+      Program p = plist.get(0);
 
       /* date */
-      long timestamp = c.getLong(c.getColumnIndex(DBConstants.KEY_DATUM));
+      long timestamp = p.getDate();
       Calendar then = GregorianCalendar.getInstance();
       then.setTimeInMillis(timestamp);
       Calendar now = GregorianCalendar.getInstance();
 
       /* topic */
-      String topic = c.getString(c.getColumnIndex(DBConstants.KEY_THEMA));
+      String topic = p.getTopic();
 
       String text;
       /* today */
@@ -162,8 +162,6 @@ public class ContextActionMode implements ListView.MultiChoiceModeListener {
          }
       }
 
-      c.close();
-
       Intent shareIntent = new Intent();
       shareIntent.setAction(Intent.ACTION_SEND);
       shareIntent.putExtra(Intent.EXTRA_TEXT, text);
@@ -178,14 +176,19 @@ public class ContextActionMode implements ListView.MultiChoiceModeListener {
     * @param id ID of the entry.
     */
    private void add2Cal(long id) {
-      Cursor c = mActivity.getContentResolver().query(Uri.withAppendedPath
-            (DBConstants.TABLE_CONTENT_URI, String.valueOf(id)), null, null, null, null);
-      if (c == null || c.getCount() <= 0)
+      /* get data */
+      String selection = DBConstants._ID + " = ?";
+      String[] selectionArgs = {String.valueOf(id)};
+
+      List<Program> plist = mDbProvider.queryProgram(selection, selectionArgs, null);
+
+      if (plist.size() == 0) {
          return;
-      c.moveToFirst();
+      }
+      Program p = plist.get(0);
 
       // Date and time of the calendar entry
-      long d = c.getLong(c.getColumnIndex(DBConstants.KEY_DATUM));
+      long d = p.getDate();
       GregorianCalendar start = new GregorianCalendar();
       GregorianCalendar end = new GregorianCalendar();
       start.setTimeInMillis(d);
@@ -195,13 +198,10 @@ public class ContextActionMode implements ListView.MultiChoiceModeListener {
       end.set(GregorianCalendar.HOUR_OF_DAY, 21);
 
       // title
-      String title = mActivity.getResources().getString(R.string.cal_prefix) + " "
-            + c.getString(c.getColumnIndex(DBConstants.KEY_THEMA));
+      String title = mActivity.getResources().getString(R.string.cal_prefix) + " " + p.getTopic();
 
       // location
       String loc = mActivity.getResources().getString(R.string.cal_loc);
-
-      c.close();
 
       // Description
       String desc = mActivity.getResources().getString(R.string.app_name);

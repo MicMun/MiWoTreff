@@ -54,11 +54,6 @@
             android:name=".SettingActivity"
             android:exported="false"/>
 
-        <provider
-            android:name="de.micmun.android.miwotreff.db.DataProvider"
-            android:authorities="de.micmun.android.miwotreff.provider"
-            android:permission="de.micmun.android.miwotreff.permission.ACCESS_DB_PROVIDER">
-        </provider>
         <service
             android:name=".service.UpdateIntentService"
             android:enabled="true"

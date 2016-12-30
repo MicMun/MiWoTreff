@@ -24,17 +24,20 @@ import android.provider.CalendarContract;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TimeZone;
 
 import de.micmun.android.miwotreff.R;
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
+import de.micmun.android.miwotreff.db.DBProvider;
+import de.micmun.android.miwotreff.recyclerview.Program;
 
 /**
  * Background to synchronise events with calendar.
  *
  * @author MicMun
- * @version 1.0, 27.02.2015
+ * @version 1.1, 29.12.16
  */
 public class CalendarSyncTask extends AsyncTask<Void, Void, Integer> {
    private final String EVENT_LOC;
@@ -44,7 +47,7 @@ public class CalendarSyncTask extends AsyncTask<Void, Void, Integer> {
    private final long TODAY_MILLIS;
    private OnEventRefreshListener mOnEventRefreshListener;
 
-   public CalendarSyncTask(Context ctx, CalendarInfo calendarInfo) {
+   CalendarSyncTask(Context ctx, CalendarInfo calendarInfo) {
       mCtx = ctx;
       mCalInfo = calendarInfo;
 
@@ -56,19 +59,17 @@ public class CalendarSyncTask extends AsyncTask<Void, Void, Integer> {
 
    @Override
    protected Integer doInBackground(Void... params) {
-      Cursor cProg = getProgramToSync();
-      if (cProg == null || cProg.getCount() <= 0) { // no data to sync
-         if (cProg != null)
-            cProg.close();
+      List<Program> programList = getProgramToSync();
+      if (programList.size() <= 0) { // no data to sync
          return 0;
       }
       HashMap<String, Long> eventMap = getEvents();
       int counter = 0;
 
-      while (cProg.moveToNext()) {
-         long date = cProg.getLong(0);
-         String topic = cProg.getString(1);
-         String person = cProg.getString(2);
+      for (Program p : programList) {
+         long date = p.getDate();
+         String topic = p.getTopic();
+         String person = p.getPerson();
 
          // start and end
          long startMillis = 0;
@@ -111,7 +112,6 @@ public class CalendarSyncTask extends AsyncTask<Void, Void, Integer> {
          }
          counter++;
       }
-      cProg.close();
 
       return counter;
    }
@@ -121,12 +121,12 @@ public class CalendarSyncTask extends AsyncTask<Void, Void, Integer> {
     *
     * @return a cursor with program entries.
     */
-   private Cursor getProgramToSync() {
-      ContentResolver cr = mCtx.getContentResolver();
-      Uri uProg = Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI, DBConstants.SYNC_QUERY);
+   private List<Program> getProgramToSync() {
+      String selection = DBConstants.KEY_DATUM + " >= ?";
+      String sortOrder = DBConstants.KEY_DATUM;
       String[] selArgs = new String[]{String.valueOf(TODAY_MILLIS)};
 
-      return cr.query(uProg, null, null, selArgs, null);
+      return DBProvider.getInstance(mCtx).queryProgram(selection, selArgs, sortOrder);
    }
 
    /**

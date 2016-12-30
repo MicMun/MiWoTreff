@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '24.0.2'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "de.micmun.android.miwotreff"
         minSdkVersion 14
-        targetSdkVersion 24
-        versionCode 6
-        versionName "4.1"
+        targetSdkVersion 25
+        versionCode 7
+        versionName "5.0"
     }
     buildTypes {
         release {
@@ -28,7 +28,9 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:design:25.1.0'
+    compile 'com.android.support:recyclerview-v7:25.1.0'
     compile 'com.anthonycr.grant:permissions:1.0'
     compile 'com.koushikdutta.ion:ion:2.1.7'
 }

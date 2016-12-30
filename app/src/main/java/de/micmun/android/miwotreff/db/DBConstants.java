@@ -15,7 +15,6 @@
 
 package de.micmun.android.miwotreff.db;
 
-import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
@@ -23,7 +22,7 @@ import android.provider.BaseColumns;
  * Provides Keys for columns, content uris, etc.
  *
  * @author Michael Munzert
- * @version 1.1, 11.10.2016.
+ * @version 1.2, 30.12.16.
  */
 public class DBConstants implements BaseColumns {
    /**
@@ -45,47 +44,19 @@ public class DBConstants implements BaseColumns {
    /**
     * Name of the table.
     */
-   public static final String TABLE_NAME = "programm";
-   /**
-    * Authority for the content provider.
-    */
-   public static final String AUTHORITY = "de.micmun.android.miwotreff.provider";
-   /**
-    * Base of content uris.
-    */
-   public static final String BASE_URI = "content://" + AUTHORITY;
-   /**
-    * Content uri.
-    */
-   public static final Uri TABLE_CONTENT_URI = Uri.parse(BASE_URI + "/" + TABLE_NAME);
-   /**
-    * Name for query with date.
-    */
-   public static final String DATE_QUERY = "withdate";
-   /**
-    * Name for sync query with date.
-    */
-   public static final String SYNC_QUERY = "syncdate";
-   /**
-    * Name for last date query.
-    */
-   public static final String LAST_DATE_QUERY = "lastdate";
-   /**
-    * Name for count number after date query.
-    */
-   public static final String NUMBER_AFTER_DATE_QUERY = "afterdate";
+   static final String TABLE_NAME = "programm";
    /**
     * Table for settings and last update date.
     */
-   public static final String SETTING_TABLE_NAME = "settings";
+   static final String SETTING_TABLE_NAME = "settings";
    /**
     * Column with the key of the setting.
     */
-   public static final String KEY_KEY = "key";
+   static final String KEY_KEY = "key";
    /**
     * Column with the value of the setting.
     */
-   public static final String KEY_VALUE = "value";
+   static final String KEY_VALUE = "value";
    /**
     * Key for last update setting.
     */
@@ -105,13 +76,5 @@ public class DBConstants implements BaseColumns {
    /**
     * Default value for last update.
     */
-   public static final String SETTING_VALUE_LAST_UPDATE = "28.10.2015";
-   /**
-    * Name for key query.
-    */
-   public static final String KEY_QUERY = "keyquery";
-   /**
-    * Uri for setting table.
-    */
-   public static final Uri SETTING_CONTENT_URI = Uri.parse(BASE_URI + "/" + SETTING_TABLE_NAME);
+   static final String SETTING_VALUE_LAST_UPDATE = "28.10.2015";
 }

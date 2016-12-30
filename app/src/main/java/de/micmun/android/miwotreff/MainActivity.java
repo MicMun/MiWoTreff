@@ -16,26 +16,24 @@ package de.micmun.android.miwotreff;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
@@ -44,9 +42,15 @@ import com.koushikdutta.ion.Ion;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
+import de.micmun.android.miwotreff.db.DBProvider;
+import de.micmun.android.miwotreff.recyclerview.DividerDecoration;
+import de.micmun.android.miwotreff.recyclerview.Program;
+import de.micmun.android.miwotreff.recyclerview.ProgramAdapter;
+import de.micmun.android.miwotreff.recyclerview.RecyclerItemListener;
 import de.micmun.android.miwotreff.service.AlarmConfiger;
 import de.micmun.android.miwotreff.util.AppPreferences;
 import de.micmun.android.miwotreff.util.CalendarInfo;
@@ -56,7 +60,6 @@ import de.micmun.android.miwotreff.util.ContextActionMode;
 import de.micmun.android.miwotreff.util.CustomToast;
 import de.micmun.android.miwotreff.util.JSONBackupRestore;
 import de.micmun.android.miwotreff.util.ProgramSaver;
-import de.micmun.android.miwotreff.util.SpecialCursorAdapter;
 
 /**
  * Main activity for miwotreff.
@@ -66,12 +69,13 @@ import de.micmun.android.miwotreff.util.SpecialCursorAdapter;
  */
 public class MainActivity
       extends BaseActivity
-      implements LoaderManager.LoaderCallbacks<Cursor>,
+      implements RecyclerItemListener.RecyclerTouchListener,
       AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
    private static final int ACTIVITY_EDIT = 1;
 
-   private SpecialCursorAdapter mAdapter;
-   private ListView mProgListView;
+   private DBProvider mDbProvider;
+   private ProgramAdapter mAdapter;
+   private RecyclerView mProgListView;
    private String lastDate;
 
    private MenuItem mMenuItemRefresh;
@@ -80,17 +84,36 @@ public class MainActivity
    private AppPreferences mAppPreferences;
 
    @Override
+   protected void onPause() {
+      mAdapter.setProgramList(new ArrayList<Program>());
+      mDbProvider.close();
+      mDbProvider = null;
+      super.onPause();
+   }
+
+   @Override
+   protected void onResume() {
+      super.onResume();
+      mDbProvider = DBProvider.getInstance(this);
+      loadData();
+   }
+
+   @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
       // Adapter and list view
-      mAdapter = new SpecialCursorAdapter(this, null);
-      mProgListView = (ListView) findViewById(R.id.progListView);
+      mAdapter = new ProgramAdapter();
+      mAdapter.setHasStableIds(true);
+      mProgListView = (RecyclerView) findViewById(R.id.progListView);
       mProgListView.setAdapter(mAdapter);
-      mProgListView.setOnItemClickListener(this);
-      mProgListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-      ContextActionMode cma = new ContextActionMode(this, mProgListView);
-      mProgListView.setMultiChoiceModeListener(cma);
+      mProgListView.addOnItemTouchListener(new RecyclerItemListener(this, mProgListView, this));
+      LinearLayoutManager llm = new LinearLayoutManager(this);
+      llm.setOrientation(LinearLayoutManager.VERTICAL);
+      mProgListView.setLayoutManager(llm);
+      RecyclerView.ItemDecoration id = new DividerDecoration(ContextCompat
+            .getDrawable(getApplicationContext(), R.drawable.recycler_divider));
+      mProgListView.addItemDecoration(id);
 
       // Swipe Layout
       mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
@@ -101,9 +124,6 @@ public class MainActivity
 
       // app preferences
       mAppPreferences = new AppPreferences(getApplicationContext());
-
-      // load data
-      getLoaderManager().initLoader(0, null, this);
 
       // set alarm for update service, if auto sync is on
       if (mAppPreferences.isAutoSync()) {
@@ -431,46 +451,6 @@ public class MainActivity
    }
 
    /* =========================================================================================== */
-   /*  Cursor loader                                                                              */
-   /* =========================================================================================== */
-
-   @Override
-   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-      return new CursorLoader(this, DBConstants.TABLE_CONTENT_URI, null,
-            null, null, null);
-   }
-
-   @Override
-   public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-      Cursor old = mAdapter.swapCursor(data);
-      if (old != null) {
-         old.close();
-      }
-      // if no data -> mustRefresh true
-      if (mAdapter.getCount() <= 0) {
-         lastDate = DBDateUtility.getDateString(Calendar.getInstance().getTimeInMillis());
-         onRefresh();
-      } else {
-         lastDate = DBDateUtility.getDateString(((Cursor) mAdapter.getItem(0)).getLong(1));
-         mProgListView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-               mProgListView.smoothScrollToPosition(mAdapter.getmNextWdPos() + 1);
-            }
-         }, 300);
-
-      }
-   }
-
-   @Override
-   public void onLoaderReset(Loader<Cursor> loader) {
-      Cursor old = mAdapter.swapCursor(null);
-      if (old != null) {
-         old.close();
-      }
-   }
-
-   /* =========================================================================================== */
    /*  Swipe Refresh Layout                                                                       */
    /* =========================================================================================== */
 
@@ -519,6 +499,7 @@ public class MainActivity
             if (countInsert != -1) {
                String msg = String.format(getString(R.string.load_success), countInsert, countUpdate);
                CustomToast.makeText(context, msg, CustomToast.TYPE_INFO).show();
+               loadData();
             } else {
                String msg = getString(R.string.error_pl_fetch);
                CustomToast.makeText(context, msg, CustomToast.TYPE_ERROR).show();
@@ -528,5 +509,52 @@ public class MainActivity
       String url = "http://www.mittwochstreff-muenchen.de/program/api/index.php?op=0&von=" +
             lastDate;
       Ion.with(this).load(url).asJsonArray().setCallback(ps);
+   }
+
+   ContextActionMode cma = null;
+
+   @Override
+   public void onClickItem(View v, int position) {
+      if (cma != null) {
+         cma.closeMode();
+         cma = null;
+      }
+      // Edit the entry
+      long id = mAdapter.getItemId(position);
+      Intent i = new Intent(this, EditActivity.class);
+      i.putExtra(DBConstants._ID, id);
+      startActivityForResult(i, ACTIVITY_EDIT);
+   }
+
+   @Override
+   public void onLongClickItem(View v, int position) {
+      if (cma != null) {
+         cma.closeMode();
+         cma = null;
+      }
+      // Start action mode
+      cma = new ContextActionMode(this, v, mAdapter.getItemId(position));
+      v.startActionMode(cma);
+   }
+
+   /**
+    * Loads the data from database in adapter an scroll to current wednesday.
+    */
+   private void loadData() {
+      List<Program> programs = mDbProvider.queryProgram(null, null, null);
+      mAdapter.setProgramList(programs);
+
+      if (programs.size() > 0) {
+         lastDate = mDbProvider.getLastDate();
+         mProgListView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+               mProgListView.smoothScrollToPosition(mDbProvider.getPosOfNextWednesday());
+            }
+         }, 300);
+      } else {
+         lastDate = DBDateUtility.getDateString(Calendar.getInstance().getTimeInMillis());
+         onRefresh();
+      }
    }
 }

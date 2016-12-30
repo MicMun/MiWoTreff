@@ -1,27 +1,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context=".MainActivity">
 
     <include
         android:id="@+id/toolbarId"
         layout="@layout/toolbar"
+        android:paddingBottom="1dp"
         android:paddingLeft="1dp"
         android:paddingRight="1dp"
-        android:paddingTop="0dp"
-        android:paddingBottom="1dp" />
+        android:paddingTop="0dp"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <ListView
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/progListView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

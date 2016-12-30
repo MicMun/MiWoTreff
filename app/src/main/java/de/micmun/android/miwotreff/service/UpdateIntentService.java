@@ -18,13 +18,10 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
@@ -45,19 +42,22 @@ import de.micmun.android.miwotreff.MainActivity;
 import de.micmun.android.miwotreff.R;
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
+import de.micmun.android.miwotreff.db.DBProvider;
 import de.micmun.android.miwotreff.util.ProgramSaver;
 
 /**
  * Service to look for updates on miwotreff program website.
  *
  * @author MicMun
- * @version 1.0, 03.02.16
+ * @version 1.1, 29.12.16
  */
 public class UpdateIntentService extends IntentService
       implements ProgramSaver.OnProgramRefreshListener {
    public final String TAG = "UpdateIntentService";
    private final DateFormat myDateFormat = new SimpleDateFormat("dd.MM.y", Locale.GERMANY);
    private Date dateLastServerUpdate;
+
+   private DBProvider mDbProvider;
 
    /**
     * Creates a new UpdateIntentService.
@@ -73,6 +73,7 @@ public class UpdateIntentService extends IntentService
     */
    public UpdateIntentService(String name) {
       super(name);
+      mDbProvider = DBProvider.getInstance(this);
    }
 
    @Override
@@ -121,29 +122,20 @@ public class UpdateIntentService extends IntentService
     * Loads program.
     */
    private void syncProgram() {
-      // Query, if date exists
-      Uri uri = Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI, DBConstants.LAST_DATE_QUERY);
-      Cursor c = getContentResolver().query(uri, null, null, null, null);
-      if (c != null) {
-         // get last program entry
-         c.moveToNext();
-         String mVon = DBDateUtility.getDateString(c.getLong(1));
-         c.close();
+      // Query last date
+      String mVon = mDbProvider.getLastDate();
+      // URL of program and program saver for writing to database
+      String url = "http://www.mittwochstreff-muenchen.de/program/api/index.php?op=0&von=" + mVon;
+      ProgramSaver ps = new ProgramSaver(this);
+      ps.setOnProgramRefreshedListener(this);
 
-         String url = "http://www.mittwochstreff-muenchen.de/program/api/index.php?op=0&von=" +
-               mVon;
-         ProgramSaver ps = new ProgramSaver(this);
-         ps.setOnProgramRefreshedListener(this);
-
-         // load program from url
-         try {
-            JsonArray program = Ion.with(this).load(url).asJsonArray().get();
-            ps.onCompleted(null, program);
-         } catch (InterruptedException | ExecutionException e) {
-            Log.e(TAG, "ERROR: " + e.getLocalizedMessage());
-            ps.onCompleted(e, null);
-         }
-
+      // load program from url
+      try {
+         JsonArray program = Ion.with(this).load(url).asJsonArray().get();
+         ps.onCompleted(null, program);
+      } catch (InterruptedException | ExecutionException e) {
+         Log.e(TAG, "ERROR: " + e.getLocalizedMessage());
+         ps.onCompleted(e, null);
       }
    }
 
@@ -173,30 +165,15 @@ public class UpdateIntentService extends IntentService
     */
    private Date getLastLocalUpdate() throws ParseException {
       // Fetch the last update from database
-      Uri uri = Uri.withAppendedPath(DBConstants.SETTING_CONTENT_URI, DBConstants.KEY_QUERY);
-      Cursor c2 = getContentResolver().query(uri, null, null,
-            new String[]{DBConstants.SETTING_KEY_LAST_UPDATE}, null);
-      String lastUpdate;
-      if (c2 == null) { // no setting found
-         lastUpdate = DBConstants.SETTING_VALUE_LAST_UPDATE;
-      } else {
-         c2.moveToNext();
-         lastUpdate = c2.getString(0);
-         c2.close();
-      }
-
+      String lastUpdate = mDbProvider.getLastUpdate();
       return myDateFormat.parse(lastUpdate);
    }
 
    @Override
    public void onProgramRefreshed(int countInsert, int countUpdate) {
       // last date to settings
-      ContentValues cv = new ContentValues();
-      cv.put(DBConstants.KEY_VALUE,
+      mDbProvider.updateSetting(DBConstants.SETTING_KEY_LAST_UPDATE,
             DBDateUtility.getDateString(dateLastServerUpdate.getTime()));
-      getContentResolver().update(
-            Uri.withAppendedPath(DBConstants.SETTING_CONTENT_URI, DBConstants.KEY_QUERY), cv, null,
-            new String[]{DBConstants.SETTING_KEY_LAST_UPDATE});
 
       // notification for user to start the app, only when countInsert > 0 or countUpdate > 0
       if (countInsert > 0 || countUpdate > 0) {

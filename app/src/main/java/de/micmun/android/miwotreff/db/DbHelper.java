@@ -25,9 +25,9 @@ import android.database.sqlite.SQLiteOpenHelper;
  * CRUD-Methods (Create, Update, Delete) and the selections.
  *
  * @author Michael Munzert
- * @version 2.0, 18.01.2013
+ * @version 2.1, 29.12.16
  */
-public class DbHelper extends SQLiteOpenHelper {
+class DbHelper extends SQLiteOpenHelper {
    private static final String DATABASE_NAME = "miwotreff";
    private static final int DATABASE_VERSION = 2;
    /* Create statement for table "programm" */
@@ -46,7 +46,7 @@ public class DbHelper extends SQLiteOpenHelper {
     *
     * @param ctx Context for the database.
     */
-   public DbHelper(Context ctx) {
+   DbHelper(Context ctx) {
       super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
    }
 

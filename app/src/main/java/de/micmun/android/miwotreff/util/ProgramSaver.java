@@ -14,10 +14,7 @@
  */
 package de.micmun.android.miwotreff.util;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
@@ -28,12 +25,14 @@ import com.koushikdutta.async.future.FutureCallback;
 import de.micmun.android.miwotreff.R;
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
+import de.micmun.android.miwotreff.db.DBProvider;
+import de.micmun.android.miwotreff.recyclerview.Program;
 
 /**
  * Saving the loaded JSON data to database.
  *
  * @author MicMun
- * @version 1.0, 07.02.16
+ * @version 1.1, 29.12.16
  */
 public class ProgramSaver implements FutureCallback<JsonArray> {
    /**
@@ -75,43 +74,28 @@ public class ProgramSaver implements FutureCallback<JsonArray> {
             String topic = o.get(DBConstants.KEY_THEMA).getAsString().trim();
             String person = o.get(DBConstants.KEY_PERSON).getAsString().trim();
 
-            // selection argument for checking, if entry exists already
-            String[] selArgs = {dateString};
-
             // Prepare values for insert or update
-            ContentValues values = new ContentValues();
-            values.put(DBConstants.KEY_DATUM, date);
-            values.put(DBConstants.KEY_THEMA, topic);
-            values.put(DBConstants.KEY_PERSON, person);
-            values.put(DBConstants.KEY_EDIT, 0);
+            Program program = new Program(date, topic, person);
 
             // Query, if date exists
-            Uri uri = Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI, DBConstants.DATE_QUERY);
-            Cursor c = mCtx.getContentResolver().query(uri, null, null, selArgs, null);
+            DBProvider dbProvider = DBProvider.getInstance(mCtx);
+            Program oldProgram = dbProvider.programExists(program);
 
-            if (c == null || c.getCount() <= 0) { // if not exists
+            if (oldProgram == null) { // if not exists
                // Insert
-               mCtx.getContentResolver()
-                     .insert(DBConstants.TABLE_CONTENT_URI, values);
+               dbProvider.insertProgram(program);
                countIns++;
-               if (c != null)
-                  c.close();
             } else { // exists
-               c.moveToFirst();
-               int edit = c.getInt(c.getColumnIndex(DBConstants.KEY_EDIT));
-               int id = c.getInt(c.getColumnIndex(DBConstants._ID));
-               String oldTopic = c.getString(c.getColumnIndex(DBConstants.KEY_THEMA));
-               String oldPerson = c.getString(c.getColumnIndex(DBConstants.KEY_PERSON));
+               program.set_id(oldProgram.get_id());
 
-               if (edit == 0) { // if not edited yet
+               if (!oldProgram.isEdited()) { // if not edited yet
                   // Update, if something has changed
-                  if (!topic.equals(oldTopic) || !person.equals(oldPerson)) {
-                     uri = Uri.withAppendedPath(DBConstants.TABLE_CONTENT_URI, String.valueOf(id));
-                     mCtx.getContentResolver().update(uri, values, null, null);
+                  if (!topic.equals(oldProgram.getTopic()) ||
+                        !person.equals(oldProgram.getPerson())) {
+                     dbProvider.updateProgram(program);
                      countUpd++;
                   }
                }
-               c.close();
             }
          }
          // notify listener of inserted count

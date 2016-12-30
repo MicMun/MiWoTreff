@@ -32,3 +32,8 @@ gradlew
 gradlew.bat
 gradle.properties
 
+# idea project files
+.idea/
+projectFilesBackup/
+*.iml
+

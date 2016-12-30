@@ -14,24 +14,25 @@
  */
 package de.micmun.android.miwotreff;
 
-import android.app.LoaderManager;
 import android.app.SearchManager;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.text.format.DateFormat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
-import android.widget.ListView;
+import android.view.View;
 
-import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import de.micmun.android.miwotreff.db.DBConstants;
 import de.micmun.android.miwotreff.db.DBDateUtility;
-import de.micmun.android.miwotreff.util.SpecialCursorAdapter;
+import de.micmun.android.miwotreff.db.DBProvider;
+import de.micmun.android.miwotreff.recyclerview.DividerDecoration;
+import de.micmun.android.miwotreff.recyclerview.Program;
+import de.micmun.android.miwotreff.recyclerview.ProgramAdapter;
+import de.micmun.android.miwotreff.recyclerview.RecyclerItemListener;
 
 /**
  * Shows the Search Result.
@@ -41,12 +42,14 @@ import de.micmun.android.miwotreff.util.SpecialCursorAdapter;
  */
 public class SearchActivity
       extends BaseActivity
-      implements //UndoBarController.UndoListener,
-      LoaderManager.LoaderCallbacks<Cursor> {
+      implements RecyclerItemListener.RecyclerTouchListener {
    private static final int SEARCH_DATE = 0;
    private static final int SEARCH_OTHERS = 1;
    private static final String KEY_SEARCH = "search";
-   private SpecialCursorAdapter mAdapter;
+
+   private ProgramAdapter mAdapter;
+   private RecyclerView mProgView;
+   private DBProvider mDbProvider;
 
    /**
     * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -56,17 +59,21 @@ public class SearchActivity
       super.onCreate(savedInstanceState);
       setBackArrowEnabled(true);
 
-//      new UndoBarController(findViewById(R.id.undobar),
-//            this);
-
-      // calculate next wednesday
-      Calendar today = DBDateUtility.getNextWednesday();
-      String nextWednesday = DateFormat.format("dd.MM.yyyy", today).toString();
-
       // initialize list view
-      ListView lv = (ListView) findViewById(R.id.progListView);
-      mAdapter = new SpecialCursorAdapter(this, null);
-      lv.setAdapter(mAdapter);
+      mProgView = (RecyclerView) findViewById(R.id.progListView);
+      mAdapter = new ProgramAdapter();
+      mAdapter.setHasStableIds(true);
+      mProgView.setAdapter(mAdapter);
+      mProgView.addOnItemTouchListener(new RecyclerItemListener(this, mProgView, this));
+      LinearLayoutManager llm = new LinearLayoutManager(this);
+      llm.setOrientation(LinearLayoutManager.VERTICAL);
+      mProgView.setLayoutManager(llm);
+      RecyclerView.ItemDecoration id = new DividerDecoration(ContextCompat
+            .getDrawable(getApplicationContext(), R.drawable.recycler_divider));
+      mProgView.addItemDecoration(id);
+
+      // DBProvider
+      mDbProvider = DBProvider.getInstance(this);
 
       Intent intent = getIntent();
       if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -122,9 +129,9 @@ public class SearchActivity
       Bundle b = new Bundle();
       b.putString(KEY_SEARCH, search);
       if (search.matches("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{2,4}")) {
-         getLoaderManager().initLoader(SEARCH_DATE, b, this);
+         querySearch(SEARCH_DATE, b);
       } else {
-         getLoaderManager().initLoader(SEARCH_OTHERS, b, this);
+         querySearch(SEARCH_OTHERS, b);
       }
    }
 
@@ -154,58 +161,41 @@ public class SearchActivity
    }
 
    /**
-    * @see de.micmun.android.miwotreff.utils.UndoBarController.UndoListener#onUndo(android.os.Parcelable)
+    * Load the queried data for id and args.
+    *
+    * @param id   id of the search (SEARCH_DATE or SEARCH_OTHERS).
+    * @param args Bundle with the search value.
     */
-//   @Override
-//   public void onUndo(Parcelable token) {
-//      // Do nothing, only because of not showing undo message
-//   }
-
-   // *********************************************************************************************
-   //   CursorLoader
-   // *********************************************************************************************
-
-   /**
-    * @see android.app.LoaderManager.LoaderCallbacks#onCreateLoader(int, android.os.Bundle)
-    */
-   @Override
-   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-      Uri uri;
-      String sel;
-      String[] selArgs;
+   public void querySearch(int id, Bundle args) {
+      String sel = null;
+      String[] selArgs = null;
 
       switch (id) {
          case SEARCH_DATE:
             Date d = DBDateUtility.getDateFromString(args.getString
                   (KEY_SEARCH));
-            uri = DBConstants.TABLE_CONTENT_URI;
             sel = DBConstants.KEY_DATUM + " = ?";
             selArgs = new String[]{String.valueOf(d.getTime())};
-            return new CursorLoader(this, uri, null, sel, selArgs, null);
+            break;
          case SEARCH_OTHERS:
             String s = args.getString(KEY_SEARCH);
-            uri = DBConstants.TABLE_CONTENT_URI;
             sel = "UPPER(" + DBConstants.KEY_THEMA + ") LIKE ? OR UPPER(" +
                   DBConstants.KEY_PERSON + ") LIKE ?";
             selArgs = new String[]{"%" + s + "%", "%" + s + "%"};
-            return new CursorLoader(this, uri, null, sel, selArgs, null);
+            break;
       }
-      return null;
+
+      List<Program> programs = mDbProvider.queryProgram(sel, selArgs, null);
+      mAdapter.setProgramList(programs);
    }
 
    @Override
-   public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-      Cursor old = mAdapter.swapCursor(data);
-      if (old != null) {
-         old.close();
-      }
+   public void onClickItem(View v, int position) {
+
    }
 
    @Override
-   public void onLoaderReset(Loader<Cursor> loader) {
-      Cursor old = mAdapter.swapCursor(null);
-      if (old != null) {
-         old.close();
-      }
+   public void onLongClickItem(View v, int position) {
+
    }
 }
