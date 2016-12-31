@@ -33,7 +33,6 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
@@ -65,12 +64,12 @@ import de.micmun.android.miwotreff.util.ProgramSaver;
  * Main activity for miwotreff.
  *
  * @author MicMun
- * @version 1.2, 13.10.2016
+ * @version 1.3, 31.12.16
  */
 public class MainActivity
       extends BaseActivity
       implements RecyclerItemListener.RecyclerTouchListener,
-      AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+      SwipeRefreshLayout.OnRefreshListener {
    private static final int ACTIVITY_EDIT = 1;
 
    private DBProvider mDbProvider;
@@ -219,18 +218,6 @@ public class MainActivity
    }
 
    /**
-    * @see android.widget.AdapterView.OnItemClickListener#onItemClick(android.widget.AdapterView,
-    * android.view.View, int, long)
-    */
-   @Override
-   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-      // Edit the entry
-      Intent i = new Intent(this, EditActivity.class);
-      i.putExtra(DBConstants._ID, id);
-      startActivityForResult(i, ACTIVITY_EDIT);
-   }
-
-   /**
     * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
     */
    @Override
@@ -276,7 +263,7 @@ public class MainActivity
       jbr.setOnRefreshListener(new JSONBackupRestore.OnDataRefreshListener() {
          @Override
          public void onDataRefreshed(int rc, String msg) {
-            // finished loading: remove the indicator and enable the menu icon again
+            // finished loading: remove the indicator
             mSwipeLayout.setRefreshing(false);
             if (rc == 0) {
                // Show success message
@@ -284,6 +271,7 @@ public class MainActivity
             } else {
                CustomToast.makeText(context, msg, CustomToast.TYPE_ERROR).show();
             }
+            loadData();
          }
       });
 
@@ -304,7 +292,7 @@ public class MainActivity
       builder.setItems(fileNames, new DialogInterface.OnClickListener() {
          @Override
          public void onClick(DialogInterface dialog, int which) {
-            // start loading: show the indicator and disable the "refresh" menu icon
+            // start loading: show the indicator
             mSwipeLayout.setRefreshing(true);
             jbr.execute(files[which]);
          }
