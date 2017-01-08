@@ -43,7 +43,7 @@
     <string name="addToCall">Add to Calendar</string>
     <string name="cal_prefix" translatable="false">Mittwochstreff:</string>
     <string name="cal_loc">Möhlstraße 20, 80935 Munich</string>
-    <string name="title_count_selected">ID (%s) selected.</string>
+    <string name="title_count_selected">One entry selected.</string>
     <string name="shareText_today">Today the topic on #Mittwochstreff is \"%1$s\".\nEverybody is welcome to join. It starts at 19:30 o\'clock in Möhlstraße 20, 80935 Munich.</string>
     <string name="shareText_future">On %2$s the topic on #Mittwochstreff is \"%1$s\".\nEverybody is welcome to join. It starts at 19:30 o\'clock in Möhlstraße 20, 80935 Munich.</string>
     <string name="shareText_past">On %2$s the topic on #Mittwochstreff was \"%1$s\".</string>

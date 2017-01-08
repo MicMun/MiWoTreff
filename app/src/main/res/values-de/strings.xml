@@ -39,7 +39,7 @@
     <string name="sync_choose_title">Wähle einen Kalendar</string>
     <string name="sync_no_calendars">Keine Kalender gefunden!</string>
     <string name="sync_result">%d Termine hinzugefügt oder geändert.</string>
-    <string name="title_count_selected">ID (%s) ausgewählt.</string>
+    <string name="title_count_selected">Ein Eintrag ausgewählt.</string>
     <string name="error_delItem">Fehler: %ld wurde nicht gelöscht.</string>
     <string name="sync_confim_message">Alle Einträge, die ab heute in der Zukunft liegen, werden mit deinem Kalender synchronisiert. Falls du das nicht willst, tippe auf Abbrechen. </string>
     <string name="sync_confim_title">Mit Kalender synchronisieren?</string>

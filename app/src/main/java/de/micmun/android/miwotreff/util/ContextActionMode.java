@@ -40,7 +40,7 @@ import de.micmun.android.miwotreff.recyclerview.Program;
  * Class for handling the contextual action bar.
  *
  * @author Michael Munzert
- * @version 1.1, 30.12.16
+ * @version 1.2, 08.01.17
  */
 public class ContextActionMode implements ActionMode.Callback {
    private final Activity mActivity;
@@ -72,9 +72,7 @@ public class ContextActionMode implements ActionMode.Callback {
       // Inflate a menu resource providing context menu items
       MenuInflater inflater = mode.getMenuInflater();
       inflater.inflate(R.menu.context_menu, menu);
-
-      String selMsg = String.format(selMsgFormat, String.valueOf(mId));
-      mode.setTitle(selMsg);
+      mode.setTitle(selMsgFormat);
 
       view.setSelected(true);
 

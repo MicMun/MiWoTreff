@@ -64,7 +64,7 @@ import de.micmun.android.miwotreff.util.ProgramSaver;
  * Main activity for miwotreff.
  *
  * @author MicMun
- * @version 1.3, 31.12.16
+ * @version 1.4, 08.01.17
  */
 public class MainActivity
       extends BaseActivity
@@ -113,6 +113,7 @@ public class MainActivity
       RecyclerView.ItemDecoration id = new DividerDecoration(ContextCompat
             .getDrawable(getApplicationContext(), R.drawable.recycler_divider));
       mProgListView.addItemDecoration(id);
+      mProgListView.setHasFixedSize(true);
 
       // Swipe Layout
       mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);

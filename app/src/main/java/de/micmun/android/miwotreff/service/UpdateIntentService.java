@@ -57,7 +57,7 @@ public class UpdateIntentService extends IntentService
    private final DateFormat myDateFormat = new SimpleDateFormat("dd.MM.y", Locale.GERMANY);
    private Date dateLastServerUpdate;
 
-   private DBProvider mDbProvider;
+   private DBProvider mDbProvider = null;
 
    /**
     * Creates a new UpdateIntentService.
@@ -73,7 +73,6 @@ public class UpdateIntentService extends IntentService
     */
    public UpdateIntentService(String name) {
       super(name);
-      mDbProvider = DBProvider.getInstance(this);
    }
 
    @Override
@@ -85,6 +84,10 @@ public class UpdateIntentService extends IntentService
             Log.e(TAG, "No internet connection!");
             return;
          }
+
+         // check if database provider is opened
+         if (mDbProvider == null)
+            mDbProvider = DBProvider.getInstance(this);
 
          try {
             Date dateLastUpdate = getLastLocalUpdate();
