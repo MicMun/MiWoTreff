@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 MicMun
+ * Copyright 2017 MicMun
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU >General Public License as published by the Free Software Foundation, either version 3 of the
@@ -64,7 +64,7 @@ import de.micmun.android.miwotreff.util.ProgramSaver;
  * Main activity for miwotreff.
  *
  * @author MicMun
- * @version 1.4, 08.01.17
+ * @version 1.4, 20.02.17
  */
 public class MainActivity
       extends BaseActivity
@@ -530,15 +530,17 @@ public class MainActivity
     * Loads the data from database in adapter an scroll to current wednesday.
     */
    private void loadData() {
+      mSwipeLayout.setRefreshing(true);
       List<Program> programs = mDbProvider.queryProgram(null, null, null);
       mAdapter.setProgramList(programs);
+      mSwipeLayout.setRefreshing(false);
 
       if (programs.size() > 0) {
          lastDate = mDbProvider.getLastDate();
          mProgListView.postDelayed(new Runnable() {
             @Override
             public void run() {
-               mProgListView.smoothScrollToPosition(mDbProvider.getPosOfNextWednesday());
+               mProgListView.smoothScrollToPosition(mDbProvider.getPosOfNextWednesday() + 1);
             }
          }, 300);
       } else {
