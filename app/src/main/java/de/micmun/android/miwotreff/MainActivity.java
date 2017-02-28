@@ -60,7 +60,6 @@ import de.micmun.android.miwotreff.util.CalendarSyncTask;
 import de.micmun.android.miwotreff.util.ContextActionMode;
 import de.micmun.android.miwotreff.util.CustomToast;
 import de.micmun.android.miwotreff.util.JSONBackupRestore;
-import de.micmun.android.miwotreff.util.ProgramAsyncTask;
 import de.micmun.android.miwotreff.util.ProgramSaver;
 
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
@@ -536,8 +535,6 @@ public class MainActivity
     */
    private void loadData() {
       mSwipeLayout.setRefreshing(true);
-      ProgramAsyncTask pat = new ProgramAsyncTask(mAdapter);
-      pat.execute(mDbProvider);
 
       final Activity currentActivity = this;
 
