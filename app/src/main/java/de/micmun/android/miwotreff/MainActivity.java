@@ -15,6 +15,7 @@
 package de.micmun.android.miwotreff;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -22,6 +23,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -58,7 +60,10 @@ import de.micmun.android.miwotreff.util.CalendarSyncTask;
 import de.micmun.android.miwotreff.util.ContextActionMode;
 import de.micmun.android.miwotreff.util.CustomToast;
 import de.micmun.android.miwotreff.util.JSONBackupRestore;
+import de.micmun.android.miwotreff.util.ProgramAsyncTask;
 import de.micmun.android.miwotreff.util.ProgramSaver;
+
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
 /**
  * Main activity for miwotreff.
@@ -531,21 +536,46 @@ public class MainActivity
     */
    private void loadData() {
       mSwipeLayout.setRefreshing(true);
-      List<Program> programs = mDbProvider.queryProgram(null, null, null);
-      mAdapter.setProgramList(programs);
-      mSwipeLayout.setRefreshing(false);
+      ProgramAsyncTask pat = new ProgramAsyncTask(mAdapter);
+      pat.execute(mDbProvider);
 
-      if (programs.size() > 0) {
-         lastDate = mDbProvider.getLastDate();
-         mProgListView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-               mProgListView.smoothScrollToPosition(mDbProvider.getPosOfNextWednesday() + 1);
+      final Activity currentActivity = this;
+
+      new AsyncTask<Void, Void, List<Program>>() {
+         @Override
+         protected List<Program> doInBackground(Void... voids) {
+            return mDbProvider.queryProgram(null, null, null);
+         }
+
+         @Override
+         protected void onPostExecute(List<Program> programs) {
+            super.onPostExecute(programs);
+
+            mAdapter.setProgramList(programs);
+            mSwipeLayout.setRefreshing(false);
+
+            if (programs.size() > 0) {
+               lastDate = mDbProvider.getLastDate();
+               if (currentActivity.getResources().getConfiguration().orientation == ORIENTATION_PORTRAIT) {
+                  mProgListView.postDelayed(new Runnable() {
+                     @Override
+                     public void run() {
+                        mProgListView.smoothScrollToPosition(mDbProvider.getPosOfNextWednesday() + 2);
+                     }
+                  }, 300);
+               } else {
+                  mProgListView.postDelayed(new Runnable() {
+                     @Override
+                     public void run() {
+                        mProgListView.smoothScrollToPosition(mDbProvider.getPosOfNextWednesday() + 1);
+                     }
+                  }, 300);
+               }
+            } else {
+               lastDate = DBDateUtility.getDateString(Calendar.getInstance().getTimeInMillis());
+               onRefresh();
             }
-         }, 300);
-      } else {
-         lastDate = DBDateUtility.getDateString(Calendar.getInstance().getTimeInMillis());
-         onRefresh();
-      }
+         }
+      }.execute();
    }
 }
