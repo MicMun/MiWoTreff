@@ -1,4 +1,4 @@
-#MiWoTreff
+# MiWoTreff
 
 ## About
 
@@ -17,7 +17,7 @@ This app is compatible from sdk version 14 (Android 4.0) upward and needs the fo
   * appcompat-v7 library
   * [grant by Anthony Restaino](https://github.com/anthonycr/Grant)
   * [ion by Koushik Dutta] (https://github.com/koush/ion)
-  
+
 Die App ist kompatibel ab SDK Version 14 (Android 4.0) aufwärts und braucht folgende Libraries zum Kompilieren:
 
   * appcompat-v7 library
