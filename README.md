@@ -26,7 +26,7 @@ Die App ist kompatibel ab SDK Version 14 (Android 4.0) aufwärts und braucht fol
 
 ## License
 
-**Copyright 2016 by MicMun**
+**Copyright 2017 by MicMun**
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU
 General Public License as published by the Free Software Foundation, either version 3 of the License, or
