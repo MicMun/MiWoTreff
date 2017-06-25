@@ -7,8 +7,8 @@ android {
         applicationId "de.micmun.android.miwotreff"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 8
-        versionName "5.1"
+        versionCode 9
+        versionName "5.2"
     }
     buildTypes {
         release {
@@ -28,9 +28,9 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:design:25.2.0'
-    compile 'com.android.support:recyclerview-v7:25.2.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.anthonycr.grant:permissions:1.0'
     compile 'com.koushikdutta.ion:ion:2.1.7'
 }
