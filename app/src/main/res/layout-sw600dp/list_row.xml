@@ -2,6 +2,7 @@
 <RelativeLayout
     android:id="@+id/row_background"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="@dimen/row_height"
@@ -20,7 +21,7 @@
         android:gravity="center_vertical"
         android:textSize="@dimen/text_size_normal"/>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/text_thema"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,14 +29,15 @@
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginRight="@dimen/margin_small"
         android:layout_toEndOf="@id/text_datum"
-        android:layout_toLeftOf="@id/text_person"
-        android:layout_toRightOf="@id/text_datum"
+        android:layout_toLeftOf="@+id/text_person"
+        android:layout_toRightOf="@+id/text_datum"
         android:layout_toStartOf="@id/text_person"
         android:gravity="center_vertical"
-        android:textSize="@dimen/text_size_normal"
-        android:textStyle="bold"/>
+        android:textColor="?android:attr/textColorPrimary"
+        android:textStyle="bold"
+        app:autoSizeTextType="uniform"/>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/text_person"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,8 +45,8 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:gravity="center_vertical"
-        android:textSize="@dimen/text_size_small"
-        android:textStyle="italic"/>
+        android:textColor="?android:attr/textColorSecondary"
+        app:autoSizeTextType="uniform"/>
 
 </RelativeLayout>
 
