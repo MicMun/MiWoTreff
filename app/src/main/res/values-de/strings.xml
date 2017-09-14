@@ -57,4 +57,7 @@
     <string name="auto_sync_summary_off">Automatische Synchronisation ist deaktiviert, die App lädt deshalb nicht automatisch das neue Programm.</string>
     <string name="auto_sync_summary_on">Automatische Synchronisation ist aktiviert, die App lädt deshalb automatisch das neue Programm.</string>
     <string name="files_keep_summary">Behalte die neuesten %s Backup-Dateien beim Löschen</string>
+    <!-- Background job -->
+    <string name="channel_text">Channel für MiWoTreff-Sync</string>
+    <string name="channel_name">sync_channel</string>
 </resources>

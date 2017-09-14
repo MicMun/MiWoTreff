@@ -16,15 +16,18 @@ package de.micmun.android.miwotreff.service;
 
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
@@ -49,10 +52,12 @@ import de.micmun.android.miwotreff.util.ProgramSaver;
  * Service to look for updates on miwotreff program website.
  *
  * @author MicMun
- * @version 1.1, 29.12.16
+ * @version 1.2, 14.09.17
  */
 public class UpdateIntentService extends IntentService
       implements ProgramSaver.OnProgramRefreshListener {
+   private static final String CHANNEL_ID = "miwotreff_channel";
+
    public final String TAG = "UpdateIntentService";
    private final DateFormat myDateFormat = new SimpleDateFormat("dd.MM.y", Locale.GERMANY);
    private Date dateLastServerUpdate;
@@ -60,25 +65,36 @@ public class UpdateIntentService extends IntentService
    private DBProvider mDbProvider = null;
 
    /**
-    * Creates a new UpdateIntentService.
+    * Default constructor for AndroidManifest.
     */
    public UpdateIntentService() {
       this("UpdateIntentService");
    }
 
    /**
-    * Creates an IntentService.  Invoked by your subclass's constructor.
+    * Creates a new UpdateIntentService with name.
     *
-    * @param name Used to name the worker thread, important only for debugging.
+    * @param name name of the Service.
     */
    public UpdateIntentService(String name) {
       super(name);
    }
 
    @Override
-   protected void onHandleIntent(Intent intent) {
+   public void onCreate() {
+      super.onCreate();
+      createChannel();
+   }
+
+   @Override
+   protected void onHandleIntent(@Nullable Intent intent) {
+      if (intent == null)
+         return;
+
       // Check intent action
       if (Intent.ACTION_GET_CONTENT.equals(intent.getAction())) {
+         Log.d("UpdateIntentService", "syncProgram started...");
+
          // check if internet connection is avalaible
          if (!isOnline()) {
             Log.e(TAG, "No internet connection!");
@@ -101,6 +117,34 @@ public class UpdateIntentService extends IntentService
          } catch (InterruptedException | ExecutionException | ParseException e) {
             Log.e(TAG, "ERROR: " + e.getLocalizedMessage());
          }
+      }
+   }
+
+   /**
+    * Creates the channel on Android 8 and higher, else do nothing.
+    */
+   private void createChannel() {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+         Log.d("UpdateIntentService", "createChannel started...");
+         NotificationManager mNotificationManager =
+               (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+         CharSequence name = getString(R.string.channel_name);
+         String description = getString(R.string.channel_text);
+         int importance = NotificationManager.IMPORTANCE_DEFAULT;
+         NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+         // Configure the notification channel.
+         mChannel.setDescription(description);
+         mChannel.enableLights(true);
+         // Sets the notification light color for notifications posted to this
+         // channel, if the device supports this feature.
+         mChannel.setLightColor(Color.BLUE);
+         mChannel.enableVibration(true);
+         mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+         mNotificationManager.createNotificationChannel(mChannel);
+         Log.d("UpdateIntentService", "... createChannel OK");
+         NotificationChannel channel = mNotificationManager.getNotificationChannel(CHANNEL_ID);
+         Log.d("UpdateIntentService", "Channel: " + channel.getId() + " = " + channel.getDescription());
       }
    }
 
@@ -182,8 +226,13 @@ public class UpdateIntentService extends IntentService
       if (countInsert > 0 || countUpdate > 0) {
          String title = getString(R.string.app_name);
          String text = String.format(getString(R.string.load_success), countInsert, countUpdate);
+         String channelId = CHANNEL_ID;
+         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            channelId = "default";
+         }
+
          NotificationCompat.Builder notifyBuilder =
-               new NotificationCompat.Builder(this);
+               new NotificationCompat.Builder(this, channelId);
          notifyBuilder.setSmallIcon(R.drawable.ic_notify);
          notifyBuilder.setContentTitle(title);
          notifyBuilder.setContentText(text);
@@ -191,6 +240,8 @@ public class UpdateIntentService extends IntentService
             notifyBuilder.setCategory(Notification.CATEGORY_SOCIAL);
          }
          notifyBuilder.setDefaults(Notification.DEFAULT_ALL);
+         notifyBuilder.setAutoCancel(true);
+
          // result intent with date of last server update
          Intent resultIntent = new Intent(this, MainActivity.class);
 
@@ -209,7 +260,6 @@ public class UpdateIntentService extends IntentService
          // mId allows you to update the notification later on.
          int mId = 1;
          Notification notification = notifyBuilder.build();
-         notification.flags |= Notification.FLAG_AUTO_CANCEL;
          mNotificationManager.notify(mId, notification);
       }
    }
