@@ -17,14 +17,15 @@ package de.micmun.android.miwotreff.service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import de.micmun.android.miwotreff.util.AppPreferences;
 
 /**
- * Brodcast receiver for boot complete event.
+ * Brodcast receiver for boot complete event and external storage avalaible.
  *
  * @author MicMun
- * @version 1.0, 08.02.16
+ * @version 1.1, 18.09.17
  */
 public class BootBroadcastReceiver extends BroadcastReceiver {
    @Override
@@ -34,6 +35,12 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
       if (action.equals("android.intent.action.BOOT_COMPLETED") ||
             action.equals("android.intent.action.QUICKBOOT_POWERON")) {
          // set alarm for update service, if auto sync is on
+         if (new AppPreferences(context).isAutoSync()) {
+            AlarmConfiger.setAlarmService(context);
+         }
+      } else if (action.equals("")) {
+         // set alarm for update service, if auto sync is on
+         Log.d("BootBroadcastReceiver", "External storage available");
          if (new AppPreferences(context).isAutoSync()) {
             AlarmConfiger.setAlarmService(context);
          }

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     package="de.micmun.android.miwotreff"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:installLocation="auto">
 
     <permission
         android:name="de.micmun.android.miwotreff.permission.ACCESS_DB_PROVIDER"
@@ -68,6 +69,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="android.intent.action.EXTERNAL_APPLICATIONS_AVAILABLE"/>
             </intent-filter>
         </receiver>
     </application>
