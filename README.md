@@ -15,18 +15,22 @@ Dieses GitHub Repository hostet den Code der Android-App _MiWoTreff_. _MiWoTreff
 This app is compatible from sdk version 14 (Android 4.0) upward and needs the following libraries to compile:
 
   * appcompat-v7 library
+  * design library
+  * recyclerview library
   * [grant by Anthony Restaino](https://github.com/anthonycr/Grant)
   * [ion by Koushik Dutta] (https://github.com/koush/ion)
 
 Die App ist kompatibel ab SDK Version 14 (Android 4.0) aufwärts und braucht folgende Libraries zum Kompilieren:
 
   * appcompat-v7 library
+  * design library
+  * recyclerview library
   * [grant von Anthony Restaino](https://github.com/anthonycr/Grant)
   * [ion von Koushik Dutta] (https://github.com/koush/ion)
 
 ## License
 
-**Copyright 2017 by MicMun**
+**Copyright 2018 by MicMun**
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU
 General Public License as published by the Free Software Foundation, either version 3 of the License, or
