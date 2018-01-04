@@ -27,6 +27,7 @@ proguard/
 # Gradle
 .gradle
 build
+release/
 gradle/
 gradlew
 gradlew.bat
