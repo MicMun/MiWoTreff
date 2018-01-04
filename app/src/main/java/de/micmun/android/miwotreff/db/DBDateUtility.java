@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Beschreibung.
@@ -33,7 +34,9 @@ import java.util.Locale;
  */
 public class DBDateUtility {
    private static final String TAG = "DBDateUtility";
+
    private static final Locale def = Locale.getDefault();
+   private static final TimeZone TIMEZONE = TimeZone.getTimeZone("Europe/Berlin");
 
    /**
     * Returns the Date-Object from String.
@@ -45,6 +48,8 @@ public class DBDateUtility {
       Date datum;
 
       SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", def);
+      sdf.setTimeZone(TIMEZONE);
+
       try {
          datum = sdf.parse(d);
       } catch (ParseException e) {
@@ -64,6 +69,8 @@ public class DBDateUtility {
    public static String getDateString(long t) {
       GregorianCalendar gc = new GregorianCalendar();
       gc.setTimeInMillis(t);
+      gc.setTimeZone(TIMEZONE);
+
       return DateFormat.format("dd.MM.yyyy", gc).toString();
    }
 
@@ -75,6 +82,7 @@ public class DBDateUtility {
    public static String getNextWednesday() {
       Calendar nextWedDay = Calendar.getInstance();
       nextWedDay.setTimeInMillis(System.currentTimeMillis());
+      nextWedDay.setTimeZone(TIMEZONE);
 
       int diff = GregorianCalendar.WEDNESDAY -
             nextWedDay.get(GregorianCalendar.DAY_OF_WEEK);
