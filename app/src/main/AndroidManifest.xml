@@ -22,10 +22,12 @@
         android:fullBackupContent="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:screenOrientation="sensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -39,7 +41,8 @@
         <activity
             android:name="de.micmun.android.miwotreff.SearchActivity"
             android:exported="false"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="sensor">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
@@ -50,7 +53,8 @@
 
         <activity
             android:name="de.micmun.android.miwotreff.EditActivity"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="sensor"/>
         <activity
             android:name=".SettingActivity"
             android:exported="false"/>
