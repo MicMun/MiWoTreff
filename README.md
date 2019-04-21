@@ -11,11 +11,6 @@ Dieses GitHub Repository hostet den Code der Android-App _MiWoTreff_. _MiWoTreff
         height="80"
         src="https://user-images.githubusercontent.com/15004217/36810046-fa306856-1cc9-11e8-808e-6eb8a81783c7.png" />
         </a>  
-<a href="https://f-droid.org/packages/de.micmun.android.miwotreff/">
-    <img alt="Get it on F-Droid"
-        height="80"
-        src="https://user-images.githubusercontent.com/15004217/36919296-19b8524e-1e5d-11e8-8962-48463b1cec8a.png" />
-        </a>
 
 ## Screenshots
 
