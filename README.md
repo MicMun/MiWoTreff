@@ -6,6 +6,17 @@ This GitHub repository hosts the code of the Android app _MiWoTreff_. _MiWoTreff
 
 Dieses GitHub Repository hostet den Code der Android-App _MiWoTreff_. _MiWoTreff_ zeigt das Programm des "Mittwochstreff der Evangelischen Gemeinschaft Bogenhausen, München".
 
+<a href="https://play.google.com/store/apps/details?id=de.micmun.android.miwotreff">
+    <img alt="Get it on Google Play"
+        height="80"
+        src="https://user-images.githubusercontent.com/15004217/36810046-fa306856-1cc9-11e8-808e-6eb8a81783c7.png" />
+        </a>  
+<a href="https://f-droid.org/packages/de.micmun.android.miwotreff/">
+    <img alt="Get it on F-Droid"
+        height="80"
+        src="https://user-images.githubusercontent.com/15004217/36919296-19b8524e-1e5d-11e8-8962-48463b1cec8a.png" />
+        </a>
+
 ## Screenshots
 
 ![Screenshot-List and Edit](screenshot01.png)
@@ -18,7 +29,7 @@ This app is compatible from sdk version 14 (Android 4.0) upward and needs the fo
   * design library
   * recyclerview library
   * [grant by Anthony Restaino](https://github.com/anthonycr/Grant)
-  * [ion by Koushik Dutta] (https://github.com/koush/ion)
+  * [ion by Koushik Dutta](https://github.com/koush/ion)
 
 Die App ist kompatibel ab SDK Version 14 (Android 4.0) aufwärts und braucht folgende Libraries zum Kompilieren:
 
@@ -26,7 +37,7 @@ Die App ist kompatibel ab SDK Version 14 (Android 4.0) aufwärts und braucht fol
   * design library
   * recyclerview library
   * [grant von Anthony Restaino](https://github.com/anthonycr/Grant)
-  * [ion von Koushik Dutta] (https://github.com/koush/ion)
+  * [ion von Koushik Dutta](https://github.com/koush/ion)
 
 ## License
 
